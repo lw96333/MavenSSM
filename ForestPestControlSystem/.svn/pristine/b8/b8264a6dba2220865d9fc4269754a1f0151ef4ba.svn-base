@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.one.dao.disposalManagement.Outgoing_managementDao">
+  	
+  	<resultMap type="com.one.bean.disposalManagement.Outgoing_managementBean" id="outGoingMap">
+  		<result column="date" property="date"/>
+  		<result column="purpoose" property="purpoose"/>
+  		<result column="num" property="num"/>
+  		<association property="goods" resultMap="nameOfGoodsMap"/>
+  		<association property="id" resultMap="scmMap"/>
+  	</resultMap>
+  	
+  	<resultMap type="com.one.bean.NameOfGoodsBean" id="nameOfGoodsMap">
+  		<result column="goodsName" property="goodsName"/>
+  	</resultMap>
+  	
+  	<resultMap type="com.one.bean.disasterPreventionAndControl.SmallClassManagementBean" id="scmMap">
+  		<result column="sbName" property="name"/>
+  	</resultMap>
+  	
+  	<select id="getAllOutGoing" parameterType="map" resultMap="outGoingMap">
+  		select
+  			om.f_date as date,
+  			om.f_purpoose as purpoose,
+  			om.f_num as num,
+  			nog.f_goodsName as goodsName,
+  			scm.f_name as sbName
+  		from
+  			t_outgoing_management as om
+  		left join
+  			t_nameOfGoods as nog
+  		on
+  			nog.pk_goodsId = om.fk_goodsId
+  		left join
+  			t_small_class_management as scm
+  		on
+  			om.fk_id = scm.pk_id
+  		where
+  			1=1
+  		<if test="dateStrat != null">
+  			between #{dateStrat} And #{dateEnd} 
+  		</if>
+  		
+  		limit 
+  			#{pageNum},#{pageSize}
+  			
+  	</select>
+  	<select id="getAllOutGoingForNumber" parameterType="map" resultType="int">
+  		select
+  			count(om.fk_id)
+  		from
+  			t_outgoing_management as om
+  		left join
+  			t_nameOfGoods as nog
+  		on
+  			nog.pk_goodsId = om.fk_goodsId
+  		left join
+  			t_small_class_management as scm
+  		on
+  			om.fk_id = scm.pk_id
+  		where
+  			1=1
+  		<if test="dateStrat != null">
+  			between #{dateStrat} And #{dateEnd} 
+  		</if>
+  		
+  		
+  			
+  	</select>
+  
+  
+  </mapper>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.one.dao.disasterPreventionAndControl.IncidentRecordDao">
+
+	<resultMap type="incident" id="incidentMap">
+		<id column="inciId" property="id" />
+		<result column="inciName" property="eventName" />
+		<result column="inciPic" property="pic" />
+		<result column="inciTime" property="time" />
+		<result column="inciDisater" property="disaster" />
+		<result column="inciInitialloss" property="initialloss" />
+		<result column="inciInfluence" property="influence" />
+		<result column="inciControlMethod" property="controlMethod" />
+
+		<association property="smallClass" javaType="smallClass">
+			<id column="smallId" property="id" />
+			<result column="smallName" property="name" />
+		</association>
+
+		<association property="discovery" javaType="com.one.bean.DiscoveryPathBean">
+			<id column="pathId" property="pathId" />
+			<result column="pathName" property="pathName" />
+		</association>
+
+		<association property="stage" javaType="com.one.bean.DisasterStageBean">
+			<id column="stageId" property="stageId" />
+			<result column="stageName" property="typeName" />
+		</association>
+
+		<association property="pestType" javaType="com.one.bean.PestTypesBean">
+			<id column="pestId" property="insectId" />
+			<result column="pestType" property="type" />
+		</association>
+
+		<association property="location" javaType="com.one.bean.LocationBean">
+			<id column="locaId" property="locationId" />
+			<result column="locaPath" property="path" />
+		</association>
+	</resultMap>
+
+	<select id="getAllIncidentRecord" parameterType="java.util.Map"
+		resultMap="incidentMap">
+
+		select inci.pk_eventId AS inciId,
+		inci.f_name as inciName,
+		inci.f_disasterAreaPic as inciPic,
+		inci.f_time as inciTime,
+		inci.f_disasterDescription as inciDisater,
+		inci.f_initialloss as
+		inciInitialloss,
+		inci.f_influence as inciInfluence,
+		inci.f_controlMethod as inciControlMethod,
+		small.pk_id as smallId,
+		small.f_name as smallName,
+		path.pk_pathId as pathId,
+		path.f_pathName as
+		pathName,
+		stage.pk_stageId as stageId,
+		stage.f_typeName as stageName,
+		pest.pk_InsectId as pestId,
+		pest.f_type as pestType,
+		area.pk_areaId as areaId,
+		area.f_areaName as areaName
+		FROM t_incident_record as inci LEFT
+		JOIN t_small_class_management as small
+		on inci.fk_id = small.pk_id
+		LEFT JOIN t_discoverypath as path on inci.fk_pathId = path.pk_pathId
+		LEFT JOIN t_disasterstage as stage on inci.fk_stageId = stage.pk_stageId
+		LEFT JOIN t_pesttypes as pest on inci.fk_InsectId = pest.pk_InsectId
+		LEFT JOIN t_area_in as area on small.fk_areaId = area.pk_areaId
+		WHERE 1=1
+		<if test="eventName != null">
+			and inci.f_name like '%${eventName}%'
+		</if>
+		<if test="typeName != null">
+			and stage.f_typeName like '%${typeName}%'
+		</if>
+		<if test="areaName != null">
+			and area.f_areaName like '%areaName%'
+		</if>
+
+		LIMIT 0,5
+
+	</select>
+
+	<select id="countAllIncidentRecord" resultType="int">
+		select count(pk_eventId) from t_incident_record
+	</select>
+
+	<update id="updateIncidentRecord" parameterType="incident">
+		UPDATE
+		t_incident_record set fk_stageId =
+		#{stage.stageId},f_disasterDescription = #{disaster} WHERE pk_eventId
+		= #{id}
+	</update>
+
+	<insert id="addIncidentRecord" parameterType="incident">
+		INSERT INTO
+		t_incident_record VALUES
+		(null,#{smallClass.id},#{discovery.pathId},#{stage.stageId},#{pestType.insectId},#{location.locationId},#{eventName},#{pic},#{time},#{disaster},#{initialloss},#{influence},#{controlMethod})
+	</insert>
+
+
+	<resultMap type="incident" id="IncidentRecordByIdMap">
+		<id column="inciId" property="id" />
+		<result column="inciName" property="eventName" />
+		<result column="inciPic" property="pic" />
+		<result column="inciTime" property="time" />
+		<result column="inciDisater" property="disaster" />
+		<result column="inciInitialloss" property="initialloss" />
+		<result column="inciInfluence" property="influence" />
+		<result column="inciControlMethod" property="controlMethod" />
+
+		<association property="smallClass" javaType="smallClass">
+			<id column="smallId" property="id" />
+			<result column="smallName" property="name" />
+		</association>
+
+		<association property="discovery" javaType="com.one.bean.DiscoveryPathBean">
+			<id column="pathId" property="pathId" />
+			<result column="pathName" property="pathName" />
+		</association>
+
+		<association property="stage" javaType="com.one.bean.DisasterStageBean">
+			<id column="stageId" property="stageId" />
+			<result column="stageName" property="typeName" />
+		</association>
+
+		<association property="pestType" javaType="com.one.bean.PestTypesBean">
+			<id column="pestId" property="insectId" />
+			<result column="pestType" property="type" />
+		</association>
+
+		<association property="location" javaType="com.one.bean.LocationBean">
+			<id column="locaId" property="locationId" />
+			<result column="locaPath" property="path" />
+		</association>
+
+	</resultMap>
+
+
+	<select id="getIncidentRecordById" parameterType="int"
+		resultMap="IncidentRecordByIdMap">
+		select inci.pk_eventId AS inciId,
+		inci.f_name as inciName,
+		inci.f_disasterAreaPic as inciPic,
+		inci.f_time as inciTime,
+		inci.f_disasterDescription as inciDisater,
+		inci.f_initialloss as
+		inciInitialloss,
+		inci.f_influence as inciInfluence,
+		inci.f_controlMethod as inciControlMethod,
+		small.pk_id as smallId,
+		small.f_name as smallName,
+		path.pk_pathId as pathId,
+		path.f_pathName as
+		pathName,
+		stage.pk_stageId as stageId,
+		stage.f_typeName as stageName,
+		pest.pk_InsectId as pestId,
+		pest.f_type as pestType,
+		loca.pk_locationId
+		as locaId,
+		loca.f_path as locaPath
+		FROM t_incident_record as inci LEFT
+		JOIN t_small_class_management as small
+		on inci.fk_id = small.pk_id
+		LEFT
+		JOIN t_discoverypath as path on inci.fk_pathId = path.pk_pathId
+		LEFT
+		JOIN t_disasterstage as stage on inci.fk_stageId = stage.pk_stageId
+		LEFT JOIN t_pesttypes as pest on inci.fk_InsectId = pest.pk_InsectId
+		LEFT JOIN t_location as loca on inci.fk_locationId =
+		loca.pk_locationId
+		WHERE inci.pk_eventId=#{id}
+	</select>
+
+	<update id="applyForExpertReview" parameterType="int">
+		UPDATE t_incident_record set fk_stageId = 3 WHERE pk_eventId = #{id}
+	</update>
+	
+	<resultMap type="incident" id="DateTime">
+		<id column="inciId" property="id" />
+		<result column="inciName" property="eventName" />
+		<result column="inciPic" property="pic" />
+		<result column="inciTime" property="time" />
+		<result column="inciDisater" property="disaster" />
+		<result column="inciInitialloss" property="initialloss" />
+		<result column="inciInfluence" property="influence" />
+		<result column="inciControlMethod" property="controlMethod" />
+
+		<association property="smallClass" javaType="smallClass">
+			<id column="smallId" property="id" />
+			<result column="smallName" property="name" />
+		</association>
+
+		<association property="discovery" javaType="com.one.bean.DiscoveryPathBean">
+			<id column="pathId" property="pathId" />
+			<result column="pathName" property="pathName" />
+		</association>
+
+		<association property="stage" javaType="com.one.bean.DisasterStageBean">
+			<id column="stageId" property="stageId" />
+			<result column="stageName" property="typeName" />
+		</association>
+
+		<association property="pestType" javaType="com.one.bean.PestTypesBean">
+			<id column="pestId" property="insectId" />
+			<result column="pestType" property="type" />
+		</association>
+
+		<association property="location" javaType="com.one.bean.LocationBean">
+			<id column="locaId" property="locationId" />
+			<result column="locaPath" property="path" />
+		</association>
+	</resultMap>
+	
+	<select id="getIncidentRecordByDate" parameterType="java.util.Map" resultMap="DateTime">
+		select inci.pk_eventId AS inciId,
+		inci.f_name as inciName,
+		inci.f_disasterAreaPic as inciPic,
+		inci.f_time as inciTime,
+		inci.f_disasterDescription as inciDisater,
+		inci.f_initialloss as
+		inciInitialloss,
+		inci.f_influence as inciInfluence,
+		inci.f_controlMethod as inciControlMethod,
+		small.pk_id as smallId,
+		small.f_name as smallName,
+		path.pk_pathId as pathId,
+		path.f_pathName as
+		pathName,
+		stage.pk_stageId as stageId,
+		stage.f_typeName as stageName,
+		pest.pk_InsectId as pestId,
+		pest.f_type as pestType,
+		loca.pk_locationId
+		as locaId,
+		loca.f_path as locaPath
+		FROM t_incident_record as inci LEFT
+		JOIN t_small_class_management as small
+		on inci.fk_id = small.pk_id
+		LEFT
+		JOIN t_discoverypath as path on inci.fk_pathId = path.pk_pathId
+		LEFT
+		JOIN t_disasterstage as stage on inci.fk_stageId = stage.pk_stageId
+		LEFT JOIN t_pesttypes as pest on inci.fk_InsectId = pest.pk_InsectId
+		LEFT JOIN t_location as loca on inci.fk_locationId =
+		loca.pk_locationId
+		WHERE 1=1
+		<if test="beginTime != null">
+			and inci.f_time > #{beginTime}
+		</if>
+		<if test="overTime != null">
+			and inci.f_time &lt; #{overTime}
+		</if>
+	</select>
+
+</mapper>

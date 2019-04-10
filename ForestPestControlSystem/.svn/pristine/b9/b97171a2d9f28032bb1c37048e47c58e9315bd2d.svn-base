@@ -1,0 +1,46 @@
+package com.one.service.disasterPreventionAndControl;
+
+import java.util.List;
+
+import com.one.bean.PageBean;
+import com.one.bean.disasterPreventionAndControl.AreaInBean;
+import com.one.bean.disasterPreventionAndControl.IncidentRecordBean;
+
+public interface IncidentService {
+	/**
+	 * 查询所有事件
+	 * @return
+	 */
+	public PageBean<List<IncidentRecordBean>> getAllIncidentRecord(int pageNum, int pageSize, String incidenName,
+			String areaName, String disasterStageType);
+	/**
+	 * 添加事件
+	 * @param incidentRecord 事件
+	 * @return
+	 */
+	public int addIncidentRecord(IncidentRecordBean incidentRecord);
+	/**
+	 * 根据id查询事件
+	 * @param id 事件id
+	 * @return
+	 */
+	public IncidentRecordBean getIncidentRecordById(int id);
+	/**
+	 * 修改事件信息
+	 * @param incidentRecord
+	 * @return
+	 */
+	public int updateIncidentRecord(IncidentRecordBean incidentRecord);
+	/**
+	 * 申请专家会审
+	 * @param incidentRecord 事件对象
+	 * @return 
+	 */
+	public int applyForExpertReview(int id);
+	
+	/**
+	 * 查询所有小班和地区
+	 * @return
+	 */
+	public List<AreaInBean> getAllAreaAndSmall();
+}

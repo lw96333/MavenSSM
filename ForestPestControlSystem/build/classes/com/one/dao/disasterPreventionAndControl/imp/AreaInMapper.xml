@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.one.dao.disasterPreventionAndControl.AreaInDao">
+
+	<resultMap type="area" id="areaMap">
+
+		<id column="id" property="areaId" />
+		<result column="areaName" property="name" />
+		<result column="forest" property="forest" />
+		<result column="advantage" property="advantage" />
+		<association property="small" javaType="smallClass">
+			<id column="smId" property="id" />
+			<result column="smName" property="name" />
+		</association>
+
+		<association property="linDi" javaType="com.one.bean.LandClassBean">
+			<id column="landId" property="landId" />
+			<result column="landName" property="name" />
+		</association>
+
+	</resultMap>
+
+	<select id="getAllAreaIn" parameterType="java.util.HashMap"
+		resultMap="areaMap">
+		SELECT area.pk_areaId as id,
+		area.f_areaName as areaName,
+		area.f_forestSpecies as forest,
+		area.f_advantage as advantage,
+		sm.pk_id as smId,
+		sm.f_name as smName,
+		land.pk_landId as landId,
+		land.f_name as landName
+		FROM t_area_in as area LEFT JOIN t_small_class_management as sm on area.pk_areaId = sm.fk_areaId
+		left join t_landclass as land on area.fk_landId=land.pk_landId where area.pk_areaId = sm.fk_areaId 
+		<if test="forest != null">
+			AND f_areaName like '%${forest}%'
+		</if>
+		<if test="advantage != null">
+			AND f_forestSpecies like '%${advantage}%'
+		</if>
+		<if test="pageNum != null ">
+			limit ${pageNum.pageNum},${pageNum.pageSize}
+		</if>
+	</select>
+	<resultMap type="area" id="areaNameMap">
+
+		<id column="id" property="areaId" />
+		<result column="areaName" property="name" />
+	</resultMap>
+
+	<select id="getAllAreaInByName" parameterType="java.util.HashMap"
+		resultMap="areaNameMap">
+		SELECT pk_areaId as id,
+			   f_areaName as areaName
+			   FROM t_area_in
+	</select>
+
+	<select id="getAreaInBySmall" resultType="area">
+		select 	area.f_areaName as name,
+				area.pk_areaId as areaId
+				from t_area_in as area  LEFT JOIN t_small_class_management as sm on sm.fk_areaId= area.pk_areaId
+				where sm.f_name is null
+	</select>
+	
+	<insert id="addAreaIn" parameterType="area">
+		INSERT INTO t_area_in
+		VALUES
+		(null,#{linDi.landId},#{forest},#{advantage},#{name});
+	</insert>
+
+</mapper>

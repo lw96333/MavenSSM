@@ -1,0 +1,110 @@
+package com.one.bean.disposalManagement;
+
+import java.io.Serializable;
+
+/**
+ *  添加出库信息
+ * @author 郑
+ *
+ */
+public class Outgoing_managementBean implements Serializable{
+
+	private Integer outId; // 出库ID
+	
+	private Integer id; // 小班ID
+	
+	private Integer insectId; //虫害ID
+	
+	private Integer typeId; // 类型ID
+	
+	private Integer goodsId; // 物品Id
+	
+	private Integer num; // 领用数量
+	
+	private String purpoose; // 主要用途
+	
+	private String date; // 日期
+
+	public Outgoing_managementBean() {
+		
+	}
+	
+	public Outgoing_managementBean(Integer outId, Integer id, Integer insectId, Integer typeId, Integer goodsId,
+			Integer num, String purpoose, String date) {
+		super();
+		this.outId = outId;
+		this.id = id;
+		this.insectId = insectId;
+		this.typeId = typeId;
+		this.goodsId = goodsId;
+		this.num = num;
+		this.purpoose = purpoose;
+		this.date = date;
+	}
+
+	public Integer getOutId() {
+		return outId;
+	}
+
+	public void setOutId(Integer outId) {
+		this.outId = outId;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getInsectId() {
+		return insectId;
+	}
+
+	public void setInsectId(Integer insectId) {
+		this.insectId = insectId;
+	}
+
+	public Integer getTypeId() {
+		return typeId;
+	}
+
+	public void setTypeId(Integer typeId) {
+		this.typeId = typeId;
+	}
+
+	public Integer getGoodsId() {
+		return goodsId;
+	}
+
+	public void setGoodsId(Integer goodsId) {
+		this.goodsId = goodsId;
+	}
+
+	public Integer getNum() {
+		return num;
+	}
+
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+
+	public String getPurpoose() {
+		return purpoose;
+	}
+
+	public void setPurpoose(String purpoose) {
+		this.purpoose = purpoose;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+	
+	
+}

@@ -1,0 +1,8 @@
+ var GG = {
+        "pageNum": function (pageNum) {
+            console.log(pageNum);
+            //console.log("hellos");
+            //window.location.href="test.html?page="+mm;
+        }
+    }
+    $("#page").initPage(1000, 1, GG.pageNum);

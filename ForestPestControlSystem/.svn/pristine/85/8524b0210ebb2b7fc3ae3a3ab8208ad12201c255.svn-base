@@ -1,0 +1,152 @@
+        var names;
+		var types;
+		var diseasesTypes;
+		
+		$(function(){
+				$("#additive").click(function(){
+					$(location).prop('href', "jsp/additive.jsp?");
+				});
+		});
+		/*$(function(){
+			$("#butts").click(function(){
+				$(location).prop('href', "jsp/pharmacy_management.jsp");
+ 		 });
+		});*/
+		
+		function tableAjax(data){
+			var str = "<tr class='info'><th>名称</th><th>防治类型</th><th>适合病虫害</th><th>适合树种</th></tr>";
+    		for(var i=0;i<data.pageData.length;i++){
+    			str += "<tr>";
+    			str += "<td>"+data.pageData[i].name+"</td>";
+    			str += "<td>"+data.pageData[i].insect.type+"</td>"
+    			str += "<td>"+data.pageData[i].diseases.diseasesType+"</td>"
+    			str += "<td>"+data.pageData[i].tree+"</td>"
+    			str += "</tr>";
+    		}
+    		$(".table").html(str);
+		}
+		
+		 function page(currPage,pageSize) { 
+			    var name;
+				var type;
+				var diseasesType;
+				
+				if(names == ""||names == null ){
+					name = "";
+				}else{
+					name = names;
+				}
+				if(types == "" || types == null){
+					type = "";
+				}else{
+					type = types;
+				}
+				if(diseasesTypes == "" || diseasesTypes == null){
+					diseasesType = "";
+				}else{
+					diseasesType = diseasesTypes;
+				}
+		 		
+		 		$.ajax({
+	            	type:"post",
+	            	url:"pharmacy_managementPage",
+	            	data:{
+	            		"currPage":currPage,
+	            		"pageSize":$("input[name=pageSize]").val(),
+	            		"name":name,
+	            		"type":type,
+	            		"diseasesType":diseasesType
+	            	},
+	            	dataType : 'json',
+	            	success:function(data){
+	            		tableAjax(data);
+	            		
+	            	}
+	            });
+	        }
+		 
+		 $(function(){
+		 		$("#butt").click(function(){
+					/* alert(2313123); */
+		 			 names = $("#name").val().trim();
+		 			 types = $("#type").val().trim();
+//		 			 alert(types);  
+		 			 diseasesTypes = $("#diseasesType").val().trim();
+		 			
+		 			if(names.trim() == "" & types.trim() == "" & diseasesTypes.trim() == ""){
+		 				alert("请输入要查询的条件");
+		 			}else{
+		 				
+		 				$.ajax({
+		 					type:"post",
+		 					url:"pharmacy_managementPage",
+		 					data:{
+		 						"currPage":1,
+		 						"pageSize":$("input[name=pageSize]").val(),
+		 						"name":names,
+		 						"type":types,
+		 						"diseasesType":diseasesTypes
+		 					},
+		 					dataType : 'json',
+		 					success:function(data){
+		 						/* alert(data); */
+		 						
+		 						tableAjax(data);
+		 						/*  alert(data); */  
+		 						$("#pagination_2").whjPaging({
+		 							css: 'css-2',
+		 							totalSize: data.totalData,
+		 							totalPage: data.totalNum,
+		 							showPageNum: data.pageSize,
+		 							firstPage: '首页',
+		 							previousPage: '上一页',
+		 							nextPage: '下一页',
+		 							lastPage: '尾页',
+		 							skip: '',
+		 							confirm: '跳转',
+		 							refresh: '刷新',
+		 							totalPageText: '总共 {} 页',
+		 							totalSizeText: "总共 {} 条",
+		 							isShowFL: true,
+		 							isShowSkip: true,
+		 							isResetPage: false,
+		 							isShowRefresh: false,
+		 							isShowTotalPage: true,
+		 							isShowTotalSize: true,
+		 							isShowPageSizeOpt: false,
+		 							callBack: function(currPage,pageSize){
+		 								page(currPage,5);
+		 							}
+		 						});
+		 					}
+		 				});
+		 			}
+		 			});
+		 		});
+		 
+		 
+		 $("#pagination_2").whjPaging({
+		 	    css: 'css-2',
+		 	    totalSize: $("input[name=totalData]").val(),
+		 	    totalPage: $("input[name=totalNum]").val(),
+		 	    showPageNum: $("input[name=pageSize]").val(),
+		 	    firstPage: '首页',
+		 	    previousPage: '上一页',
+		 	    nextPage: '下一页',
+		 	    lastPage: '尾页',
+		 	    skip: '',
+		 	    confirm: '跳转',
+		 	    refresh: '刷新',
+		 	    totalPageText: '总共 {} 页',
+		 	    totalSizeText: "总共 {} 条",
+		 	    isShowFL: true,
+		 	    isShowSkip: true,
+		 	    isResetPage: false,
+		 	    isShowRefresh: false,
+		 	    isShowTotalPage: true,
+		 	    isShowTotalSize: true,
+		 	    isShowPageSizeOpt: false,
+		 	    callBack: function(currPage,pageSize){
+		 	    	page(currPage,pageSize);
+		 	    }
+		 	});

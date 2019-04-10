@@ -1,0 +1,63 @@
+package com.one.servlet.disposalManagement;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+import com.one.bean.PageBean;
+import com.one.service.disposalManagement.Consultation_managementService;
+
+/**
+ * Servlet implementation class SpecialistPageServlet
+ */
+@WebServlet("/consultation_managementPage")
+public class consultation_managementPageServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public consultation_managementPageServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		String pageNum = request.getParameter("currPage");
+		String pageSize = request.getParameter("pageSize");
+		String pageName = request.getParameter("pageName");
+		String pageInsect = request.getParameter("pageInsect");
+//		System.out.println("1111111111111111111111");
+//		System.out.println(pageSize);
+//		System.out.println("1111111111111111111111");
+		if("".equals(pageName)) {
+			pageName = null;
+		}
+		if("".equals(pageInsect)) {
+			pageInsect = null;
+		}
+		
+		PageBean page = Consultation_managementService.getInstance().getShowConsultation_management(Integer.parseInt(pageNum), Integer.parseInt(pageSize), pageName, pageInsect);
+		Gson gson = new Gson();
+		String pageBean = gson.toJson(page);
+		response.getWriter().print(pageBean);
+//		System.out.println("2222222222222222222222");
+//		System.out.println(pageBean);
+//		System.out.println("2222222222222222222222");
+	}
+}

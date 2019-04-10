@@ -1,0 +1,266 @@
+package com.one.service.disasterPreventionAndControl.Imp;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import com.one.bean.PageBean;
+import com.one.bean.disasterPreventionAndControl.AreaInBean;
+import com.one.bean.disasterPreventionAndControl.IncidentRecordBean;
+import com.one.bean.disasterPreventionAndControl.SmallClassManagementBean;
+import com.one.dao.disasterPreventionAndControl.IncidentRecordDao;
+import com.one.dao.disasterPreventionAndControl.SmallClassManagementDao;
+import com.one.service.disasterPreventionAndControl.IncidentService;
+
+public class IncidentServiceImp implements IncidentService {
+
+	private SqlSession getSession() throws Exception {
+		InputStream inputStream = null;
+		inputStream = Resources.getResourceAsStream("config/mybatis_config.xml");
+		SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
+		return factory.openSession();
+	}
+
+	@Override
+	public PageBean<List<IncidentRecordBean>> getAllIncidentRecord(int pageNum, int pageSize, String incidenName,
+			String areaName, String disasterStageType,String beginTime,String overTime) {
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		Map<String,Object> mapList = new HashMap<String,Object>();
+		
+		PageBean<List<IncidentRecordBean>> page = new PageBean<>();
+		page.setPageNum((pageNum - 1) * pageSize);
+		page.setPageSize(pageSize);
+		if("".equals(incidenName)) {
+			map.put("incidenName", null);
+			mapList.put("incidenName", null);
+		}else {
+			map.put("incidenName", incidenName);
+			mapList.put("incidenName", incidenName);
+		}
+		if("".equals(areaName)) {
+			map.put("regName", null);
+			mapList.put("regName", null);
+		}else {
+			map.put("regName", areaName);
+			mapList.put("regName", areaName);
+		}
+		if("0".equals(disasterStageType)) {
+			map.put("disasterStageType", null);
+			mapList.put("disasterStageType", null);
+		}else {
+			map.put("disasterStageType", disasterStageType);
+			mapList.put("disasterStageType", disasterStageType);
+		}
+		if("".equals(beginTime)) {
+			map.put("beginTime", null);
+			mapList.put("beginTime", null);
+		}else {
+			map.put("beginTime", beginTime);
+			mapList.put("beginTime", beginTime);
+		}
+		if("".equals(overTime)) {
+			map.put("overTime", null);
+			mapList.put("overTime", null);
+		}else {
+			map.put("overTime", overTime);
+			mapList.put("overTime", overTime);
+		}
+		map.put("pageNum", page);
+		mapList.put("pageNum", null);
+		
+		SqlSession session = null;
+		List list = null;
+		List<IncidentRecordBean> liTotal = null;
+		
+		try {
+			session = this.getSession();
+			IncidentRecordDao incident = session.getMapper(IncidentRecordDao.class);
+			liTotal = incident.getAllIncidentRecord(mapList);
+			list = incident.getAllIncidentRecord(map);
+			page.setTotalData(liTotal.size());
+			page.setPageNum(pageNum);
+			page.setPageSize(pageSize);
+			page.setTotalNum((int) Math.ceil((double)page.getTotalData()/pageSize));
+			map.put("pageNum", (pageNum - 1) * pageSize);
+			page.setPageData(list);
+			session.commit();
+		} catch (Exception e) {
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
+		return page;
+	}
+
+	@Override
+	public int addIncidentRecord(IncidentRecordBean incidentRecord) {
+		SqlSession session = null;
+		try {
+			session = this.getSession();
+			IncidentRecordDao incident = session.getMapper(IncidentRecordDao.class);
+			int add = incident.addIncidentRecord(incidentRecord);
+			session.commit();
+			return add;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
+		return 0;
+		
+	}
+
+	@Override
+	public IncidentRecordBean getIncidentRecordById(int id) {
+		SqlSession session = null;
+		try {
+			session = this.getSession();
+			IncidentRecordDao incident = session.getMapper(IncidentRecordDao.class);
+			IncidentRecordBean inci = incident.getIncidentRecordById(id);
+			session.commit();
+			return inci;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			session.rollback();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
+		return null;
+		
+	}
+
+	@Override
+	public PageBean<IncidentRecordBean> getIncidentRecordByDate(int pageNum, int pageSize,String beginTime, String overTime) {
+		PageBean<IncidentRecordBean> page = new PageBean<>();
+		Map<String,Object> map = new HashMap<String,Object>();
+		Map<String,Object> mapList = new HashMap<String,Object>();
+		page.setPageNum((pageNum - 1) * pageSize);
+		page.setPageSize(pageSize);
+		if("".equals(beginTime)) {
+			map.put("beginTime", null);
+			mapList.put("beginTime", null);
+		}else {
+			map.put("beginTime", beginTime);
+			mapList.put("beginTime", beginTime);
+		}
+		if("".equals(overTime)) {
+			map.put("overTime", null);
+			mapList.put("overTime", null);
+		}else {
+			map.put("overTime", overTime);
+			mapList.put("overTime", overTime);
+		}
+		map.put("pageNum", page);
+		mapList.put("pageNum", null);
+		
+		SqlSession session = null;
+		List<IncidentRecordBean> liTotal = null;
+		List<IncidentRecordBean> list = null;
+		
+		try {
+			session = this.getSession();
+			IncidentRecordDao incident = session.getMapper(IncidentRecordDao.class);
+			liTotal = incident.getIncidentRecordByDate(map);
+			list = incident.getIncidentRecordByDate(mapList);
+			page.setTotalData(list.size());
+			page.setPageNum(pageNum);
+			page.setPageSize(pageSize);
+			page.setTotalNum((int) Math.ceil((double)page.getTotalData()/pageSize));
+			map.put("pageNum", (pageNum - 1) * pageSize);
+			page.setPageData(liTotal);
+			session.commit();
+		} catch (Exception e) {
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
+		return page;
+	}
+
+	@Override
+	public int updateIncidentRecord(IncidentRecordBean incidentRecord) {
+		SqlSession session = null;
+		try {
+			session = this.getSession();
+			IncidentRecordDao incident = session.getMapper(IncidentRecordDao.class);
+			int add = incident.updateIncidentRecord(incidentRecord);
+			session.commit();
+			return add;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			session.rollback();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
+		return 0;
+		
+	}
+
+	@Override
+	public int applyForExpertReview(int id) {
+		SqlSession session = null;
+		try {
+			session = this.getSession();
+			IncidentRecordDao incident = session.getMapper(IncidentRecordDao.class);
+			int inci = incident.applyForExpertReview(id);
+			session.commit();
+			return inci;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			session.rollback();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
+		return 0;
+		
+	}
+
+	@Override
+	public List<AreaInBean> getAllAreaAndSmall() {
+		SqlSession session = null;
+		try {
+			session = this.getSession();
+			IncidentRecordDao incident = session.getMapper(IncidentRecordDao.class);
+			List<AreaInBean> list = incident.getAllAreaAndSmall();
+			System.out.println(list);
+			session.commit();
+			return list;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			session.rollback();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+		}
+		return null;
+		
+	}
+
+}

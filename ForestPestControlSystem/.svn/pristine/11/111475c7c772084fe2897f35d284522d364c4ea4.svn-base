@@ -1,0 +1,396 @@
+/*==============================================================*/
+/* DBMS name:      MySQL 5.0                                    */
+/* Created on:     2019/1/7 23:26:04                            */
+/*==============================================================*/
+
+
+drop table if exists t_area_in;
+
+drop table if exists t_consultation_management;
+
+drop table if exists t_disasterStage;
+
+drop table if exists t_discoveryPath;
+
+drop table if exists t_diseasesAndInsectPests;
+
+drop table if exists t_diseasesList_management;
+
+drop table if exists t_incident_record;
+
+drop table if exists t_instrument_management;
+
+drop table if exists t_landClass;
+
+drop table if exists t_location;
+
+drop table if exists t_log_list;
+
+drop table if exists t_nameOfGoods;
+
+drop table if exists t_outgoing_management;
+
+drop table if exists t_pestTypes;
+
+drop table if exists t_pestsList_management;
+
+drop table if exists t_pharmacy_management;
+
+drop table if exists t_region;
+
+drop table if exists t_rodentpestsList_management;
+
+drop table if exists t_small_class_management;
+
+drop table if exists t_specialist_management;
+
+drop table if exists t_type;
+
+drop table if exists t_userPrivileges;
+
+drop table if exists t_user_management;
+
+/*==============================================================*/
+/* Table: t_area_in                                             */
+/*==============================================================*/
+create table t_area_in
+(
+   pk_areaId            int not null auto_increment,
+   fk_id                int,
+   fk_landId            int,
+   f_forestSpecies      varchar(50),
+   f_advantage          varchar(50),
+   f_areaName           varchar(50),
+   primary key (pk_areaId)
+);
+
+/*==============================================================*/
+/* Table: t_consultation_management                             */
+/*==============================================================*/
+create table t_consultation_management
+(
+   pk_id                int not null auto_increment,
+   pk_InsectId          int,
+   f_name               varchar(50),
+   f_purpose            varchar(255),
+   primary key (pk_id)
+);
+
+/*==============================================================*/
+/* Table: t_disasterStage                                       */
+/*==============================================================*/
+create table t_disasterStage
+(
+   pk_stageId           int not null auto_increment,
+   f_typeName           varchar(50),
+   primary key (pk_stageId)
+);
+
+/*==============================================================*/
+/* Table: t_discoveryPath                                       */
+/*==============================================================*/
+create table t_discoveryPath
+(
+   pk_pathId            int not null auto_increment,
+   f_pathName           varchar(50),
+   primary key (pk_pathId)
+);
+
+/*==============================================================*/
+/* Table: t_diseasesAndInsectPests                              */
+/*==============================================================*/
+create table t_diseasesAndInsectPests
+(
+   pk_diseasesId        int not null auto_increment,
+   f_type               varchar(50),
+   primary key (pk_diseasesId)
+);
+
+/*==============================================================*/
+/* Table: t_diseasesList_management                             */
+/*==============================================================*/
+create table t_diseasesList_management
+(
+   pk_diseaseId         int not null auto_increment,
+   f_diseaseName        varchar(50),
+   f_pathology          varchar(50),
+   f_onsetSymptom       varchar(255),
+   f_incidenceRegularity varchar(255),
+   f_diseasePic         varchar(120),
+   f_preventiveMeasures varchar(255),
+   f_mainHazards        varchar(50),
+   primary key (pk_diseaseId)
+);
+
+/*==============================================================*/
+/* Table: t_incident_record                                     */
+/*==============================================================*/
+create table t_incident_record
+(
+   pk_eventId           int not null,
+   fk_id                int,
+   fk_pathId            int,
+   fk_stageId           int,
+   fk_InsectId          int,
+   fk_locationId        int,
+   f_name               varchar(50),
+   f_disasterAreaPic    varchar(120),
+   f_time               date,
+   f_disasterDescription varchar(255),
+   f_initialloss        varchar(50),
+   f_influence          varchar(50),
+   f_controlMethod      varchar(50),
+   primary key (pk_eventId)
+);
+
+/*==============================================================*/
+/* Table: t_instrument_management                               */
+/*==============================================================*/
+create table t_instrument_management
+(
+   pk_consultationId    int not null auto_increment,
+   fk_eventId           int,
+   f_date               date,
+   f_persons            varchar(100),
+   f_result             varchar(255),
+   primary key (pk_consultationId)
+);
+
+/*==============================================================*/
+/* Table: t_landClass                                           */
+/*==============================================================*/
+create table t_landClass
+(
+   pk_landId            int not null auto_increment,
+   f_name               char(10),
+   primary key (pk_landId)
+);
+
+/*==============================================================*/
+/* Table: t_location                                            */
+/*==============================================================*/
+create table t_location
+(
+   pk_locationId        int not null auto_increment,
+   f_path               char(10),
+   primary key (pk_locationId)
+);
+
+/*==============================================================*/
+/* Table: t_log_list                                            */
+/*==============================================================*/
+create table t_log_list
+(
+   pk_id                int not null auto_increment,
+   f_content            varchar(255),
+   f_date               date,
+   primary key (pk_id)
+);
+
+/*==============================================================*/
+/* Table: t_nameOfGoods                                         */
+/*==============================================================*/
+create table t_nameOfGoods
+(
+   pk_goodsId           int not null auto_increment,
+   f_goodsName          varchar(50),
+   primary key (pk_goodsId)
+);
+
+/*==============================================================*/
+/* Table: t_outgoing_management                                 */
+/*==============================================================*/
+create table t_outgoing_management
+(
+   pk_outId             int not null,
+   fk_id                int,
+   fk_InsectId          int,
+   fk_typeId            int,
+   fk_goodsId           int,
+   f_num                int,
+   f_purpoose           varchar(255),
+   f_date               date,
+   primary key (pk_outId)
+);
+
+/*==============================================================*/
+/* Table: t_pestTypes                                           */
+/*==============================================================*/
+create table t_pestTypes
+(
+   pk_InsectId          int not null auto_increment,
+   f_type               varchar(50),
+   primary key (pk_InsectId)
+);
+
+/*==============================================================*/
+/* Table: t_pestsList_management                                */
+/*==============================================================*/
+create table t_pestsList_management
+(
+   pk_pestisId          int not null auto_increment,
+   f_pestisName         varchar(50),
+   f_host               varchar(50),
+   f_reproduction       varchar(50),
+   f_naturalEnemy       varchar(50),
+   f_larvaPic           varchar(120),
+   f_aduitPic           varchar(120),
+   f_preventiveMeasures varchar(255),
+   f_mainHazards        varchar(255),
+   primary key (pk_pestisId)
+);
+
+/*==============================================================*/
+/* Table: t_pharmacy_management                                 */
+/*==============================================================*/
+create table t_pharmacy_management
+(
+   fk_diseasesId        int,
+   fk_InsectId          int,
+   pk_id                int,
+   f_name               varchar(50),
+   f_tree               varchar(50)
+);
+
+/*==============================================================*/
+/* Table: t_region                                              */
+/*==============================================================*/
+create table t_region
+(
+   pk_regionId          int not null auto_increment,
+   f_name               varchar(100),
+   primary key (pk_regionId)
+);
+
+/*==============================================================*/
+/* Table: t_rodentpestsList_management                          */
+/*==============================================================*/
+create table t_rodentpestsList_management
+(
+   pk_mouseId           int not null auto_increment,
+   f_mouseName          varchar(50),
+   f_mouseFoot          varchar(50),
+   f_reproduction       varchar(50),
+   f_naturalEnemy       varchar(50),
+   f_mousePic           varchar(120),
+   f_preventiveMeasures varchar(255),
+   f_mainHazards        varchar(255),
+   primary key (pk_mouseId)
+);
+
+/*==============================================================*/
+/* Table: t_small_class_management                              */
+/*==============================================================*/
+create table t_small_class_management
+(
+   pk_id                int not null,
+   fk_regionId          int,
+   pk_landId            int,
+   f_name               varchar(50),
+   f_person             varchar(50),
+   f_phone              varchar(16),
+   f_personNum          int,
+   f_time               date,
+   primary key (pk_id)
+);
+
+/*==============================================================*/
+/* Table: t_specialist_management                               */
+/*==============================================================*/
+create table t_specialist_management
+(
+   pk_id                int not null auto_increment,
+   f_name               varchar(50),
+   f_gender             tinyint,
+   f_bithday            date,
+   f_pic                varchar(120),
+   f_expertise          varchar(50),
+   f_post               varchar(50),
+   f_phone              varchar(16),
+   f_workUnit           varchar(50),
+   f_path               varchar(50),
+   f_email              varchar(50),
+   primary key (pk_id)
+);
+
+/*==============================================================*/
+/* Table: t_type                                                */
+/*==============================================================*/
+create table t_type
+(
+   pk_typeId            int not null auto_increment,
+   f_typeName           varchar(50),
+   primary key (pk_typeId)
+);
+
+/*==============================================================*/
+/* Table: t_userPrivileges                                      */
+/*==============================================================*/
+create table t_userPrivileges
+(
+   pk_privilegesId      int not null auto_increment,
+   f_privilegesName     varchar(20),
+   primary key (pk_privilegesId)
+);
+
+/*==============================================================*/
+/* Table: t_user_management                                     */
+/*==============================================================*/
+create table t_user_management
+(
+   pk_userId            int not null auto_increment,
+   fk_privilegesId      int,
+   f_userName           varchar(16),
+   f_password           varchar(100),
+   f_name               varchar(30),
+   primary key (pk_userId)
+);
+
+INSERT INTO `t_disasterstage`(`pk_stageId`, `f_typeName`) VALUES (1, '已得到控制');
+INSERT INTO `t_disasterstage`(`pk_stageId`, `f_typeName`) VALUES (2, '防治中');
+INSERT INTO `t_disasterstage`(`pk_stageId`, `f_typeName`) VALUES (3, '无法解决，申请专家会审');
+
+INSERT INTO `t_discoverypath`(`pk_pathId`, `f_pathName`) VALUES (1, '小班巡查发现');
+INSERT INTO `t_discoverypath`(`pk_pathId`, `f_pathName`) VALUES (2, '公众发现');
+INSERT INTO `t_discoverypath`(`pk_pathId`, `f_pathName`) VALUES (3, '上级部门通报');
+
+INSERT INTO `t_diseasesandinsectpests`(`pk_diseasesId`, `f_type`) VALUES (1, '大叶杨白粉病');
+INSERT INTO `t_diseasesandinsectpests`(`pk_diseasesId`, `f_type`) VALUES (2, '枯萎病');
+INSERT INTO `t_diseasesandinsectpests`(`pk_diseasesId`, `f_type`) VALUES (3, '幼苗猝倒病');
+
+INSERT INTO `t_landclass`(`pk_landId`, `f_name`) VALUES (1, '林地');
+INSERT INTO `t_landclass`(`pk_landId`, `f_name`) VALUES (2, '疏林地');
+INSERT INTO `t_landclass`(`pk_landId`, `f_name`) VALUES (3, '灌木林');
+INSERT INTO `t_landclass`(`pk_landId`, `f_name`) VALUES (4, '苗圃地');
+
+INSERT INTO `t_location`(`pk_locationId`, `f_path`) VALUES (1, '雅安一号地区');
+INSERT INTO `t_location`(`pk_locationId`, `f_path`) VALUES (2, '宜宾二号地区');
+INSERT INTO `t_location`(`pk_locationId`, `f_path`) VALUES (3, '攀枝花三号地区');
+
+INSERT INTO `t_nameofgoods`(`pk_goodsId`, `f_goodsName`) VALUES (1, '波尔多液');
+INSERT INTO `t_nameofgoods`(`pk_goodsId`, `f_goodsName`) VALUES (2, '胶体流30倍液');
+INSERT INTO `t_nameofgoods`(`pk_goodsId`, `f_goodsName`) VALUES (3, '粉秀林可湿性粉液');
+
+INSERT INTO `t_pesttypes`(`pk_InsectId`, `f_type`) VALUES (1, '虫害');
+INSERT INTO `t_pesttypes`(`pk_InsectId`, `f_type`) VALUES (2, '鼠害');
+INSERT INTO `t_pesttypes`(`pk_InsectId`, `f_type`) VALUES (3, '病害');
+
+INSERT INTO `t_region`(`pk_regionId`, `f_name`) VALUES (1, '成都成华区');
+INSERT INTO `t_region`(`pk_regionId`, `f_name`) VALUES (2, '成都金牛区');
+INSERT INTO `t_region`(`pk_regionId`, `f_name`) VALUES (3, '成都锦江区');
+
+INSERT INTO `t_type`(`pk_typeId`, `f_typeName`) VALUES (1, '药剂');
+INSERT INTO `t_type`(`pk_typeId`, `f_typeName`) VALUES (2, '器械');
+
+INSERT INTO `t_user_management`(`pk_userId`, `fk_privilegesId`, `f_userName`, `f_password`, `f_name`) VALUES (2, 1, 'admin', '21232f297a57a5a743894a0e4a801fc3', '系统管理员');
+
+INSERT INTO `t_userprivileges`(`pk_privilegesId`, `f_privilegesName`) VALUES (1, '超级管理员');
+INSERT INTO `t_userprivileges`(`pk_privilegesId`, `f_privilegesName`) VALUES (2, '资料管理员');
+INSERT INTO `t_userprivileges`(`pk_privilegesId`, `f_privilegesName`) VALUES (3, '灾情管理员');
+INSERT INTO `t_userprivileges`(`pk_privilegesId`, `f_privilegesName`) VALUES (4, '专家管理员');
+INSERT INTO `t_userprivileges`(`pk_privilegesId`, `f_privilegesName`) VALUES (5, '库房管理员');
+
+
+
+
+

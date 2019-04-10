@@ -1,0 +1,58 @@
+package com.one.service.expertConsultation;
+
+import java.util.List;
+import java.util.Map;
+
+import com.one.bean.PageBean;
+import com.one.bean.expertConsultation.SpecialistManagementBean;
+import com.one.service.expertConsultation.imp.SpecialistServlceImp;
+/**
+ * 	专家一览Servlce
+ * @author 49160
+ *
+ */
+public interface ISpecialistServlce {
+	
+	static ISpecialistServlce getInstance() {
+		return new SpecialistServlceImp();
+	}
+	/**
+	 * 	添加专家
+	 * @param specialist
+	 * @return
+	 */
+	int addSpecialist(SpecialistManagementBean specialist);
+	/**
+	 * 	根据ID查询专家
+	 * @param id
+	 * @return
+	 */
+	SpecialistManagementBean getSpecialist(int id);
+	/**
+	 * 	根据ID查询专家并修改修改
+	 * @param id 
+	 * @param phone 电话
+	 * @param workUnit 工作单位
+	 * @param post 职务
+	 * @param email 邮箱
+	 * @return
+	 */
+	int updateSpecialist(int id,String phone,String workUnit,String post,String email);
+	/**
+	 * 根据id删除
+	 * @param id
+	 * @return
+	 */
+	int deleteSpecialist(int[] id);
+	/**
+	 * 	根据条件分页查询
+	 * @param pageNum 当前页数
+	 * @param pageSize 每页显示条数
+	 * @param name 专家姓名
+	 * @param expertise 专长
+	 * @param workUnit 工作地点
+	 * @return 分页对象
+	 */
+	PageBean<List<SpecialistManagementBean>> getAllSpecialist(int pageNum,int pageSize,String name,String expertise,String workUnit,boolean falg);
+
+}

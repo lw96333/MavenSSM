@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.one.dao.expertConsultation.ISpecialistDao">
+  	
+  	<select id="getAllSpecialist" resultType="com.one.bean.expertConsultation.SpecialistManagementBean" parameterType="map">
+  		select 
+  			pk_id as id,
+  			f_name as name,
+  			f_gender as gender,
+  			f_bithday as bithday,
+  			f_pic as pic,
+  			f_expertise as expertise,
+  			f_post as post,
+  			f_phone as phone,
+  			f_workUnit as workUnit,
+  			f_path as path,
+  			f_email as email
+  		from 
+  			t_specialist_management
+  		where pk_id &gt;= 
+  			(select 
+  				pk_id 
+  			from  
+  				t_specialist_management 
+  			where 1=1
+  				<if test="name != null ">  
+	                AND f_name LIKE CONCAT(#{name},'%') 
+	            </if >  
+	            <if test="expertise != null">  
+	                AND f_expertise = #{expertise}  
+	            </if >  
+	            <if test="workUnit != null ">  
+	                AND f_workUnit = #{workUnit}  
+	            </if >
+  			
+  				limit ${pageNum},1)
+  			
+  		 		<if test="name != null ">  
+	                AND f_name LIKE CONCAT(#{name},'%') 
+	            </if >  
+	            <if test="expertise != null">  
+	                AND f_expertise = #{expertise}  
+	            </if >  
+	            <if test="workUnit != null ">  
+	                AND f_workUnit = #{workUnit}  
+	            </if >
+	     order by pk_id
+	     
+	     limit ${pageSize}
+	            
+	 
+  		
+
+  	</select>
+  	<select id="getAllSpecialistForNum" resultType="int" parameterType="map">
+  		select 
+  			count(1)
+  		from 
+  			t_specialist_management
+  		where 1=1 
+            <if test="name != null ">  
+                AND f_name LIKE CONCAT(#{name},'%') 
+            </if >  
+            <if test="expertise != null">  
+                AND f_expertise = #{expertise}  
+            </if >  
+            <if test="workUnit != null ">  
+                AND f_workUnit = #{workUnit}  
+            </if >   
+  	</select>
+  	<select id="getSpecialist" resultType="com.one.bean.expertConsultation.SpecialistManagementBean" parameterType="int">
+  		select 
+  			pk_id as id,
+  			f_name as name,
+  			f_gender as gender,
+  			f_bithday as bithday,
+  			f_pic as pic,
+  			f_expertise as expertise,
+  			f_post as post,
+  			f_phone as phone,
+  			f_workUnit as workUnit,
+  			f_path as path,
+  			f_email as email
+  		from 
+  			t_specialist_management
+  		where
+  			pk_id = #{id}
+  	</select>
+  	
+  	<insert id="addSpecialist" parameterType="com.one.bean.expertConsultation.SpecialistManagementBean">
+  		insert into
+  			t_specialist_management
+  		values
+  			(
+  				null,
+  				#{name},
+  				#{gender},
+  				#{bithday},
+  				#{pic},
+  				#{expertise},
+  				#{post},
+  				#{phone},
+  				#{workUnit},
+  				#{path},
+  				#{email}	
+  			)
+  	</insert>
+  	
+  	<update id="updateSpecialist" parameterType="com.one.bean.expertConsultation.SpecialistManagementBean">
+  		update
+  			t_specialist_management
+  		set 
+  			f_post = #{post},
+  			f_phone = #{phone},
+  			f_email = #{email},
+  			f_workUnit = #{workUnit}
+  		where
+  			pk_id = #{id}
+  	</update>
+  	
+  	<delete id="deleteSpecialist" parameterType="int[]">
+  		delete from
+  			t_specialist_management
+  		where pk_id in
+  		<foreach collection="array" item="arr" index="no" open="("
+
+			separator="," close=")">
+
+			#{arr}
+
+		</foreach>
+  	</delete>
+  	
+  </mapper>

@@ -1,0 +1,11 @@
+package com.one.dao.disposalManagement;
+
+import java.util.List;
+
+import com.one.bean.disposalManagement.Outgoing_managementBean;
+
+
+public interface Outgoing_managementDao {
+
+	
+}

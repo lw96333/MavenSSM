@@ -1,0 +1,241 @@
+package com.one.service.systemInformation.Impl;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import com.one.bean.PageBean;
+import com.one.bean.systemInformation.User_Management_Bean;
+import com.one.bean.systemInformation.User_Privileges_Bean;
+import com.one.dao.systemInformation.InterSystemInformation;
+import com.one.service.systemInformation.InterUserManagementBeanService;
+
+public class UserManagementBeanServiceImpl implements InterUserManagementBeanService {
+
+	public UserManagementBeanServiceImpl(){
+		
+	}
+	private SqlSession getSession() throws Exception {
+		InputStream inputStream = null;
+		inputStream = Resources.getResourceAsStream("config/mybatis_config.xml");
+		SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
+		return factory.openSession();
+
+	}
+	
+	
+	@Override
+	public int addUser_Management_Bean(User_Management_Bean user) {
+		// TODO Auto-generated method stub
+		SqlSession session = null ;
+		int num = -1;
+		try {
+			session = this.getSession();
+			InterSystemInformation interSI = session.getMapper(InterSystemInformation.class);
+			num = interSI.addUser_Management_Bean(user);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		
+		return num;
+	}
+
+	@Override
+	public int deleteUser_Management_BeanById(int id) {
+		// TODO Auto-generated method stub
+		SqlSession session = null ;
+		int num = -1;
+		try {
+			session = this.getSession();
+			InterSystemInformation interSI = session.getMapper(InterSystemInformation.class);
+			num = interSI.deleteUser_Management_BeanById(id);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		
+		return num;
+	}
+
+	@Override
+	public User_Management_Bean showUser_Management_BeanInfoById(int id) {
+		// TODO Auto-generated method stub
+		SqlSession session = null ;
+		User_Management_Bean ub = null;
+		try {
+			session = this.getSession();
+			InterSystemInformation interSI = session.getMapper(InterSystemInformation.class);
+			 ub  = interSI.showUser_Management_BeanInfoById(id);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		
+		return ub;
+	
+	}
+
+	@Override
+	public int updateUser_Management_Bean(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		SqlSession session = null ;
+		int num = -1;
+		try {
+			session = this.getSession();
+			InterSystemInformation interSI = session.getMapper(InterSystemInformation.class);
+			num = interSI.updateUser_Management_BeanById(map);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		
+		return num;
+	}
+	
+
+	@Override
+	public PageBean<List<User_Management_Bean>> getAllUser_Management_Bean(int pageNum,int pageSize,String privilegesName) {
+		// TODO Auto-generated method stub
+		Map<String,Object> map = new HashMap();
+		Map<String,Object> mapTotal = new HashMap();
+		PageBean<List<User_Management_Bean>> page = new PageBean<>();
+		if("".equals(privilegesName)) {
+			map.put("privilegesName", null);
+			mapTotal.put("privilegesName", null);
+		}else {
+			map.put("privilegesName", privilegesName);
+			mapTotal.put("privilegesName",privilegesName);
+		}
+
+		map.put("pageSize", pageSize);
+		
+		
+		SqlSession session = null;
+		List li = null;
+		int liTotal = -1;
+		try {
+			session = this.getSession();
+			InterSystemInformation in = session.getMapper(InterSystemInformation.class);
+			liTotal = in.getUser_Management_BeanNumber(mapTotal);
+			page.setTotalData(liTotal);
+			page.setPageNum(pageNum);
+			page.setPageSize(pageSize);
+			page.setTotalNum((int) Math.ceil((double)page.getTotalData()/pageSize));
+			map.put("pageNum", (pageNum - 1) * pageSize);
+			li = in.getAllUser_Management_Bean(map);
+		//	System.out.println("服务层实现类：总条数="+liTotal+"shujus ="+li);
+			page.setPageData(li);
+			//session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		return page;
+	
+	}
+
+	@Override
+	public List<User_Privileges_Bean> getAllgetAllUser_Privileges_Bean() {
+		// TODO Auto-generated method stub
+		SqlSession session = null ;
+		List<User_Privileges_Bean> ub = null;
+		try {
+			session = this.getSession();
+			InterSystemInformation interSI = session.getMapper(InterSystemInformation.class);
+			 ub  = interSI.getAllUser_Privileges_Bean();
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		
+		return ub;
+	}
+
+	@Override
+	public PageBean<List<User_Management_Bean>> getAllUser_Management_BeanByCondition(int pageSize, int pageNum,
+			int fid) {
+		// TODO Auto-generated method stub
+		Map<String,Object> map = new HashMap();
+		Map<String,Object> mapTotal = new HashMap();
+		PageBean<List<User_Management_Bean>> page = new PageBean<>();
+		map.put("pageSize", pageSize);		
+		mapTotal.put("privilegesName", fid);
+		SqlSession session = null;
+		List li = null;
+		int liTotal = -1;
+		try {
+			session = this.getSession();
+			InterSystemInformation in = session.getMapper(InterSystemInformation.class);
+			liTotal = in.getUser_Management_BeanNumber(mapTotal);
+			page.setTotalData(liTotal);
+			page.setPageNum(pageNum);
+			page.setPageSize(pageSize);
+			page.setTotalNum((int) Math.ceil((double)page.getTotalData()/pageSize));
+			map.put("pageNum", (pageNum - 1) * pageSize);
+			li = in.getAllUser_Management_BeanByCondition(fid);
+		//	System.out.println("服务层实现类：总条数="+liTotal+"shujus ="+li);
+			page.setPageData(li);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		return page;
+	
+	}
+
+}

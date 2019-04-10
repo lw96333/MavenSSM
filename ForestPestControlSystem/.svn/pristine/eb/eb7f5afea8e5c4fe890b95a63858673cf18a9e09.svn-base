@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+
+	<properties resource="config/db.properties"></properties>
+
+	<settings>
+		<setting name="lazyLoadingEnabled" value="false" />
+		
+		<setting name="logImpl" value="LOG4J" />
+	</settings>
+
+	<typeAliases>
+		<!--鼠害虫害病害对象 设置别名 -->
+		<typeAlias type="com.one.bean.dataManagement.PestsBean"
+			alias="pestsBean" />
+		<typeAlias type="com.one.bean.dataManagement.DiseaseBean"
+			alias="diseaseBean" />
+		<typeAlias type="com.one.bean.dataManagement.RodentpestsBean"
+			alias="rodentpestsBean" />
+
+		<!-- 灾情防治别名 -->
+		<typeAlias type="com.one.bean.disasterPreventionAndControl.AreaInBean"
+			alias="area" />
+		<typeAlias type="com.one.bean.disasterPreventionAndControl.IncidentRecordBean"
+			alias="incident" />
+		<typeAlias type="com.one.bean.disasterPreventionAndControl.SmallClassManagementBean"
+			alias="smallClass" />
+	</typeAliases>
+
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${driver}" />
+				<property name="url" value="${url}" />
+				<property name="username" value="${username}" />
+				<property name="password" value="${password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	<!-- 加载 -->
+	
+	<mappers>
+
+		<!--注册鼠害,虫害,病害 -->
+		<mapper resource="com/one/dao/dataManagement/Impl/PestsBeanMapper.xml" />
+		<mapper resource="com/one/dao/dataManagement/Impl/DiseaseBeanMapper.xml" />
+		<mapper resource="com/one/dao/dataManagement/Impl/RodentpestsMapper.xml" />
+
+		<!-- 用户登录 -->
+		<mapper resource="com/one/dao/LoginMapper.xml" />
+		<!-- 专家一览 -->
+		<mapper resource="com/one/mapper/expertConsultation/SpecialistMapper.xml" />
+		<!-- 专家会商 -->
+		<mapper resource="com/one/mapper/expertConsultation/InstrumentManagementMapper.xml" />
+		<!-- 区域一览 -->
+		<mapper resource="com/one/dao/disasterPreventionAndControl/imp/AreaInMapper.xml" />
+		<!-- 小班管理 -->
+		<mapper resource="com/one/dao/disasterPreventionAndControl/imp/SmallClassMapper.xml" />
+		<!-- 事件记录 -->
+		<mapper resource="com/one/dao/disasterPreventionAndControl/imp/IncidentRecordMapper.xml" />
+		<!-- 日志信息 -->
+		<mapper resource="com/one/dao/systemInformation/Impl/LogDaoMpper.xml" />
+		<!-- 器械管理 -->
+		<mapper resource="com/one/dao/disposalManagement/Consultation_managementMapper.xml" />
+		<!-- 添加药剂 -->
+		<mapper resource="com/one/dao/disposalManagement/Pharmacy_managemenMapper.xml" />
+		<!-- 出库管理 -->
+		<mapper resource="com/one/dao/disposalManagement/Outgoing_managementMapper.xml" />
+		
+		
+	</mappers>
+	
+</configuration>

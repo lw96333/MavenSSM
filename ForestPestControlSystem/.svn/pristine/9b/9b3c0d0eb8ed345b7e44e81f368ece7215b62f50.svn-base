@@ -1,0 +1,12 @@
+package com.one.bean.expertConsultation;
+/**
+    * 专家会商
+ * @author 49160
+ *
+ */
+public class Instrument_Management {
+
+	private Integer consultationId;
+	
+	
+}

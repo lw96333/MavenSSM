@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="com.one.dao.systemInformation.InterSystemInformation">
+  	
+  	<resultMap type="user" id="userMap">
+		<id column="uid" property="userId" />
+		<result column="uName" property="userName" />
+		<result column="upass" property="password" />
+		<result column="utname" property="name" />
+		<association property="privileges" javaType="privilege"
+		resultMap="privilegesMap">	
+	    </association>
+	</resultMap>
+	<resultMap type="privilege" id="privilegesMap">
+	<id column="pid" property="privilegesId"></id>
+		<result column="pname" property="privilegesName" />
+	</resultMap>
+	<sql id="userColumn">
+	            u.pk_userId as uid,	
+				u.f_userName as uName,
+				u.f_password as upass,
+				u.f_name as utname
+	</sql>
+	
+	<sql id="priColumn">
+	            p.pk_privilegesId as pid,
+				p.f_privilegesName as pname
+	</sql>
+	<select id="getAllUser_Management_Bean" parameterType="java.util.HashMap" resultMap="userMap">
+	
+		select 	
+		<include refid="userColumn"/>,
+		<include refid="priColumn"/>
+				from  t_user_management as u  LEFT JOIN t_userprivileges as p on u.fk_privilegesId = p.pk_privilegesId
+				<where>  
+	            <if test="privilegesName != null">  
+	                 and p.f_privilegesName = ${privilegesName}'  
+	            </if > 
+	            </where> 	        
+ 				<if test="pageNum != null ">  
+	                limit ${pageNum},${pageSize}
+	            </if >
+</select>
+
+<select id="showUser_Management_BeanInfoById" resultType="com.one.bean.systemInformation.User_Management_Bean" parameterType="int">
+  		select 	pk_userId as userId,
+  		        f_userName as userName,	
+				f_name as name
+				from  t_user_management where 
+  			pk_userId = #{id}
+  	</select>
+	<select id="getUser_Management_BeanNumber" parameterType="java.util.HashMap" resultType="int">
+	select count(pk_userId) from  t_user_management as u  LEFT JOIN t_userprivileges as p on u.fk_privilegesId = p.pk_privilegesId
+			<where>
+			<if test="privilegesName != null">  
+	                 and p.f_privilegesName = ${privilegesName}'  
+	            </if > 
+			</where>	
+</select>
+
+<insert id="addUser_Management_Bean" parameterType="user">
+	INSERT INTO t_user_management VALUES (null,#{privileges.privilegesId},#{userName},md5(#{password}),#{name})
+</insert>
+
+<update id="updateUser_Management_BeanById" parameterType="java.util.HashMap">
+	UPDATE t_user_management set f_password = md5(${npwd}),fk_privilegesId=${privilegesId} where pk_userId = ${userId}
+</update>
+	
+  	<delete id="deleteUser_Management_BeanById" parameterType="int">
+  		delete from
+  			t_user_management
+  		where 
+  			pk_userId = #{id}
+  	</delete>
+
+  </mapper>

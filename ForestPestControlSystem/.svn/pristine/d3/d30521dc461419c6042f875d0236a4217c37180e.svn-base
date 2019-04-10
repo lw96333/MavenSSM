@@ -1,0 +1,7 @@
+$(function() {
+	$("#pagerArea").cypager({
+		pg_size : 10,
+		pg_nav_count : 8,
+		pg_total_count : 194
+	});
+});

@@ -1,0 +1,184 @@
+package com.one.service.expertConsultation.imp;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import com.one.bean.PageBean;
+import com.one.bean.expertConsultation.SpecialistManagementBean;
+import com.one.dao.expertConsultation.ISpecialistDao;
+import com.one.service.expertConsultation.ISpecialistServlce;
+
+public class SpecialistServlceImp implements ISpecialistServlce{
+	
+	private SqlSession getSession() throws Exception {
+		InputStream inputStream = null;
+		inputStream = Resources.getResourceAsStream("config/mybatis_config.xml");
+		SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(inputStream);
+		return factory.openSession();
+
+	}
+	
+	@Override
+	public int addSpecialist(SpecialistManagementBean specialist) {
+		// TODO Auto-generated method stub
+		SqlSession session = null;
+		int num = -1;
+		try {
+			session = this.getSession();
+			ISpecialistDao isd = session.getMapper(ISpecialistDao.class);
+			num = isd.addSpecialist(specialist);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		return num;
+	}
+
+	@Override
+	public SpecialistManagementBean getSpecialist(int id) {
+		SqlSession session = null;
+		SpecialistManagementBean smb = null;
+		try {
+			session = this.getSession();
+			ISpecialistDao isd = session.getMapper(ISpecialistDao.class);
+			smb = isd.getSpecialist(id);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		return smb;
+	}
+
+	@Override
+	public int updateSpecialist(int id,String phone,String workUnit,String post,String email) {
+		// TODO Auto-generated method stub
+		SqlSession session = null;
+		int num = -1;
+		try {
+			session = this.getSession();
+			ISpecialistDao isd = session.getMapper(ISpecialistDao.class);
+			SpecialistManagementBean smb = isd.getSpecialist(id);
+			smb.setPhone(phone);
+			smb.setWorkUnit(workUnit);
+			smb.setEmail(email);
+			smb.setPost(post);
+			num = isd.updateSpecialist(smb);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		return num;
+	}
+
+	@Override
+	public int deleteSpecialist(int id) {
+		// TODO Auto-generated method stub
+		SqlSession session = null;
+		int num = -1;
+		try {
+			session = this.getSession();
+			ISpecialistDao isd = session.getMapper(ISpecialistDao.class);
+			num = isd.deleteSpecialist(id);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		return num;
+	}
+
+	@Override
+	public PageBean<List<SpecialistManagementBean>> getAllSpecialist(int pageNum, int pageSize, String name,
+			String expertise, String workUnit) {
+		// TODO Auto-generated method stub
+		Map<String,Object> map = new HashMap();
+		Map<String,Object> mapTotal = new HashMap();
+		if("".equals(name)) {
+			map.put("name", null);
+			mapTotal.put("name", null);
+		}else {
+			map.put("name", name);
+			mapTotal.put("name", name);
+		}
+		if("".equals(expertise)) {
+			map.put("expertise", null);
+			mapTotal.put("expertise", null);
+		}else {
+			map.put("expertise", expertise);
+			mapTotal.put("expertise", expertise);
+		}
+		if("".equals(workUnit)) {
+			map.put("workUnit", null);
+			mapTotal.put("workUnit", null);
+		}else {
+			map.put("workUnit", workUnit);
+			mapTotal.put("workUnit", workUnit);
+		}
+
+		map.put("pageSize", pageSize);
+		
+		
+		SqlSession session = null;
+		List li = null;
+		int liTotal = -1;
+		PageBean<List<SpecialistManagementBean>> page = new PageBean<>();
+		try {
+			session = this.getSession();
+			ISpecialistDao isd = session.getMapper(ISpecialistDao.class);
+			liTotal = isd.getAllSpecialistForNum(mapTotal);
+			page.setTotalData(liTotal);
+			page.setPageNum(pageNum);
+			page.setPageSize(pageSize);
+			page.setTotalNum((int) Math.ceil((double)page.getTotalData()/pageSize));
+			map.put("pageNum", (pageNum - 1) * pageSize);
+			li = isd.getAllSpecialist(map);
+			page.setPageData(li);
+			session.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			session.rollback();
+			e.printStackTrace();
+		}finally {
+			if(session != null) {
+				session.close();
+			}
+			
+		}
+		return page;
+	}
+
+}

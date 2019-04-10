@@ -1,0 +1,19 @@
+$('#updataSmall').click(function() {
+	var personName = $("#personName").val();
+	var personPhone = $("#personPhone").val();
+	$.ajax({
+		type : "post",
+		dataType : "json",
+		url : "updataSmallClass",
+		data : {
+			'smallId' : $("#smallClassId").val(),
+			'personName' : personName,
+			'personPhone' : personPhone,
+		},
+		success : function(data) {
+			if (data == 1) {
+				window.location.href = 'smallClass';
+			}
+		}
+	});
+});

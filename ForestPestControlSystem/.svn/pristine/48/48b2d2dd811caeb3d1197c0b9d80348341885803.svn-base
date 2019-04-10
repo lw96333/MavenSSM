@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.one.dao.expertConsultation.IInstrumentManagementDao">
+  	
+  	<resultMap type="com.one.bean.disasterPreventionAndControl.IncidentRecordBean" id="incidentRecordMap">
+  		<id column="id" property="id"/>
+  		<result column="name" property="eventName"/>
+  		<result column="time" property="time"/>
+  		<result column="method" property="controlMethod"/>
+  		<result column="disD" property="disaster"/>
+  		<result column="influence" property="influence"/>
+  		<result column="pic" property="pic"/>
+  		<association property="stage" resultMap="stageMap"/>
+  		<association property="smallClass" resultMap="smallClassMap"/>
+  	</resultMap>
+  	
+  	<resultMap type="com.one.bean.disasterPreventionAndControl.SmallClassManagementBean" id="smallClassMap">
+  		<association property="areaIn" resultMap="areaInMap"/>
+  	</resultMap>
+  	
+  	<resultMap type="com.one.bean.DisasterStageBean" id="stageMap">
+  		<id column="stageId" property="stageId"></id>
+  		<result column="typeName" property="typeName"/>
+  	</resultMap>
+  	
+  	<resultMap type="com.one.bean.disasterPreventionAndControl.AreaInBean" id="areaInMap">
+  		<result column="areaName" property="name"/>
+  	</resultMap>
+  	<select id="getIncidentRecordById" parameterType="int" resultMap="incidentRecordMap">
+  		select
+  			ir.pk_eventId as id,
+  			ir.f_name as name,
+  			ir.f_time as time,
+  			ir.f_controlMethod as method,
+			ir.f_disasterDescription as disD,
+			ir.f_influence as influence,
+			ir.f_disasterAreaPic as pic,
+  			ai.f_areaName as areaName,	
+  			ds.pk_stageId as stageId,
+			ds.f_typeName as typeName
+  		from
+  			t_incident_record as ir
+			left join
+				t_disasterStage as ds
+			on
+				ir.fk_stageId = ds.pk_stageId
+  		left join
+  			t_small_class_management as scm
+  		on
+  			scm.pk_id = ir.fk_id
+  		left join
+  			t_area_in as ai
+  		on
+  			scm.fk_areaId = ai.pk_areaId
+		where 
+			ir.pk_eventId = #{id}
+  	</select>
+  	
+  	<select id="getIncidentRecordByStageId" parameterType="map" resultMap="incidentRecordMap">
+  		select
+  			ir.pk_eventId as id,
+  			ir.f_name as name,
+  			ir.f_time as time,
+  			ir.f_controlMethod as method,
+			ir.f_disasterDescription as disD,
+			ir.f_influence as influence,
+			ir.f_disasterAreaPic as pic,
+  			ai.f_areaName as areaName,	
+  			ds.pk_stageId as stageId,
+			ds.f_typeName as typeName
+  		from
+  			t_incident_record as ir
+			left join
+				t_disasterStage as ds
+			on
+				ir.fk_stageId = ds.pk_stageId
+  		left join
+  			t_small_class_management as scm
+  		on
+  			scm.pk_id = ir.fk_id
+  		left join
+  			t_area_in as ai
+  		on
+  			scm.fk_areaId = ai.pk_areaId
+		where 
+			ds.pk_stageId = 3
+		limit 
+			${pageNum},${pageSize}
+  	</select>
+  	<select id="getIncidentRecordByStageIdForNum"  resultType="int">
+  		select
+  			count(ir.pk_eventId)
+  		from
+  			t_incident_record as ir
+			left join
+				t_disasterStage as ds
+			on
+				ir.fk_stageId = ds.pk_stageId
+  		left join
+  			t_small_class_management as scm
+  		on
+  			scm.pk_id = ir.fk_id
+  		left join
+  			t_area_in as ai
+  		on
+  			scm.fk_areaId = ai.pk_areaId
+		where 
+			ds.pk_stageId = 3
+  	</select>
+  	<insert id="addInstrumentManagement" parameterType="com.one.bean.expertConsultation.InstrumentManagementBean">
+  		insert into 
+  			t_instrument_management
+  		values
+  			(
+  				null,
+  				#{incidentRecord.id},
+  				#{date},
+  				#{persons},
+  				#{result}
+  				
+  			)
+  	</insert>
+  	<select id="getInstrumentManagement" resultType="com.one.bean.expertConsultation.InstrumentManagementBean" parameterType="map">
+  		select
+  			pk_consultationId as consultationId,
+  			f_date as date,
+  			f_persons as persons,
+  			f_result as result
+  		from
+  			t_instrument_management
+  		limit 
+			${pageNum},${pageSize}
+  	</select>
+  	<select id="getInstrumentManagementForNum" resultType="int" >
+  		select
+  			count(pk_consultationId)
+  		from
+  			t_instrument_management
+  	</select>
+  </mapper>

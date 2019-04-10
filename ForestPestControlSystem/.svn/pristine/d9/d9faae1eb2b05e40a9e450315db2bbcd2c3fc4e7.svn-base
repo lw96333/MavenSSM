@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.one.dao.disposalManagement.Outgoing_managementDao">
+  	
+  	<resultMap type="com.one.bean.disposalManagement.Outgoing_managementBean" id="outGoingMap">
+  		<result column="date" property="date"/>
+  		<result column="purpoose" property="purpoose"/>
+  		<result column="num" property="num"/>
+  		<association property="goods" resultMap="nameOfGoodsMap"/>
+  		<association property="id" resultMap="scmMap"/>
+  		<association property="type" resultMap="TypeMap"/>
+  		<association property="insect" resultMap="PestTypesMap"/>
+  	</resultMap>
+  	
+  	<resultMap type="com.one.bean.NameOfGoodsBean" id="nameOfGoodsMap">
+  		<id column="goodsId" property="goodsId"/>
+  		<result column="goodsName" property="goodsName"/>
+  	</resultMap>
+  	
+  	<resultMap type="com.one.bean.disasterPreventionAndControl.SmallClassManagementBean" id="scmMap">
+  		<id column="id" property="id"/>
+  		<result column="sbName" property="name"/>
+  	</resultMap>
+  	
+  	<resultMap type="com.one.bean.TypeBean" id="TypeMap">
+  		<id column="typeId" property="typeId"/>
+  		<result column="typeName" property="typeName"/>
+  	</resultMap>
+  	
+  	<resultMap type="com.one.bean.PestTypesBean" id="PestTypesMap">
+  		<id column="InsectId" property="insectId"/>
+  		<result column="type" property="type"/>
+  	</resultMap>
+  	<select id="getAllOutGoing" parameterType="map" resultMap="outGoingMap">
+  		select
+  			om.f_date as date,
+  			om.f_purpoose as purpoose,
+  			om.f_num as num,
+  			nog.f_goodsName as goodsName,
+  			scm.f_name as sbName
+  		from
+  			t_outgoing_management as om
+  		left join
+  			t_nameOfGoods as nog
+  		on
+  			nog.pk_goodsId = om.fk_goodsId
+  		left join
+  			t_small_class_management as scm
+  		on
+  			om.fk_id = scm.pk_id
+  		where
+  			1=1
+  		<if test="dateStrat != null">
+  			AND om.f_date  between #{dateStrat} And #{dateEnd} 
+  		</if>
+		<if test="pageNum != null ">  
+              limit ${pageNum},${pageSize}
+        </if > 
+  		
+  	</select>
+  	<select id="getAllOutGoingForNumber" parameterType="map" resultType="int">
+  		select
+  			count(om.fk_id)
+  		from
+  			t_outgoing_management as om
+  		left join
+  			t_nameOfGoods as nog
+  		on
+  			nog.pk_goodsId = om.fk_goodsId
+  		left join
+  			t_small_class_management as scm
+  		on
+  			om.fk_id = scm.pk_id
+  		where
+  			1=1
+  		<if test="dateStrat != null">
+  			AND om.f_date  between #{dateStrat} And #{dateEnd} 
+  		</if>
+  	</select>
+  <select id="getAllPestTypesBean" resultType="com.one.bean.PestTypesBean" >
+  		select
+  			pt.pk_InsectId as InsectId,
+  			pt.f_type as type
+  		from
+  			t_pestTypes as pt
+  		
+  </select>
+  <select id="getAllTypeBean" resultType="com.one.bean.TypeBean">
+  		select
+  			tp.pk_typeId as typeId,
+  			tp.f_typeName as typeName
+  		from
+			t_type as tp
+  
+  </select>
+  <select id="getAllNameOfGoodsBean" resultType="com.one.bean.NameOfGoodsBean">
+  		select
+  			nog.pk_goodsId as goodsId,
+  			nog.f_goodsName as goodsName
+  		from
+  			t_nameOfGoods as nog
+  			
+  </select>
+  <select id="getAllSmallClassManagementBean" resultType="com.one.bean.disasterPreventionAndControl.SmallClassManagementBean">
+  		select
+  			pk_id as id,
+  			f_name as name
+  		from
+  			t_small_class_management
+
+  </select>
+  <select id="addOutGoing" parameterType="com.one.bean.disposalManagement.Outgoing_managementBean" >
+  		insert into
+  					t_outgoing_management
+  					values(
+						null,
+						#{id.id},
+						#{insect.insectId},
+						#{type.typeId},
+						#{goods.goodsId},
+						#{num},
+						#{purpoose},
+						#{date},
+						#{personName}
+						)
+  
+  </select>
+  
+  </mapper>

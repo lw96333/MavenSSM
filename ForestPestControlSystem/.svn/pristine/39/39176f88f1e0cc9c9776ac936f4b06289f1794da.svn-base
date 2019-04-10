@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--映射的命令空间 -->
+<mapper namespace="com.one.dao.dataManagement.InterDataManagement">
+	<!-- 查看虫害 -->
+	<select id="showPestsInfoById" parameterType="int" resultType="pestsBean">
+		select pk_pestisId as pestisId,
+		f_pestisName as pestisName,
+		f_host as host,
+		f_reproduction as reproduction,
+		f_naturalEnemy as naturalEnemy,
+		f_larvaPic as larvaPic,
+		f_aduitPic as aduitPic,
+		f_preventiveMeasures as preventiveMeasures,
+		f_mainHazards as mainHazards
+		from t_pestslist_management
+		where pk_pestisId= #{id};
+	</select>
+
+	<!--添加虫害 -->
+	<insert id="addPests" parameterType="pestsBean">
+		INSERT INTO
+		t_pestslist_management(f_pestisName,f_host,f_reproduction,f_naturalEnemy,
+		f_larvaPic,f_aduitPic,f_preventiveMeasures,f_mainHazards)
+		VALUES(#{pestisName},#{host},#{reproduction},#{naturalEnemy},
+		#{larvaPic},#{aduitPic},#{preventiveMeasures},#{mainHazards});
+	</insert>
+
+	<!-- 按条件查询虫害 -->
+	<select id="getAllPestsBeanList" resultType="pestsBean"
+		parameterType="map">
+		select pk_pestisId as pestisId,
+		f_pestisName as pestisName,
+		f_host as host,
+		f_reproduction as reproduction,
+		f_naturalEnemy as naturalEnemy,
+		f_larvaPic as larvaPic,
+		f_aduitPic as aduitPic,
+		f_preventiveMeasures as preventiveMeasures,
+		f_mainHazards as mainHazards
+		from t_pestslist_management
+		where 1=1
+
+		<if test="ThePestisName != null ">
+			AND f_pestisName LIKE '%#{ThePestisName}%'
+		</if>
+		<if test="TheHost != null">
+			AND f_host LIKE '%#{TheHost}%'
+		</if>
+		<if test="pageNum != null ">
+			limit ${pageNum},${pageSize}
+		</if>
+
+	</select>
+
+</mapper>

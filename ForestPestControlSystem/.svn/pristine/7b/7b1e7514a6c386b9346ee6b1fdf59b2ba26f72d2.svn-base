@@ -1,0 +1,39 @@
+package com.one.dao.disasterPreventionAndControl;
+
+import java.util.List;
+import java.util.Map;
+
+import com.one.bean.disasterPreventionAndControl.SmallClassManagementBean;
+
+/**
+ * 小班管理Dao
+ * @author 16968
+ *
+ */
+public interface SmallClassManagementDao {
+
+	/**
+	 * 
+	 * @return 查询所有小班
+	 */
+	public List<SmallClassManagementBean> getAllSmallClassManagement(Map<String, Object> map);
+	/**
+	 * 添加小班
+	 * @param smallClass 小班
+	 * @return 是否添加成功
+	 */
+	public int addSmallClass(SmallClassManagementBean smallClass);
+	/**
+	 * 查看小班信息
+	 * @param id 小班ID
+	 * @return 小班信息
+	 */
+	public SmallClassManagementBean getSmallClassInfoById(int id);
+	/**
+	 * 修改小班信息
+	 * @param  small 小班
+	 * @return 是否修改成功
+	 */
+	public int updateSmallClassById(SmallClassManagementBean small);
+	
+}

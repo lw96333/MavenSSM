@@ -1,0 +1,18 @@
+package com.one.service;
+
+import java.util.Map;
+
+import com.one.bean.systemInformation.Log_List_Bean;
+import com.one.bean.systemInformation.User_Management_Bean;
+import com.one.service.imp.LoginServiceImp;
+
+public interface ILoginService {
+
+	static ILoginService getInstance() {
+		return new LoginServiceImp();
+	}
+	
+	User_Management_Bean getUserByUserNameAndPwd(String userName,String password);
+	
+	int addLog(Log_List_Bean log);
+}

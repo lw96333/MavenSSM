@@ -1,0 +1,37 @@
+package com.one.servlet.dataManagement;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.one.bean.dataManagement.PestsBean;
+import com.one.service.dataManagement.InterDataManagementService;
+
+@WebServlet("/showPestsInfo")
+public class showPestsInfoServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	
+	public showPestsInfoServlet(){
+		super();
+	}
+	
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doPost(req, resp);
+	}
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		String str = req.getParameter("chonseId");
+		System.out.println("选中查看信息的id= "+str);
+		PestsBean pb =InterDataManagementService.getInstance().showPestsInfoById(Integer.parseInt(str));
+	    System.out.println(pb);
+	    req.setAttribute("PestsBean", pb);
+	    req.getRequestDispatcher("jsp/showInfoOfpests_informaation.jsp").forward(req, resp);
+	}
+}

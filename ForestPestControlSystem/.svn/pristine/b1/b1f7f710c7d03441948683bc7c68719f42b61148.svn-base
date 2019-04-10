@@ -1,0 +1,178 @@
+var chonseId = 0;
+			var falg = false;
+			function tableAjax(data){
+				var str = "<tr class='info'><th>姓名</th> <th>工作单位</th><th>专长</th><th>职务</th><th>电话</th></tr>";
+        		for(var i=0;i<data.pageData.length;i++){
+        			str += "<tr>";
+        			str += "<td id='name' value='"+data.pageData[i].id+"'>"+data.pageData[i].name+"</td>";
+        			str += "<td>"+data.pageData[i].workUnit+"</td>"
+        			str += "<td>"+data.pageData[i].expertise+"</td>"
+        			str += "<td>"+data.pageData[i].post+"</td>"
+        			str += "<td>"+data.pageData[i].phone+"</td>"
+        			str += "</tr>";
+        		}
+        		$(".table").html(str);
+        		chonse();
+			}
+		 	function page(currPage,pageSize) { 
+		 		if(falg){
+		 			var queryName = $("#queryName").val();
+		 			var queryExpertise = $("#queryExpertise").val();
+		 			var queryWorkUnit = $("#queryWorkUnit").val();
+		 		}else{
+		 			var queryName = "";
+		 			var queryExpertise = "";
+		 			var queryWorkUnit = "";
+		 		}
+		 		
+		 		$.ajax({
+                	type:"post",
+                	url:"specialistPage",
+                	data:{
+                		"currPage":currPage,
+                		"pageSize":$("input[name=pageSize]").val(),
+                		"queryName":queryName,
+                		"queryExpertise":queryExpertise,
+                		"queryWorkUnit":queryWorkUnit
+                	},
+                	dataType : 'json',
+                	success:function(data){
+                		tableAjax(data);
+                		
+                	}
+                });
+            }
+		 	$(function(){
+		 		$("#query").click(function(){
+
+		 			var queryName = $("#queryName").val();
+		 			var queryExpertise = $("#queryExpertise").val();
+		 			var queryWorkUnit = $("#queryWorkUnit").val();
+		 			$.ajax({
+	                	type:"post",
+	                	url:"specialistPage",
+	                	data:{
+	                		"currPage":1,
+	                		"pageSize":$("input[name=pageSize]").val(),
+	                		"queryName":queryName,
+	                		"queryExpertise":queryExpertise,
+	                		"queryWorkUnit":queryWorkUnit
+	                	},
+	                	dataType : 'json',
+	                	success:function(data){
+	                		falg= true;
+	                		tableAjax(data);
+	                		$("#pagination_2").whjPaging({
+	            	            css: 'css-2',
+	            	            totalSize: data.totalData,
+	            	            totalPage: data.totalNum,
+	            	            showPageNum: data.pageSize,
+	            	            firstPage: '首页',
+	            	            previousPage: '上一页',
+	            	            nextPage: '下一页',
+	            	            lastPage: '尾页',
+	            	            skip: '',
+	            	            confirm: '跳转',
+	            	            refresh: '刷新',
+	            	            totalPageText: '总共 {} 页',
+	            	            totalSizeText: "总共 {} 条",
+	            	            isShowFL: true,
+	            	            isShowSkip: true,
+	            	            isResetPage: false,
+	            	            isShowRefresh: false,
+	            	            isShowTotalPage: true,
+	            	            isShowTotalSize: true,
+	            	            isShowPageSizeOpt: false,
+	            	            callBack: function(currPage,pageSize){
+	            	            	page(currPage,pageSize);
+	            	            }
+	            	        });
+	              
+	                	}
+	                });
+		 		});
+		 		$("#addPerson").click(function(){
+		 			$(location).prop('href',"jsp/addspecialist.jsp");
+		 		});
+		 		$("#updatePerson").click(function(){
+		 			
+		 			if(chonseId == 0){
+						alert("请选择要查看的数据");
+					}else{
+						$(location).prop('href', "specialistcheckandupdate?chonseId="+chonseId);
+					}
+		 		});
+		 		$("#checkPerson").click(function(){
+		 			
+		 			if(chonseId == 0){
+						alert("请选择要查看的数据");
+					}else{
+						$(location).prop('href', "specialistcheck?chonseId="+chonseId);
+						
+					}
+		 		});
+				$("#deletePerson").click(function(){
+					if(chonseId == 0){
+						alert("请选择要删除的数据");
+					}else{
+						if(confirm("确定删除吗")){
+							$.ajax({
+			                	type:"post",
+			                	url:"specialistDelete",
+			                	data:{
+			                		"currPage":1,
+			                		"pageSize":$("input[name=pageSize]").val(),
+			                		'chonseId':chonseId
+			                	},
+			                	dataType : 'text',
+			                	success:function(data){
+			                		if(data == 1){
+			                			window.location.href = "specialist";
+			                		}
+			              
+			                	}
+			                });
+							return true;
+						}
+					}
+					return false;
+				});
+		 		chonse();
+		 	});
+	        $("#pagination_2").whjPaging({
+	            css: 'css-2',
+	            totalSize: $("input[name=totalData]").val(),
+	            totalPage: $("input[name=totalNum]").val(),
+	            showPageNum: $("input[name=pageSize]").val(),
+	            firstPage: '首页',
+	            previousPage: '上一页',
+	            nextPage: '下一页',
+	            lastPage: '尾页',
+	            skip: '',
+	            confirm: '跳转',
+	            refresh: '刷新',
+	            totalPageText: '总共 {} 页',
+	            totalSizeText: "总共 {} 条",
+	            isShowFL: true,
+	            isShowSkip: true,
+	            isResetPage: false,
+	            isShowRefresh: false,
+	            isShowTotalPage: true,
+	            isShowTotalSize: true,
+	            isShowPageSizeOpt: false,
+	            callBack: function(currPage,pageSize){
+	            	page(currPage,pageSize);
+	            }
+	        });
+	        function chonse(){
+	        	
+        		$(".table tr").on("click",function(){
+		 			$(".table tr").css({
+		 				background: "white"
+		 			});
+		 			$(this).css({
+		 				background: "#D8ECF7"
+		 			});
+		 			chonseId = $(this).first().find("#name").attr("value");
+		 		});
+	        }

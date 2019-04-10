@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?> 	
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.one.dao.disposalManagement.Pharmacy_managementDao">
+  <!-- 药剂 -->
+  <resultMap type="com.one.bean.disposalManagement.Pharmacy_managementBean" id="Pharmacy_managementMap">
+  		<id column="Id" property="id"/>
+  		<result column="pmName" property="name"/>
+  		<result column="Tree" property="tree"/>
+  		<association property="diseases" resultMap="DiseasesAndInsectPestsMap"/>
+  		<association property="insect" resultMap="PestTypesMap"/>
+  </resultMap> 
+  <!-- 适用病虫害 -->
+  <resultMap type="com.one.bean.DiseasesAndInsectPestsBean" id="DiseasesAndInsectPestsMap">
+			<id column="diseasesId" property="diseasesId"/>
+			<result column="Type" property="diseasesType"/>
+  </resultMap>
+  <!-- 虫害类型 -->
+  <resultMap type="com.one.bean.PestTypesBean" id="PestTypesMap">
+			<id column="InsectId" property="insectId"/>
+			<result column="ftype" property="type"/>
+  </resultMap>
+  				
+  <select id="getAllPharmacy_management" resultMap="Pharmacy_managementMap" >
+	  	SELECT pm.pk_id as Id,
+		       pm.f_name as pmName,
+		       pm.f_tree as Tree,
+		       d.pk_diseasesId as diseasesId,
+		       d.f_type as Type,
+			   p.pk_InsectId as InsectId,
+			   p.f_type as ftype
+			   FROM 
+			   t_pharmacy_management as pm
+			   LEFT JOIN 
+			   t_diseasesandinsectpests as d 
+			   on 
+			   pm.fk_diseasesId = d.pk_diseasesId
+			   LEFT JOIN 
+			   t_pesttypes as p 
+			   on pm.fk_InsectId = p.pk_InsectId
+			   where
+			      1=1
+			   <if test="name != null ">  
+	                AND  pm.f_name LIKE CONCAT(#{name},'%') 
+	            </if >  
+	            <if test="type != null">  
+	                AND p.f_type = #{insect.type}  
+	            </if >  
+	            <if test="diseasesType != null ">  
+	                AND d.f_type = #{diseases.diseasesType}  
+	            </if >
+ 				<if test="pageNum != null ">  
+	                limit ${pageNum},${pageSize}
+	            </if > 
+  
+  </select>
+  <select id="additive" resultMap="Pharmacy_managementMap">
+	  		insert into
+	  			t_pharmacy_management
+	  		values
+	  			(
+	  				#{diseases.diseasesId},
+	  				#{insect.insectId},
+	  				null,
+	  				#{name},
+	  				#{tree}
+	  			)
+  
+  </select>
+  </mapper>

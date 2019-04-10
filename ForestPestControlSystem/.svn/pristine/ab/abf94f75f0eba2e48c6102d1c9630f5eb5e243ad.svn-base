@@ -1,0 +1,342 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!-- 添加专家信息 -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>首页</title>
+    <link rel="stylesheet" href="../css/style_all.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../css/fileinput.min.css"/>
+    <link rel="stylesheet" href="../css/style.css"  type="text/css" media="screen" />
+</head>
+
+<body>
+<div id="top">
+    <div id="head">
+        <h3 class="logo"><span>森</span>林病虫害防治系统</h3>
+        <div class="head_memberinfo">
+            <div class="head_memberinfo_logo">
+                <span>1</span>
+                <img src="../images/unreadmail.png" alt=""/>
+
+            </div>
+
+                    <span class='memberinfo_span'>
+                       欢迎 <a href="">管理员</a>
+                   </span>
+
+                   <span class='memberinfo_span'>
+                    <a href="">设置</a>
+                </span>
+
+                <span>
+                    <a href="#">登出</a>
+                </span>
+
+                <span class='memberinfo_span2'>
+                    <a href="">1 条私信</a>
+                </span>
+        </div>
+        <!--end head_memberinfo-->
+
+    </div>
+    <!--end head-->
+
+    <div id="bg_wrapper">
+        <div id="main">
+            <div id="content">
+                <div class="">
+                    <ol class="breadcrumb">
+                        <li><a href="#">专家会商</a></li>
+                        <li class="active"><a href="#">专家一览</a></li>
+                        <li class="active">添加专家</li>
+                    </ol>
+                </div>
+
+                <div  class="panel panel-info col-md-10 col-md-offset-1">
+                    <div class="panel-heading">添加专家信息</div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" enctype="multipart/form-data" action="../specialistAdd" method="post">
+                            <div class="form-group row">
+                                <label  class="col-md-5">姓名</label>
+
+                                <label  class="col-md-5 col-md-offset-2">性别</label>
+
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" name="name" placeholder="姓名">
+                                </div>
+
+                                <div class="col-md-5 col-md-offset-2">
+                                    <select class="form-control" name="gender">
+                                        <option value="1">男</option>
+                                        <option value="0">女</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label  class="col-md-5">出生年月</label>
+
+                                <label  class="col-md-5 col-md-offset-2">照片</label>
+
+                                <div class="col-md-5">                 
+                                    <input class="form-control Wdate" name="bithday" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})" />
+                                </div>
+
+                                <div class="col-md-5 col-md-offset-2">
+                                    <input id="file-pic1" name="uploadImgFile" type="file" value="上传"  multiple/>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label  class="col-md-5">专长</label>
+
+                                <label  class="col-md-5 col-md-offset-2">职务</label>
+
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" name="expertise" placeholder="专长">
+                                </div>
+
+                                <div class="col-md-5 col-md-offset-2">
+                                    <input type="text" class="form-control" name="post" placeholder="职务">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label  class="col-md-5">电话</label>
+
+                                <label  class="col-md-5 col-md-offset-2">工作单位</label>
+
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" name="phone" placeholder="电话号码">
+                                </div>
+
+                                <div class="col-md-5 col-md-offset-2">
+                                    <input type="text" class="form-control" name="workUnit" placeholder="工作单位">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label  class="col-md-5">通讯地址</label>
+
+                                <label  class="col-md-5 col-md-offset-2">邮箱</label>
+
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" name="path" placeholder="通讯地址">
+                                </div>
+
+                                <div class="col-md-5 col-md-offset-2">
+                                    <input type="text" class="form-control" name="email" placeholder="邮箱">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-2 col-md-offset-5">
+                                    <button type="button" class="btn btn-primary" id="add">添加</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <!--end content-->
+
+        </div><!--end main-->
+
+        <div id="sidebar">
+            <ul class="nav">
+                <li><a class="headitem item1" href="#">资料管理</a>
+                    <ul><!-- ul items without this class get hiddden by jquery-->
+                        <li><a href="pestsList_management.html">虫害一览</a></li>
+                        <li><a href="diseasesList_management.html">病害一览</a></li>
+                        <li><a href="rodentpestsList_management.html">鼠害一览</a></li>
+
+                    </ul>
+                </li>
+                <li><a class="headitem item2" href="#">灾情防治</a>
+                    <ul>
+                        <li><a href="area_in.html">区域一览</a></li>
+                        <li><a href="small_class_management.html">小班管理</a></li>
+                        <li><a href="incident_record.html">事件记录</a></li>
+                    </ul>
+                </li>
+                <li><a class="headitem item3" href="#">专家会商</a>
+                    <ul>
+                        <li><a href="specialist_management.html">专家一览</a></li>
+                        <li><a href="instrument_management.html">会商灾情</a></li>
+                    </ul>
+                </li>
+                <li><a class="headitem item4" href="#">药剂器械出库管理</a>
+                    <ul>
+                        <li><a href="pharmacy_management.html">药剂管理</a></li>
+                        <li><a href="consultation_management.html">器械管理</a></li>
+                        <li><a href="outgoing_management.html">出库管理</a></li>
+                    </ul>
+                </li>
+                <li><a class="headitem item5" href="#">系统信息</a>
+                    <ul>
+                        <li><a href="user_management.html">用户管理</a></li>
+                        <li><a href="log_list.html">日志一览</a></li>
+                    </ul>
+                </li>
+            </ul><!--end subnav-->
+
+
+
+        </div>
+        <!--end sidebar-->
+
+    </div><!--end bg_wrapper-->
+
+    <div  id="footer" style="color: #fff;text-align: center">
+        More Templates <a href="http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a>
+    </div><!--end footer-->
+
+</div><!-- end top -->
+<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../js/jquery-ui.js"></script>
+<script type='text/javascript' src='../js/custom.js'></script>
+<script src="../js/fileinput.min.js"></script>
+<script src="../js/zh.js"></script>
+<script language="javascript" type="text/javascript"
+	src="../js/WdatePicker.js"></script>
+<script>
+	function judge(obj,str){
+		var my = obj;
+		if(my.val() != "" && my.val() != null){
+			my.css({
+				"border": "1px solid gainsboro"
+			});
+			return true;
+		}else{
+			my.attr("placeholder",str);
+			my.css({
+				"border": "1px solid red"
+			});
+			return false;
+		}
+	}
+	$("input[name=name]").on("blur",function(){
+		judge($(this),"请输入名字");
+	});
+	$("input[name=bithday]").on("blur",function(){
+		judge($(this),"请输入出生日期");
+	});
+
+	$("input[name=expertise]").on("blur",function(){
+		judge($(this),"请输入专长");
+	});
+	$("input[name=post]").on("blur",function(){
+		judge($(this),"请输入职位");
+	});
+	$("input[name=phone]").on("blur",function(){
+		judge($(this),"请输入电话");
+	});
+	$("input[name=workUnit]").on("blur",function(){
+		judge($(this),"请输入工作地址");
+	});
+	$("input[name=path]").on("blur",function(){
+		judge($(this),"请输入联系地址");
+	});
+	$("input[name=email]").on("blur",function(){
+		judge($(this),"请输入邮箱");
+	});
+    $(function(){
+    	$("#add").click(function(){
+    		var falg = true;
+    		var name = $("input[name=name]").val();
+    		var bithday = $("input[name=bithday]").val();
+    		var uploadImgFile = $("input[name=uploadImgFile]").val();
+    		var expertise = $("input[name=expertise]").val();
+    		var post = $("input[name=post]").val();
+    		var phone = $("input[name=phone]").val();
+    		var workUnit = $("input[name=workUnit]").val();
+    		var path = $("input[name=path]").val();
+    		var email = $("input[name=email]").val();
+    		if(name == "" || name == null){
+    			$("input[name=name]").blur();
+				falg = false;
+			}
+    		if(bithday == "" || bithday == null){
+				$("input[name=bithday]").blur();
+				falg = false;
+			}
+    		if($("input[name=uploadImgFile]").val() != "" && $("input[name=uploadImgFile]").val() != null){
+    			$(".file-caption").css({
+    				"border": "1px solid gainsboro"
+    			});
+    		}else{
+    			$(".file-caption").css({
+    				"border": "1px solid red"
+    			});
+    			falg = false;
+    		}
+
+    		
+    		if(expertise == "" || expertise == null){
+				$("input[name=expertise]").blur();
+				falg = false;
+			}
+    		if(post == "" || post == null){
+				$("input[name=post]").blur();
+				falg = false;
+			}
+    		if(phone == "" || phone == null){
+				$("input[name=phone]").blur();
+				falg = false;
+			}
+    		if(workUnit == "" || workUnit == null){
+				$("input[name=workUnit]").blur();
+				falg = false;
+			}
+    		if(path == "" || path == null){
+				$("input[name=path]").blur();
+				falg = false;
+			}
+    		if(email == "" || email == null){
+				$("input[name=email]").blur();
+				falg = false;
+			}
+			
+    		if(falg){
+				$(".form-horizontal").submit();
+			}
+    	});
+    	
+    	
+        $('#file-pic1').fileinput({
+
+            //初始化上传文件框
+            language: "zh",//配置语言
+            showPreview: false,//是否显示预览
+            showUpload: true, //显示整体上传的按钮
+            showRemove: false,//显示整体删除的按钮
+            uploadAsync: false,//默认异步上传
+//            uploadLabel: "上传",//设置整体上传按钮的汉字
+            removeLabel: "移除",//设置整体删除按钮的汉字
+            uploadClass: "btn btn-primary",//设置上传按钮样式
+            showCaption: true,//是否显示标题initialCaption:"请选择图片",
+            dropZoneEnabled: false,//是否显示拖拽区域
+            showUpload: false,//是否显示上传按钮
+//                    uploadUrl: getPath('/gz/tool/toolAction/uploadImgFile'),//这个是配置上传调取的后台地址，本项目是SSM搭建的
+            maxFileSize : 9999,//文件大小限制
+            maxFileCount: 1,//允许最大上传数，可以多个，
+            enctype: 'multipart/form-data',
+            allowedFileExtensions : ["jpg", "png","gif","docx","zip","xlsx","txt"],/*上传文件格式限制*/
+            msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
+            showBrowse: true,
+            browseOnZoneClick: true,
+            initialCaption: "请选择上传图片",//输入提示
+            slugCallback : function(filename) {
+                return filename.replace('(', '_').replace(']', '_');
+            }
+        });
+    });
+</script>
+</body>
+
+</html>

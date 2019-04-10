@@ -1,0 +1,65 @@
+package com.one.servlet.disasterPreventionAndControl;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+import com.one.bean.DisasterStageBean;
+import com.one.bean.disasterPreventionAndControl.IncidentRecordBean;
+import com.one.service.disasterPreventionAndControl.IncidentService;
+import com.one.service.disasterPreventionAndControl.Imp.IncidentServiceImp;
+
+/**
+ * Servlet implementation class UpdateIncidentServlet
+ */
+@WebServlet("/updateIncident")
+public class UpdateIncidentServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public UpdateIncidentServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String stageId = request.getParameter("stageId");
+		String incidentId = request.getParameter("incidentId");
+		String controlMethod = request.getParameter("controlMethod");
+		System.out.println(stageId + "*************" + incidentId + "***********" + controlMethod);
+		if(stageId != null || stageId != "" || controlMethod != null || controlMethod != "" || incidentId != null || incidentId != ""){
+			IncidentService inci = new IncidentServiceImp();
+			IncidentRecordBean incident = new IncidentRecordBean();
+			incident.setControlMethod(controlMethod);
+			incident.setId(Integer.parseInt(incidentId));
+			DisasterStageBean disaster = new DisasterStageBean();
+			disaster.setStageId(Integer.parseInt(stageId));
+			incident.setStage(disaster);
+			int update = inci.updateIncidentRecord(incident);
+			System.out.println(update);
+			if(update == 1){
+				Gson g = new Gson();
+				String affirm = g.toJson(update);
+				response.getWriter().print(affirm);
+			}
+		}
+	}
+
+}

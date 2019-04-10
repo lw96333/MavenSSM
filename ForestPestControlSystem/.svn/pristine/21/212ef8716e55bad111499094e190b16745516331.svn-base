@@ -1,0 +1,60 @@
+function judge(obj,str){
+		var my = obj;
+		if(my.val() != "" && my.val() != null){
+			my.css({
+				"border": "1px solid gainsboro"
+			});
+		}else{
+			my.attr("placeholder",str);
+			my.css({
+				"border": "1px solid red"
+			});
+		}
+	}
+	$(function(){
+		$("input[name=newPhone]").on("blur",function(){
+			judge($(this),"请输入电话")
+		});
+		$("input[name=newPost]").on("blur",function(){
+			judge($(this),"请输入职务")
+		});
+		$("input[name=newWorkUnit]").on("blur",function(){
+			judge($(this),"请输入工作地址")
+		});
+		$("input[name=newEmail]").on("blur",function(){
+			judge($(this),"请输入邮箱")
+		});
+		
+		$("#sure").click(function(){
+			var chonse = $("intput[name=id]").val();
+			var falg = true;
+			var newPost = $("input[name=newPost]").val();
+			var newPhone = $("input[name=newPhone]").val();
+			var newWorkUnit = $("input[name=newWorkUnit]").val();
+			var newEmail = $("input[name=newEmail]").val();
+			if(newPost == "" || newPost == null){
+				$("input[name=newPost]").blur();
+				falg = false;
+			}
+			if(newPhone == "" || newPhone == null){
+				$("input[name=newPhone]").blur();		
+				falg = false;
+			}
+			if(newWorkUnit == "" || newWorkUnit == null){
+				$("input[name=newWorkUnit]").blur();
+				falg = false;
+			}
+			if(newEmail == "" || newEmail == null){
+				$("input[name=newEmail]").blur();
+				falg = false;
+			}
+			if(falg){
+				input = $("<input type='hidden' name='id' value="+chonse+">");
+				$(".form-horizontal").append(input);
+				$(".form-horizontal").attr("action","specialistUpdate");
+				$(".form-horizontal").submit();
+			}else{
+				return false;
+			}
+		});
+	});

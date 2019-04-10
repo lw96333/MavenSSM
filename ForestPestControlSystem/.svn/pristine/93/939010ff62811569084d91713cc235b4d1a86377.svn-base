@@ -1,0 +1,49 @@
+package com.one.dao.expertConsultation;
+
+import java.util.List;
+import java.util.Map;
+
+import com.one.bean.disasterPreventionAndControl.IncidentRecordBean;
+import com.one.bean.expertConsultation.InstrumentManagementBean;
+import com.one.bean.expertConsultation.SpecialistManagementBean;
+
+/**
+ * 	专家会商
+ * @author 49160
+ *
+ */
+public interface IInstrumentManagementDao {
+	/**
+	 * 	根据灾情结果得到事件记录
+	 * @return
+	 */
+	List<IncidentRecordBean> getIncidentRecordByStageId(Map map);
+	/**
+	 * 根据事件id来查询
+	 * @param id
+	 * @return
+	 */
+	IncidentRecordBean getIncidentRecordById(int id);
+	/**
+	 * 得到所有条数
+	 * @return
+	 */
+	int getIncidentRecordByStageIdForNum();
+	/**
+	 * 	添加会商记录
+	 * @param imb
+	 * @return
+	 */
+	int addInstrumentManagement(InstrumentManagementBean imb);
+	/**
+	 * 查询所有的会商结果
+	 * @param map
+	 * @return
+	 */
+	List<InstrumentManagementBean> getInstrumentManagement(Map map);
+	/**
+	 * 查询数据总条数
+	 * @return
+	 */
+	int getInstrumentManagementForNum(int id);
+}

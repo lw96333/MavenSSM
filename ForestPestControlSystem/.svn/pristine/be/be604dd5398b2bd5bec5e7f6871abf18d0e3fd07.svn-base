@@ -1,0 +1,57 @@
+package com.one.servlet.disasterPreventionAndControl;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+import com.one.bean.PageBean;
+import com.one.bean.disasterPreventionAndControl.IncidentRecordBean;
+import com.one.service.disasterPreventionAndControl.IncidentService;
+import com.one.service.disasterPreventionAndControl.Imp.IncidentServiceImp;
+
+/**
+ * Servlet implementation class QueryIncidentBytimeServlet
+ */
+@WebServlet("/queryIncidentBytime")
+public class QueryIncidentBytimeServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public QueryIncidentBytimeServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String pageNum = request.getParameter("currPage");
+		String pageSize = request.getParameter("pageSize");
+		String beginTime = request.getParameter("beginTime");
+		String overTime = request.getParameter("overTime");
+		IncidentService inci = new IncidentServiceImp();
+		if(pageNum != null && pageSize != null){
+			
+			PageBean<IncidentRecordBean> page = inci.getIncidentRecordByDate(Integer.parseInt(pageNum), Integer.parseInt(pageSize), beginTime,overTime);
+			System.out.println(page.getTotalData());
+			Gson gson = new Gson();
+			String pageBean = gson.toJson(page);
+			response.getWriter().print(pageBean);
+		}
+	}
+
+}

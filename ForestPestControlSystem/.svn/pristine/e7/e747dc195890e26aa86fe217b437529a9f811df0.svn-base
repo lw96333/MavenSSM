@@ -1,0 +1,56 @@
+package com.one.servlet.disposalManagement;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+import com.one.bean.PageBean;
+import com.one.service.disposalManagement.Outgoing_managementService;
+
+/**
+ *  添加出库信息
+ * @author 郑
+ *
+ */
+@WebServlet("/outgoing_managementPage")
+public class Outgoing_managementPageServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    public Outgoing_managementPageServlet() {
+        super();
+    }
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		doPost(request, response);
+		
+	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String pageNum = request.getParameter("currPage");
+		String pageSize = request.getParameter("pageSize");
+		String stratDate = request.getParameter("stratDate");
+		String endDate = request.getParameter("endDate");
+//        System.out.println("..................");
+//        System.out.println(pageSize);
+//        System.out.println("..................");
+		if("".equals(stratDate)) {
+			stratDate = null;
+		}
+		if("".equals(endDate)) {
+			endDate = null;
+		}
+		PageBean page = Outgoing_managementService.getInstance().getShowOutGoing(Integer.parseInt(pageNum), Integer.parseInt(pageSize), stratDate, endDate);
+		Gson gson = new Gson();
+//		System.out.println(page+"33333333333334444");
+		String pageBean = gson.toJson(page);
+//		System.out.println(pageNum+"111111111111111111112222222"+pageSize);
+		response.getWriter().print(pageBean);
+	}
+
+}

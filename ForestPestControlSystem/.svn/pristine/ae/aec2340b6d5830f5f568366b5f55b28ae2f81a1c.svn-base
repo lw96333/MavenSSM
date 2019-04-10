@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--映射的命令空间 -->
+<mapper namespace="com.one.dao.dataManagement.InterDataManagement">
+	<!-- 查看鼠害 -->
+	<select id="showRodentpestsBeanInfoById" parameterType="int"
+		resultType="rodentpestsBean">
+		select pk_mouseId as mouseId,
+		f_mouseName as mouseName,
+		f_mouseFoot as mouseFoot,
+		f_reproduction as reproduction,
+		f_naturalEnemy as naturalEnemy,
+		f_mousePic as mousePic,
+		f_preventiveMeasures as preventiveMeasures,
+		f_mainHazards as mainHazards
+		from t_rodentpestslist_management
+		where pk_mouseId= #{id};
+	</select>
+
+	<!--添加鼠害 -->
+	<insert id="addRodentpestsBean" parameterType="rodentpestsBean">
+		INSERT INTO
+		t_rodentpestslist_management(f_mouseName,f_mouseFoot,f_reproduction,f_naturalEnemy,
+		f_mousePic,f_preventiveMeasures,f_mainHazards)
+		VALUES(#{mouseName},#{mouseFoot},#{reproduction},#{naturalEnemy},
+		#{mousePic},#{preventiveMeasures},#{mainHazards});
+	</insert>
+
+	<!-- 按条件查询鼠害 -->
+	<select id="getAllRodentpestsBeanList" resultType="rodentpestsBean"
+		parameterType="map">
+		select pk_mouseId as mouseId,
+		f_mouseName as mouseName,
+		f_mouseFoot as mouseFoot,
+		f_reproduction as reproduction,
+		f_naturalEnemy as naturalEnemy,
+		f_mousePic as mousePic,
+		f_preventiveMeasures as preventiveMeasures,
+		f_mainHazards as mainHazards
+		from t_rodentpestslist_management
+		where 1=1
+		<if test="TheMouseName != null ">
+			AND f_mouseName LIKE '%#{TheMouseName}%'
+		</if>
+		<if test="pageNum != null ">
+			limit ${pageNum},${pageSize}
+		</if>
+
+	</select>
+
+</mapper>

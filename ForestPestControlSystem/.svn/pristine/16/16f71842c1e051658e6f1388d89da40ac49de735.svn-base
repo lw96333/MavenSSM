@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.one.dao.disposalManagement.Consultation_managementDao">
+
+  <resultMap type="com.one.bean.disposalManagement.Consultation_managementBean" id="Consultation_managementMap">
+  		<id column="Id" property="id"/>
+  		<result column="Fname" property="name"/>
+  		<result column="Purpose" property="purpose"/>
+  		<association property="insect" resultMap="PestTypesMap"/>
+  </resultMap>
+  
+  <!-- 虫害类型 -->
+  <resultMap type="com.one.bean.PestTypesBean" id="PestTypesMap">
+			<id column="InsectId" property="insectId"/>
+			<result column="type" property="type"/>
+  </resultMap>
+  		
+  <select id="getAllConsultation_management" resultMap="Consultation_managementMap">
+  		SELECT cm.pk_id as Id,
+			 cm.f_name as Fname,
+			 cm.f_purpose as Purpose,
+			 p.pk_InsectId as InsectId,
+			 p.f_type as type
+			 FROM t_consultation_management as cm 
+			 LEFT JOIN t_pesttypes as p on cm.fk_InsectId = p.pk_InsectId
+			 
+			  <if test="name != null ">  
+	                AND cm.f_name LIKE CONCAT(#{name},'%') 
+	            </if >  
+	            <if test="type != null">  
+	                AND p.f_type = #{insect.type}  
+	            </if >  
+	            <if test="Purpose != null ">  
+	                AND cm.f_purpose = #{Purpose}  
+	            </if >   
+ 				<if test="pageNum != null ">  
+	                limit ${pageNum},${pageSize}
+	            </if > 
+  </select>	
+  <select id="add_instruments" resultMap="Consultation_managementMap">
+  		insert into
+  			t_consultation_management
+  		values
+  			(
+  				null,
+  				#{insect.insectId},
+  				#{name},
+  				#{purpose}
+  			)
+  
+  </select>
+  	
+  	
+  	
+  </mapper>

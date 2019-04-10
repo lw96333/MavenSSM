@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.one.dao.disasterPreventionAndControl.AreaInDao">
+
+	<resultMap type="area" id="areaMap">
+
+		<id column="id" property="areaId" />
+		<result column="name" property="name" />
+		<result column="forest" property="forest" />
+		<result column="advantage" property="advantage" />
+
+		<association property="small" javaType="smallClass">
+			<id column="smId" property="id" />
+			<result column="smName" property="name" />
+		</association>
+
+		<association property="linDi" javaType="com.one.bean.LandClassBean">
+			<id column="landId" property="landId" />
+			<result column="landName" property="name" />
+		</association>
+
+	</resultMap>
+
+	<select id="getAllAreaIn" parameterType="java.util.HashMap"
+		resultMap="areaMap">
+
+		SELECT pk_areaId as id,
+		f_areaName as name,
+		f_forestSpecies as forest,
+		f_advantage as advantage,
+		sm.pk_id as smId,
+		sm.f_name as smName,
+		land.pk_landId as landId,
+		land.f_name as landName
+		FROM (t_area_in as area LEFT JOIN t_small_class_management as sm on
+		area.pk_areaId = sm.fk_regionId)
+		left join t_landclass as land on area.fk_landId=land.pk_landId where 1=1
+		<if test="forest != null">
+			AND f_areaName like '%${areaName}%'
+		</if>
+		<if test="advantage != null">
+			AND f_forestSpecies like '%${advantage}%'
+		</if>
+		<if test="pageNum != null ">
+			limit ${pageNum},${pageSize}
+		</if>
+	</select>
+
+	<insert id="addAreaIn" parameterType="area">
+		INSERT INTO t_area_in VALUES
+		(null,#{linDi.landId},#{forest},#{advantage},#{name});
+	</insert>
+
+</mapper>

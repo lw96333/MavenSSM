@@ -1,0 +1,66 @@
+package com.one.servlet.disposalManagement;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.one.bean.PestTypesBean;
+import com.one.bean.disposalManagement.Consultation_managementBean;
+import com.one.service.disposalManagement.DisposalManagementService;
+import com.one.service.disposalManagement.imp.DisposalManagementServiceImp;
+
+/**
+ * Servlet implementation class add_instruments
+ */
+@WebServlet("/add_instruments")
+public class add_instruments extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public add_instruments() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String uName = request.getParameter("name");
+		String uInsect = request.getParameter("insect");
+		String uType = request.getParameter("type");
+		
+//		测试前台页面获取的输入值 
+		 System.out.println(uName+"=="+uInsect+"=="+uType+"==1111111111111111111111111");
+		
+		Consultation_managementBean cm = new Consultation_managementBean();
+		System.out.println(cm+"222222222222222222222");
+		PestTypesBean pb = new PestTypesBean();
+		DisposalManagementService ds = new DisposalManagementServiceImp();
+		
+		
+		cm.setName(uName);
+		pb.setType(uInsect);
+		cm.setInsect(pb);
+		cm.setPurpose(uType);
+
+		DisposalManagementService.getInstance().additive(cm);
+		request.getRequestDispatcher("consultation_management").forward(request, response);
+		
+	}
+
+}

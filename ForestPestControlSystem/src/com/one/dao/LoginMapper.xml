@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.one.dao.ILoginDao">
+  	<!-- 用户对象 -->
+  	<resultMap type="com.one.bean.systemInformation.User_Management_Bean" id="UserMap">
+  		<id column="userId" property="userId"/>
+  		<result column="userName" property="userName"/>
+  		<result column="name" property="name"/>
+  		
+  		<association property="privileges" resultMap="privilegesMap"/>
+  	</resultMap>
+  	<!-- 权限对象 -->
+  	<resultMap type="com.one.bean.systemInformation.User_Privileges_Bean" id="privilegesMap">
+  		<id column="privilegesId" property="privilegesId"/>
+  		<result column="privilegesName" property="privilegesName"/>
+  	</resultMap>
+  	
+  	<select id="getUserByUserNameAndPwd" resultMap="UserMap">
+  		select
+  			u.pk_userId as userId,
+  			u.f_userName as userName,
+  			u.f_name as name,
+  			p.pk_privilegesId as privilegesId,
+  			p.f_privilegesName as privilegesName
+  		from
+  			t_user_management as u
+  		left join
+  			t_userPrivileges as p
+  		on 
+  			u.fk_privilegesId = p.pk_privilegesId
+  		where
+  			u.f_userName = #{userName}
+  		and
+  			u.f_password = MD5(#{password})
+  	</select>
+  	
+  	<insert id="addLog" parameterType="com.one.bean.systemInformation.Log_List_Bean">
+  		insert into 
+  			t_log_list
+  		values(
+  			null,
+  			#{content},
+  			#{date}
+  		)
+  	</insert>
+  </mapper>

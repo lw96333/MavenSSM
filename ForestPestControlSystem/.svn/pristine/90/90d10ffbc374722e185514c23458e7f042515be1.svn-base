@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.one.dao.disasterPreventionAndControl.SmallClassManagementDao">
+
+<resultMap type="smallClass" id="smallClassMap">
+
+	<id column="id" property="id"/>
+	<result column="smName" property="name"/>
+	<result column="phone" property="personPhone"/>
+	<result column="person" property="personName"/>
+	
+	<association property="region" javaType="area">
+		<result column="regName" property="name"/>
+	</association>
+
+</resultMap>
+
+<select id="getAllSmallClassManagement" parameterType="java.util.HashMap" resultMap="smallClassMap">
+	
+		select 	pk_id as id,	
+				sm.f_name as smName,
+				f_person as person,
+				f_phone as phone,
+				area.f_areaName as areaName
+				from  t_small_class_management as sm  LEFT JOIN t_area_in as area on sm.fk_regionId = area.pk_areaId
+				where 1=1  
+	            <if test="smName != null">  
+	                 and sm.f_name like '%${smName}%'  
+	            </if >  
+	            <if test="regName != null ">  
+	                and area.f_areaName like '%${regName}%' 
+	            </if >   
+ 				<if test="pageNum != null ">  
+	                limit ${pageNum},${pageSize}
+	            </if >
+</select>
+
+<select id="countAllSmallClassManagement" resultType="int">
+	select count(pk_id) from t_small_class_management 
+</select>
+
+<update id="updateSmallClassById" parameterType="smallClass">
+	UPDATE t_small_class_management set f_phone = #{personPhone},f_person=#{personName} where pk_id = #{id}
+</update>
+
+<insert id="addSmallClass" parameterType="smallClass">
+	INSERT INTO t_small_class_management VALUES (null,#{areaIn.areaId},#{land.landId},#{name},#{personName},#{personPhone},#{personNum},#{creationTime})
+</insert>
+
+<resultMap type="smallClass" id="smallClassMapTwo">
+
+	<id column="smId" property="id"/>
+	<result column="smName" property="name"/>
+	<result column="smTime" property="creationTime"/>
+	<result column="smPhone" property="personPhone"/>
+	<result column="smPerson" property="personName"/>
+	<result column="smPersonNum" property="personNum"/>
+	<association property="land" javaType="com.one.bean.LandClassBean">
+		<id column="landId" property="landId"/>
+		<result column="landName" property="name"/>
+	</association>
+	
+	<association property="areaIn" javaType="area">
+		<id column="id" property="areaId"/>
+		<result column="areaName" property="name"/>
+		<result column="forestSpecies" property="forest"/>
+		<result column="advantage" property="advantage"/>
+	</association>
+	
+</resultMap>
+
+<select id="getSmallClassInfoById" parameterType="int" resultMap="smallClassMapTwo">
+
+	SELECT  pk_areaId as id,
+			f_areaName as areaName,
+			f_forestSpecies as forestSpecies,
+			f_advantage as advantage,
+			sm.pk_id as smId,
+			sm.f_name as smName,
+			sm.f_time as smTime,
+			sm.f_phone as smPhone,
+			sm.f_person as smPerson,
+			sm.f_personNum as smPersonNum,
+			land.pk_landId as landId,
+			land.f_name as landName
+			FROM ( t_small_class_management as sm  LEFT JOIN t_area_in as area on sm.fk_regionId = area.pk_areaId) 		
+			left join t_landclass as land on area.fk_landId=land.pk_landId 	where sm.pk_id = #{id};
+</select>
+
+</mapper>
+
+
+
+
+
+
+
+
+

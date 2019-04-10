@@ -1,0 +1,26 @@
+            $(function(){
+			$("#button").click(function(){
+			var	name = $("#name").val().trim();
+			var	type = $("#type").val().trim();
+			
+				if(name == "" || type == ""){
+					alert("请输入完整的添加信息");
+				}else{
+					 $.ajax({
+			                type: "POST",//方法
+			                url: "../add_instruments" ,//表单接收url
+			                data: $('#form').serialize(),
+			                success: function () {
+			                  //提交成功的提示词或者其他反馈代码
+			                   /* alert("fsd"); */
+			                	$(location).prop('href', "../consultation_management?");
+			                },
+			                error : function() {
+			                  //提交失败的提示词或者其他反馈代码
+			                    var result=document.getElementById("success");
+			                    result.innerHTML="失败!";
+			                }
+			           });
+				} 
+			});
+		});

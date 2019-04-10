@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--映射的命令空间 -->
+<mapper namespace="com.one.dao.dataManagement.InterDataManagement">
+	<!-- 查看病害 -->
+	<select id="showDiseaseBeanInfoById" parameterType="int"
+		resultType="diseaseBean">
+		select pk_diseaseId as diseaseId,
+		f_diseaseName as diseaseName,
+		f_pathology as pathology,
+		f_onsetSymptom as onsetSymptom,
+		f_incidenceRegularity as incidenceRegularity,
+		f_diseasePic as diseasePic,
+		f_preventiveMeasures as preventiveMeasures,
+		f_mainHazards as mainHazards
+		from t_diseaseslist_management
+		where pk_diseaseId= #{id};
+	</select>
+
+	<!--添加病害 -->
+	<insert id="addDiseaseBean" parameterType="diseaseBean">
+		INSERT INTO
+		t_diseaseslist_management(f_diseaseName,f_pathology,f_onsetSymptom,f_incidenceRegularity,
+		f_diseasePic,f_preventiveMeasures,f_mainHazards)
+		VALUES(#{diseaseName},#{pathology},#{onsetSymptom},#{incidenceRegularity},
+		#{diseasePic},#{preventiveMeasures},#{mainHazards});
+	</insert>
+
+	<!-- 按条件查询病害 -->
+	<select id="getAllDiseaseBeanList" resultType="diseaseBean"
+		parameterType="map">
+		select pk_diseaseId as diseaseId,
+		f_diseaseName as diseaseName,
+		f_pathology as pathology,
+		f_onsetSymptom as onsetSymptom,
+		f_incidenceRegularity as incidenceRegularity,
+		f_diseasePic as diseasePic,
+		f_preventiveMeasures as preventiveMeasures,
+		f_mainHazards as mainHazards
+		from t_diseaseslist_management
+		where 1=1
+
+		<if test="TheDiseaseName != null">
+			AND f_diseaseName LIKE '%#{TheDiseaseName}%'
+		</if>
+		<if test="TheOnsetSymptom != null">
+			AND f_onsetSymptom LIKE '%#{TheOnsetSymptom}%'
+		</if>
+		<if test="pageNum != null ">
+			limit ${pageNum},${pageSize}
+		</if>
+	</select>
+
+</mapper>

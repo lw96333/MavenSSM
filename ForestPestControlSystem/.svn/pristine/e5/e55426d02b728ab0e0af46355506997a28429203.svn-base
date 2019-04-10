@@ -1,0 +1,104 @@
+function judge(obj,str){
+			var my = obj;
+			if(my.val() != "" && my.val() != null){
+				my.css({
+					"border": "1px solid gainsboro"
+				});
+				return true;
+			}else{
+				my.attr("placeholder",str);
+				my.css({
+					"border": "1px solid red"
+				});
+				return false;
+			}
+		}
+		$("input[name=persons]").on("blur",function(){
+			judge($(this),"请会商人员");
+		});
+		$("textarea[name=result]").on("blur",function(){
+			judge($(this),"请输入会商意见");
+		});
+
+		function tableAjax(data){
+			var str = "<tr class='info'><th>日期</th> <th>会商人员</th><th>会商结果</th></tr>";
+			for(var i=0;i<data.pageData.length;i++){
+				str += "<tr>";
+				str += "<td>"+data.pageData[i].date+"</td>";
+				str += "<td>"+data.pageData[i].persons+"</td>"
+				str += "<td>"+data.pageData[i].result+"</td>"
+				str += "</tr>";
+			}
+			$(".table").html(str);
+		}
+	 	function page(currPage,pageSize) { 
+	 		
+	 		
+	 		$.ajax({
+	        	type:"post",
+	        	url:"instrumentPage",
+	        	data:{
+	        		"currPage":currPage,
+	        		"pageSize":$("input[name=pageSize]").val(),
+	        		"id":$("input[name=irbId]").val()
+	        	},
+	        	dataType : 'json',
+	        	success:function(data){
+	        		tableAjax(data);
+	        		
+	        	}
+	        });
+	    }
+	 	$(function(){
+	 		$("#add").click(function(){
+	 			var chonse = $("input[name=irbId]").val();
+	 			var falg = true;
+	 			var persons = $("input[name=persons]").val();
+	 			var result = $("textarea[name=result]").val();
+	 			if(persons == "" || persons == null){
+	 				falg = false;
+	 				$("input[name=persons]").blur();
+	 			}
+	 			if(result == "" || result == null){
+	 				falg = false;
+	 				$("textarea[name=result]").blur();
+	 			}
+	 			if(falg){
+	 				input = $("<input type='hidden' name='id' value="+chonse+">");
+					$(".form-horizontal").append(input);
+					$(".form-horizontal").attr("action","instrumentAdd");
+					$(".form-horizontal").submit();
+	 			}
+	 		});
+	 		$("#pagination_2").whjPaging({
+	 	         css: 'css-2',
+	 	         pageSizeOpt: [
+	 	             {value: 5, text: '5/page', selected: true},
+	 	             {value: 10, text: '10/page'},
+	 	             {value: 15, text: '15/page'},
+	 	             {value: 20, text: '20/page'}
+	 	         ],
+	 	        	totalSize: $("input[name=totalData]").val(),
+	 	         totalPage: $("input[name=totalNum]").val(),
+	 	         showPageNum: $("input[name=pageSize]").val(),
+	 	         firstPage: '首页',
+	 	         previousPage: '上一页',
+	 	         nextPage: '下一页',
+	 	         lastPage: '尾页',
+	 	         skip: '',
+	 	         confirm: '跳转',
+	 	         refresh: 'refresh',
+	 	         totalPageText: '共 {} 页',
+	 	         totalSizeText: "共 {} 条",
+	 	         isShowFL: true,
+	 	         isShowSkip: true,
+	 	         isResetPage: false,
+	 	         isShowRefresh: false,
+	 	         isShowTotalPage: true,
+	 	         isShowTotalSize: true,
+	 	         isShowPageSizeOpt: false,
+	 	         callBack: function (currPage, pageSize) {
+	 	        	page(currPage,pageSize);
+	 	         }
+	 	     });	
+	 	});

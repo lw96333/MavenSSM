@@ -1,0 +1,94 @@
+var chonseId = 0;
+function chonse(){
+	$(".table tr").on("click",function(){
+		$(".table tr").css({
+			background: "white"
+		});
+		$(this).css({
+			background: "#D8ECF7"
+		});
+		chonseId = $(this).first().find("#name").attr("value");
+	});
+}
+function tableAjax(data){
+	var str = "<tr class='info'><th>姓名</th> <th>工作单位</th><th>专长</th><th>职务</th><th>电话</th></tr>";
+	for(var i=0;i<data.pageData.length;i++){
+		str += "<tr>";
+		str += "<td id='name' value='"+data.pageData[i].id+"'>"+data.pageData[i].eventName+"</td>";
+		str += "<td>"+data.pageData[i].time+"</td>"
+		str += "<td>"+data.pageData[i].smallClass.areaIn.name+"</td>"
+		str += "<td>"+data.pageData[i].controlMethod+"</td>"
+		str += "<td>"+data.pageData[i].stage.typeName+"</td>"
+		str += "</tr>";
+	}
+	$(".table").html(str);
+	chonse();
+}
+function page(currPage,pageSize) { 
+	
+	
+	$.ajax({
+    	type:"post",
+    	url:"instrumentManagementPage",
+    	data:{
+    		"currPage":currPage,
+    		"pageSize":$("input[name=pageSize]").val(),
+    	},
+    	dataType : 'json',
+    	success:function(data){
+    		tableAjax(data);
+    		
+    	}
+    });
+}
+$(function(){
+	$("#excel").click(function(){
+		$(location).prop('href','instrumentManagementExcel');
+	
+	});
+	
+	$("#discuss").click(function(){
+		if(chonseId==0){
+			alert("请选择查看数据");
+		}else{
+			var form = $("<form action='instrument' method='post'></form>");
+			var input = $("<input type='hidden' name='chonseId'>");
+			input.val(chonseId);
+			form.append(input);
+			form.appendTo(document.body);
+			form.submit();	
+		}
+	});
+	$("#pagination_2").whjPaging({
+         css: 'css-2',
+         pageSizeOpt: [
+             {value: 5, text: '5/page', selected: true},
+             {value: 10, text: '10/page'},
+             {value: 15, text: '15/page'},
+             {value: 20, text: '20/page'}
+         ],
+         totalSize: $("input[name=totalData]").val(),
+         totalPage: $("input[name=totalNum]").val(),
+         showPageNum: $("input[name=pageSize]").val(),
+         firstPage: '首页',
+         previousPage: '上一页',
+         nextPage: '下一页',
+         lastPage: '尾页',
+         skip: '',
+         confirm: '跳转',
+         refresh: 'refresh',
+         totalPageText: '总共 {} 页',
+         totalSizeText: "总共 {} 条",
+         isShowFL: true,
+         isShowSkip: true,
+         isResetPage: false,
+         isShowRefresh: false,
+         isShowTotalPage: true,
+         isShowTotalSize: true,
+         isShowPageSizeOpt: false,
+         callBack: function (currPage, pageSize) {
+        	page(currPage,pageSize);
+         }
+     });
+	chonse();
+});
