@@ -1,0 +1,79 @@
+package com.ne.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ne.bean.PageBean;
+import com.ne.dao.CompanylcontractDao;
+import com.ne.entity.CompanyEntity;
+import com.ne.entity.CompanylcontractEntity;
+import com.ne.service.CompanyService;
+import com.ne.service.CompanylcontractService;
+
+/**
+ * 企业合约接口实现类
+ * 
+ * @author 班贵华 2019年3月21日
+ */
+@Transactional(transactionManager = "transactionManager")
+@Rollback(value = false)
+@Service
+public class CompanylcontractServiceImpl extends ServiceImpl<CompanylcontractDao, CompanylcontractEntity>
+		implements CompanylcontractService {
+	@Autowired
+	private CompanylcontractDao companylcontractDao;
+	@Autowired
+	private CompanyService companyService;
+	/**
+	 * 企业合约分页对象
+	 */
+	@Override
+	public PageBean showCompanylcontractInfoByPage(Map<Object, Object> condition) {
+
+		// 获取数据库查询条件的总条数
+		int curPage = (Integer) condition.get("curPage");
+		int pageSize = (Integer) condition.get("pageSize");
+
+		
+		List<CompanylcontractEntity> list = companylcontractDao.getCompanylcontractInfos(condition);
+		
+		QueryWrapper<CompanylcontractEntity> queryWrapper = new QueryWrapper<CompanylcontractEntity>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("isinvalid", "否");
+		queryWrapper.allEq(map);
+		int tolPetSize = companylcontractDao.selectCount(queryWrapper);
+		PageBean<CompanylcontractEntity> pageBean = new PageBean<CompanylcontractEntity>();
+        for (CompanylcontractEntity companylcontractEntity : list) {
+        	CompanyEntity companyEntity =	companyService.getById(companylcontractEntity.getCompany());
+        	companylcontractEntity.setCompanyEntity(companyEntity);
+		}
+		// 封装分页对象
+		/*
+		 * 当前页数
+		 */
+		pageBean.setCurPage(curPage);
+		// 总条数
+		pageBean.setTolSize(tolPetSize);
+		//每页显示条数
+		pageBean.setPageSize(pageSize);
+		// 显示数据
+		pageBean.setDatas(list);
+	
+
+		return pageBean;
+	}
+	@Override
+	public CompanylcontractEntity getCompanylcontractEntityByStallId(int stallid, int companyid) {
+		// TODO Auto-generated method stub
+		return companylcontractDao.getCompanylcontractEntityByStallId(stallid, companyid);
+	}
+
+}

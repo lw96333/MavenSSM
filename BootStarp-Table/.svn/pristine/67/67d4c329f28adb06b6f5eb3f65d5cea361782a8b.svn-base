@@ -1,0 +1,22 @@
+$("#see").click(function() {
+	
+	$.ajax({
+		type:"post",
+		url:"../CBDBillCount",
+		data:{"startDate":$('#startDate').val(),"endDate":$('#endDate').val()},
+		dataType:"json",
+		
+		success:function(data){
+			var str="";
+			
+				str+="<tr><td>"+data.count+"</td>" +
+		 		"<td>"+data.expendCount+"</td>" +
+		 		"<td>"+data.incomeCount+"</td>";
+			
+			$("#show").html(str);
+			/*var str2 = data.incomeCount-data.expendCount;
+			alert(str2);
+			$("#ji").html(str2);*/
+		}
+	})
+})

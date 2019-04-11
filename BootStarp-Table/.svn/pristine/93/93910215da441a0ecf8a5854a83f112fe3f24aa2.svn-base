@@ -1,0 +1,164 @@
+package com.ne.shiro;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ne.entity.*;
+import com.ne.service.*;
+import org.apache.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.util.ByteSource;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * @Auther: tangxiong
+ * @Date: 2019/3/24 12:40
+ * @Description: 自定义realm登录授权
+ */
+public class LoginRealm extends AuthorizingRealm {
+
+    private static Logger logger = Logger.getLogger(LoginRealm.class);
+
+    @Autowired
+    private AdminService adminService;
+    @Autowired
+    private CompanyService companyService;
+    @Autowired
+    private PersonalService personalService;
+    @Autowired
+    private SuperadminService superadminService;
+    @Autowired
+    private LevelService levelService;
+
+
+    @Override
+    public String getName() {
+        return "LoginRealm";
+    }
+
+    /**
+     * 授权
+     * @param principalCollection
+     * @return
+     */
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+        logger.info("shiro授权！");
+        SimpleAuthorizationInfo info =new SimpleAuthorizationInfo();
+        Object object=  principalCollection.getPrimaryPrincipal();
+        System.out.println(object instanceof PersonalEntity);
+        if (object instanceof PersonalEntity) {
+        	logger.info("个人授权！");
+            info.addRole("personal");
+        } else if (object instanceof CompanyEntity) {
+         	logger.info("企业授权！");
+            info.addRole("company");
+        } else if (object instanceof AdminEntity) {
+         	logger.info("后台授权！");
+            info.addRole("admin");
+            Set<String> set =new HashSet<>();
+            AdminEntity adminEntity = (AdminEntity) principalCollection.getPrimaryPrincipal();
+            LevelEntity levelEntity = levelService.getById(adminEntity.getId());
+            //后台用户权限
+            if (levelEntity.getUserlevel()==1){
+                set.add("admin:user");
+            }
+            if (levelEntity.getStalllevel()==1){
+                set.add("admin:stall");
+            }
+            if (levelEntity.getComplaintlevel()==1){
+                set.add("admin:complaint");
+            }
+            if (levelEntity.getContractlevel()==1){
+                set.add("admin:contract");
+            }
+            logger.info(set);
+            info.setStringPermissions(set);
+        } else if (object instanceof SuperadminEntity) {
+         	logger.info("系统授权！");
+            info.addRole("superAdmin");
+        }
+
+        return info;
+
+    }
+
+    /**
+     * 登录验证
+     * @param authenticationToken
+     * @return
+     * @throws AuthenticationException
+     */
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+        logger.info("shiro认证！");
+        CustomLoginToken token = (CustomLoginToken) authenticationToken;
+        String loginType = token.getLoginType();
+        String username = (String) token.getPrincipal();
+        if ("个人".equals(loginType)) {
+            QueryWrapper<PersonalEntity> wrapper = new QueryWrapper<>();
+            wrapper.eq("name", username);
+            PersonalEntity personalEntity = personalService.getOne(wrapper);
+            if (personalEntity == null) {
+                throw new UnknownAccountException();
+            } else {
+                return new SimpleAuthenticationInfo(personalEntity, personalEntity.getPassword(),
+                        ByteSource.Util.bytes(personalEntity.getName()),
+                        getName());
+
+            }
+
+        } else if ("企业".equals(loginType)) {
+            QueryWrapper<CompanyEntity> wrapper = new QueryWrapper<>();
+            wrapper.eq("loginName", username);
+            CompanyEntity companyEntity = companyService.getOne(wrapper);
+            if (companyEntity == null) {
+                throw new UnknownAccountException();
+            } else {
+
+                return new SimpleAuthenticationInfo(companyEntity, companyEntity.getLoginpassword(),
+                        ByteSource.Util.bytes(companyEntity.getLoginname()),
+                        getName());
+            }
+        } else if ("后台".equals(loginType)) {
+            QueryWrapper<AdminEntity> wrapper = new QueryWrapper<>();
+            wrapper.eq("employeeId", username);
+            AdminEntity adminEntity = adminService.getOne(wrapper);
+            if (adminEntity == null) {
+                throw new UnknownAccountException();
+            } else {
+                return new SimpleAuthenticationInfo(adminEntity, adminEntity.getPassword(),
+                        ByteSource.Util.bytes(adminEntity.getEmployeeid()),
+                        getName());
+            }
+        } else if ("系统".equals(loginType)) {
+            QueryWrapper<SuperadminEntity> wrapper = new QueryWrapper<>();
+            wrapper.eq("name", username);
+            SuperadminEntity superadminEntity = superadminService.getOne(wrapper);
+            if (superadminEntity == null) {
+
+                throw new UnknownAccountException();
+
+            } else {
+                return new SimpleAuthenticationInfo(superadminEntity, superadminEntity.getPassword(),
+                        ByteSource.Util.bytes(superadminEntity.getName()),
+                        getName());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 清楚权限缓存
+     */
+    public void clearCached(){
+        PrincipalCollection principalCollection = SecurityUtils.getSubject().getPrincipals();
+        super.clearCache(principalCollection);
+    }
+
+}

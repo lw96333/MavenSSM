@@ -1,0 +1,108 @@
+
+package com.ne.util;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+
+public class FileUploads {
+
+	/**
+	 * 从上到下依次获取页面中上传的所有不为空的字节文件（二进制如图片）并储存在项目的指定文件夹里面
+	 * 
+	 * @param request HttpServletRequest request 传入参数
+	 * @param imgs    Web项目中指定储存文件的文件夹名
+	 * @return 返回一个相对路径名集合，如果在页面中有File文件上传但没有操作则在集合对应位置为空
+	 * @throws IllegalAccessException
+	 * @throws IOException
+	 */
+	public static List<String> getFileUploadsPath(HttpServletRequest request)
+			throws IllegalAccessException, IOException {
+
+		String fileName = null;
+	
+		List<String> list = new ArrayList<>();
+		String webPaths = request.getServletContext().getRealPath("/");
+		
+		String webPath = "";
+		
+				for (int i = 0; i < webPaths.length(); i++) {
+					if(webPaths.charAt(i) == '.') {
+						
+						webPath = webPaths.substring(0,i) + "CBD\\WebContent\\myimgs\\";
+						 break;
+					}
+					
+				}
+		
+		//System.out.println("webPath===>>>>"+ webPath);
+		// 创建上传文件解析器
+		CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getServletContext());
+
+		// 判断上传文件
+		if (multipartResolver.isMultipart(request)) {
+
+			// 转换request类型为上传文件类型
+			MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
+
+			// 获取上传文件名
+			Iterator<String> iterator = multipartHttpServletRequest.getFileNames();
+			while (iterator.hasNext()) {
+				// 获取上传文件
+				MultipartFile file = multipartHttpServletRequest.getFile(iterator.next());
+
+				if (file != null) {
+					// 获取源文件名
+					fileName = file.getOriginalFilename();
+					if (("".equals(fileName)) || fileName == null) {
+						list.add(null);
+
+					} else {
+						// 写文件
+					Long time = System.currentTimeMillis();
+						file.transferTo(new File(webPath + time + fileName));
+						System.out.println(webPath + time + fileName);
+						list.add(time + fileName);
+					}
+
+				}
+
+			}
+
+		}
+
+		return list;
+	}
+
+	/**
+	 * 删除文件夹里面的指定文件(图片，文件，等等)
+	 * 
+	 * @param request      HttpServletRequest request传入参数
+	 * @param myimgs         Web 项目中存放文件的地方（存放图片的文件夹）
+	 * @param relativePath 传入数据库的文件名
+	 * @return 如果返回-1表示删除失败，如果返回1表示删除成功
+	 */
+	public static int deleteFile(HttpServletRequest request, String relativePath) {
+		if (!("".equals(relativePath)) && relativePath != null ) {
+
+			// 相对路径你应该知道到。
+			String absolutePath = request.getServletContext().getRealPath("/") +  "myimgs\\" + relativePath;
+			// 取出文件的绝对路径，然后用File方法删除相应文件。
+			File file = new File(absolutePath);
+			if (file.exists()) {
+				file.delete();
+				return 1;
+			}
+		}
+		return -1;
+	}
+
+}

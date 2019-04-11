@@ -1,0 +1,53 @@
+package com.ne.bean;
+
+/**
+ * 账单统计费用类
+ * @author 包杰
+ *
+ * 2019年3月22日
+ */
+public class BillCountBean {
+	/**
+	 * 总收入
+	 */
+	private int incomeCount;
+	
+	/**
+	 * 总支出
+	 */
+	private int expendCount;
+	
+	/**
+	 * 交易次数
+	 */
+	private int count;
+
+	public int getIncomeCount() {
+		return incomeCount;
+	}
+
+	public void setIncomeCount(int incomeCount) {
+		this.incomeCount = incomeCount;
+	}
+
+	public int getExpendCount() {
+		return expendCount;
+	}
+
+	public void setExpendCount(int expendCount) {
+		this.expendCount = expendCount;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	@Override
+	public String toString() {
+		return "BillCountBean [incomeCount=" + incomeCount + ", expendCount=" + expendCount + ", count=" + count + "]";
+	}
+}

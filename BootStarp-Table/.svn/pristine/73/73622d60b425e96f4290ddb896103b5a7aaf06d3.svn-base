@@ -1,0 +1,48 @@
+package com.ne.service;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.StallEntity;
+import java.util.Map;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+ * 车位信息服务层接口
+ * @author 杨雷
+ *
+ *2019年3月21日
+ */
+public interface StallService extends IService<StallEntity>{
+
+	PageBean<StallEntity> showPageByCondition(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 *  (baojie)企业查看空闲车位
+	 * @param page 条件
+	 * @return 
+	 */
+	PageBean<StallEntity> getFreeStallPage(Map<String, Object> condition)throws Exception;
+ 
+	/**
+	 * 查看企业已租车位
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	PageBean<StallEntity> showComanyRentedStallPage(Map<String, Object> condition)throws Exception;
+	 
+	/** 分页显示车位信息数据
+	 * @param condition 分页条件
+	 * @return   分页对象
+	 * @throws Exception
+	 */
+	PageBean<StallEntity> showStallPage(Map<String, Object> condition) throws Exception;
+
+
+	/**
+	 * author yanglei
+	 * @param condition 分页条件
+	 * @return 分页对象
+	 * @throws Exception
+	 */
+	PageBean<StallEntity> showAllUnaduitStall(Map<String, Object> condition) throws Exception;
+}

@@ -1,0 +1,114 @@
+package com.ne.bean;
+
+import java.io.Serializable;
+
+/**
+ * 
+ * 外部合约模型数据实体类
+ *@author 班贵华
+ * 2019年3月21日
+ */
+public class ExternalcontractBean implements Serializable {
+
+	
+	/**
+	 * 	合同编号
+	 */
+	//@TableField(exist=false)
+    private String contractnumber;
+    /**
+	 * 	合同单位
+	 */
+    private String contractunit;
+    /**
+	 * 	对方联系人
+	 */
+    private String contractname;
+    /**
+	 * 	对方联系人电话
+	 */
+    private Integer contractphone;
+    /**
+	 * 	出售价格
+	 */
+    private Object price;
+    /**
+	 * 	合同生效日期	
+	 */
+    private String starttime;
+    /**
+	 * 	合同截止日期
+	 */
+    private String endtime;
+    /**
+	 * 	合同截止日期
+	 */
+    private String contractpic;
+    /**
+	 * 	是否作废
+	 */
+    private String isinvalid;
+	public String getContractnumber() {
+		return contractnumber;
+	}
+	public void setContractnumber(String contractnumber) {
+		this.contractnumber = contractnumber;
+	}
+	public String getContractunit() {
+		return contractunit;
+	}
+	public void setContractunit(String contractunit) {
+		this.contractunit = contractunit;
+	}
+	public String getContractname() {
+		return contractname;
+	}
+	public void setContractname(String contractname) {
+		this.contractname = contractname;
+	}
+	public Integer getContractphone() {
+		return contractphone;
+	}
+	public void setContractphone(Integer contractphone) {
+		this.contractphone = contractphone;
+	}
+	public Object getPrice() {
+		return price;
+	}
+	public void setPrice(Object price) {
+		this.price = price;
+	}
+	public String getStarttime() {
+		return starttime;
+	}
+	public void setStarttime(String starttime) {
+		this.starttime = starttime;
+	}
+	public String getEndtime() {
+		return endtime;
+	}
+	public void setEndtime(String endtime) {
+		this.endtime = endtime;
+	}
+	public String getContractpic() {
+		return contractpic;
+	}
+	public void setContractpic(String contractpic) {
+		this.contractpic = contractpic;
+	}
+	public String getIsinvalid() {
+		return isinvalid;
+	}
+	public void setIsinvalid(String isinvalid) {
+		this.isinvalid = isinvalid;
+	}
+	@Override
+	public String toString() {
+		return "ExternalcontractModel [contractnumber=" + contractnumber + ", contractunit=" + contractunit
+				+ ", contractname=" + contractname + ", contractphone=" + contractphone + ", price=" + price
+				+ ", starttime=" + starttime + ", endtime=" + endtime + ", contractpic=" + contractpic + ", isinvalid="
+				+ isinvalid + "]";
+	}
+    
+    
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+
+<hibernate-mapping package="com.my.entity">
+	<!-- 类和表的映射 -->
+	<class name="MemberEntity" table="t_member">
+		<!-- 映射主键标识属性 -->
+		<id name="id" column="pk_id">
+			<!-- 指定主键生成器策略（自增主键） -->
+			<generator class="native"/>
+		</id>
+		
+		<!-- 映射普通属性 -->
+		<property name="relation" column="f_relation"/>
+		<!-- 映射一对多双向关联属性(not-null外键不为空)-->
+		<many-to-one name="home" class="HomeEntity" column="fk_homeId" not-null="true"/>
+		
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,32 @@
+package com.ne.service;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.PersonalsaleEntity;
+
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+ * (Personalsale)表服务接口
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+public interface PersonalsaleService extends IService<PersonalsaleEntity>{
+
+	/**
+	 * 个人发布出售车位业务层接口
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+    PageBean<PersonalsaleEntity> showPersonalSale(Map<String , Object> condition) throws Exception;
+    /**
+     * author yanglei
+     * @param condition
+     * @return
+     * @throws Exception
+     */
+    PageBean<PersonalsaleEntity> showAllPendingStall(Map<String, Object> condition) throws Exception;
+}

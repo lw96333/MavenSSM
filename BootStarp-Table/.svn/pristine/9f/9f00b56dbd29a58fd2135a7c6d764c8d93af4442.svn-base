@@ -1,0 +1,136 @@
+package com.ne.test;
+
+
+
+import static org.junit.Assert.assertNotNull;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ne.bean.PageBean;
+import com.ne.dao.ComplainDao;
+import com.ne.dao.PersonalDao;
+import com.ne.dao.StallDao;
+import com.ne.entity.ComplainEntity;
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.PersonalrentEntity;
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.StallEntity;
+import com.ne.service.ComplainService;
+import com.ne.service.PersonalService;
+import com.ne.service.PersonalrentService;
+import com.ne.service.PersonalsaleService;
+
+/**
+ * 投诉管理
+ * @author 张峻豪
+ *
+ * 2019年3月28日
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "file:src/main/webapp/WEB-INF/application.xml" })
+@Transactional(transactionManager="transactionManager",rollbackFor = Exception.class)
+@Rollback(value=false)
+public class Tests extends AbstractTransactionalJUnit4SpringContextTests{
+	
+	/**
+	 * 测试 判断是否为空
+	 */
+		@Autowired
+		private ComplainService complainService;
+		@Autowired
+		private ComplainDao complainDao;
+		@Autowired
+		private PersonalDao personalDao;
+		@Autowired
+		private StallDao stallDao;
+		@Autowired
+		private PersonalService personalService;
+		@Autowired
+		private PersonalsaleService personalsaleService;
+		@Autowired
+		private PersonalrentService personalrentService;
+		@Test
+		public void selectTest() {
+			ComplainEntity complainEntity = complainService.getById(1);
+			
+			System.out.println(complainEntity);
+			assertNotNull(complainEntity);
+		}
+		/**
+		 * 分页查看
+		 */
+		@Test
+		public void sadfafTest() {
+			List<ComplainEntity> list= complainDao.selectList(null);
+			for (int i = 0; i < list.size(); i++) {
+				PersonalEntity personalEntity=personalDao.selectById(list.get(i).getComplainant());
+				PersonalEntity personalEntity1=personalDao.selectById(list.get(i).getBycomplainant());
+				StallEntity personalEntity2=stallDao.selectById(list.get(i).getStallid());
+				
+				list.get(i).setComplainanter(personalEntity);
+				list.get(i).setBycomplainanter(personalEntity1);
+				list.get(i).setStallEntity(personalEntity2);
+			}
+			for (ComplainEntity complainEntity : list) {
+				System.out.println(complainEntity);
+			}
+		}
+		/**
+		 * 修改
+		 */
+		@Test
+		public void sadfsadasTest() {
+			 
+			 ComplainEntity complainEntity=new ComplainEntity();
+//			 complainEntity.setId(1);
+//			 complainEntity.setType("已处理");
+//			 Boolean i= complainService.updateById(complainEntity);
+//			 System.out.println(i);
+			ComplainEntity complainEntity1=new ComplainEntity();
+			 complainEntity.setId(16);
+			 complainEntity.setResult("投诉生效");
+			 complainEntity.setType("已处理");
+			 Boolean i1= complainService.updateById(complainEntity);
+			 PersonalEntity personalEntity=personalService.getById(complainEntity.getBycomplainant());
+			 QueryWrapper< ComplainEntity> queryWrapper = new QueryWrapper<ComplainEntity>();
+			 Map< String , Object> map  = new HashMap<>(16);
+			 map.put("type", "已处理");
+			 map.put("byComplainant", complainEntity.getBycomplainant());
+			 queryWrapper.allEq(map);
+			 double num = complainService.count(queryWrapper);
+			 QueryWrapper< PersonalsaleEntity> queryWrapper2 = new QueryWrapper<PersonalsaleEntity>();
+			 queryWrapper2.eq("personalId", complainEntity.getBycomplainant());
+			 
+			 QueryWrapper< PersonalrentEntity> queryWrapper3 = new QueryWrapper<PersonalrentEntity>();
+			 queryWrapper3.eq("personalId", complainEntity.getBycomplainant());
+			
+			 double num2 = personalsaleService.count(queryWrapper2) + personalrentService.count(queryWrapper3);
+			 personalEntity.setCredibility(num/num2);
+			 System.out.println(personalEntity);
+//			Map<String, Object> s=new HashMap<>(null);
+//			PageBean<ComplainEntity> list=null;
+//			s.put("curPage", 0);
+//			s.put("pageSize", 2);
+//			try {
+//				 list = complainService.getComplainEntity(s);
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			System.out.println(list);
+		}
+		
+	
+}

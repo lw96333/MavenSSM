@@ -1,0 +1,110 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * 日志记录实体类
+ * @author 张晋忠
+ *
+ * 2019年3月25日
+ */
+@TableName(value="t_log")
+public class LogEntity implements Serializable {
+    /**
+     * 日志id
+     */
+	@TableId(type=IdType.AUTO)
+    private Integer id;
+    /**
+     * 时间
+     */
+    private String time;
+    /**
+     * 用户类型
+     */
+    private String usertype;
+    /**
+     * 用户名
+     */
+    private String name;
+    /**
+     * 用户ip
+     */
+    private String ip;
+    /**
+     * 日志类型
+     */
+    private String logtype;
+    /**
+     * 日志内容
+     */
+    private String content;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public String getUsertype() {
+		return usertype;
+	}
+
+	public void setUsertype(String usertype) {
+		this.usertype = usertype;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public String getLogtype() {
+		return logtype;
+	}
+
+	public void setLogtype(String logtype) {
+		this.logtype = logtype;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	@Override
+	public String toString() {
+		return "LogEntity [id=" + id + ", time=" + time + ", usertype=" + usertype + ", name=" + name + ", ip=" + ip
+				+ ", logtype=" + logtype + ", content=" + content + "]";
+	}
+
+}

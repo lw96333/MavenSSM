@@ -1,0 +1,86 @@
+
+function judge(obj,str){
+    var my = obj;
+    if(my.val() != "" && my.val() != null){
+        my.css({
+            "border": "1px solid gainsboro"
+        });
+        return true;
+    }else{
+        my.attr("placeholder",str);
+        my.css({
+            "border": "1px solid red"
+        });
+        return false;
+    }
+}
+
+$(function(){
+   
+	$("#showerror").css("display","none");
+    $("#companyman").on("blur",function(){
+        judge($(this),"请输入企业联系人姓名,2-6个中文汉字");
+
+    });
+    $("#companytel").on("blur",function(){
+        judge($(this),"请输入企业联系人手机号码");
+    });
+    
+    $("#surechange").click(function(){
+    	
+        var falg = true;
+        var comname = $("#companyman").val();
+        var comtel = $("#companytel").val();
+        var comid = $("#companyid").val();
+        var reg = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/;
+        if(comname==null || comname== ""||!(/^[\u4e00-\u9fa5]{2,6}$/.test(comname.trim()))){
+            $("#companyman").css({
+    			"border": "1px solid red"
+    		});
+          
+            falg =false;
+        }
+       
+        if(comtel==null || comtel == ""||!reg.test(comtel.trim())){
+            $("#companytel").css({
+    			"border": "1px solid red"
+    		});
+            falg =false;
+        }
+ 
+        if(falg){
+    
+			$.ajax({
+				type:"post",
+				url:"../updatecompany",
+				data:{
+					"comname":comname,
+					"comtel":comtel,
+					"comid":comid
+					
+				},
+				dataType:"json",
+				success:changeSuccess
+			});
+
+        }else{
+        	$("#showerror").css("display","");
+            return false;
+        }
+    });
+    
+   
+    
+    
+    function changeSuccess(rd){
+    	if(rd.message=="updateok"){
+    	alert("资料修改成功，即将返回主页!");
+    		self.location="companyindex.jsp";
+    	}
+    	
+    }
+ $("body").change(function(){
+    	
+    	$("#showerror").css("display","none");
+    });
+})

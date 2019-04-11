@@ -1,0 +1,71 @@
+package com.ne.dao;
+
+import com.ne.entity.PersonalrentEntity;
+
+import net.sf.ehcache.search.aggregator.Count;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * (Personalrent)表数据库访问层
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+public interface PersonalrentDao  extends BaseMapper<PersonalrentEntity>{
+	
+	
+	/**
+	 * 根据条件查询所有出租车位信息
+	 * @param condition
+	 * @throws Exception
+	 * @return
+	 */
+	@Select("<script>select rent.id as id,rent.stallId as stallid ,rent.personalId as personalid,rent.startTime as starttime,"
+			+ "rent.endTime as endtime,rent.price as price , rent.message as message,rent.rentPersonalId as rentpersonalid from "
+			+ "(t_stall as stall left join t_personal as personal on stall.userId = personal.id) "
+			+ "left join t_personalrent as rent on stall.id = rent.stallId where 1=1 and stall.userType= '个人'  "
+			+ "<if test='personalId != null'>"
+			+ " and rent.personalId=#{personalId}</if>"
+			+ "<if test='rentPersonalId != null'>"
+			+ " and rent.rentPersonalId=#{rentPersonalId}</if>"
+			+ "<if test='stallType != null'>"
+			+ " and stall.stallType=#{stallType}</if>"
+			+ "<if test='startTime != null'>"
+			+ " and startTime &gt;= #{startTime}</if>"
+			+ "<if test='endTime != null'>"
+			+ " and endTime &lt;= #{endTime}</if>"
+			+ " limit #{curPage},#{pageSize}</script>")
+    List<PersonalrentEntity> showPersonalRenStall(Map<String , Object> condition) throws Exception;
+	
+	/**
+	 * 计算条件查询的结果数
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("<script>select count(*) from "
+			+ "(t_stall as stall left join t_personal as personal on stall.userId = personal.id) "
+			+ "left join t_personalrent as rent on stall.id = rent.stallId where 1=1 and stall.userType= '个人'  "
+			+ "<if test='personalId != null'>"
+			+ " and rent.personalId=#{personalId}</if>"
+			+ "<if test='stallType != null'>"
+			+ " and stall.stallType=#{stallType}</if></script>")
+	int countRent(Map<String, Object> condition) throws Exception;
+	/**
+	 * 查询当前用户所有出租车位信息
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("select * from t_personalrent where  personalId=#{personalId} "
+			+ "limit #{curPage},#{pageSize}")
+	List<PersonalrentEntity> showReservRentStall(Map<String , Object> condition) throws Exception;
+
+}

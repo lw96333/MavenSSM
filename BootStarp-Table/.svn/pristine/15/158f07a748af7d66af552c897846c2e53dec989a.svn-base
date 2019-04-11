@@ -1,0 +1,374 @@
+package com.ne.controller;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.log4j.Logger;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.web.session.HttpServletSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ne.bean.PageBean;
+import com.ne.entity.BillEntity;
+import com.ne.entity.CompanyEntity;
+import com.ne.entity.CompanylcontractEntity;
+import com.ne.entity.RenewalcompanycontractEntity;
+import com.ne.entity.StallEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.LogType;
+import com.ne.log.UserType;
+import com.ne.service.BillService;
+import com.ne.service.CompanyService;
+import com.ne.service.CompanylcontractService;
+import com.ne.service.RenewalcompanycontractService;
+import com.ne.service.StallService;
+import com.ne.util.CBDUtil;
+import com.ne.util.ResponseData;
+import com.ne.util.UploadFiles;
+
+/**
+ * 企业合约页面控制器
+ * 
+ * @author 班贵华 2019年3月21日
+ */
+@RestController
+public class CompanylContractController {
+	/**
+	 * 服务对象
+	 */
+	@Autowired
+	private CompanyService companyService;
+	@Autowired
+	private CompanylcontractService companylcontractService;
+	@Autowired
+	private StallService stallService;
+	@Autowired
+	private RenewalcompanycontractService renewalcompanycontractService;
+	@Autowired
+	private BillService billService;
+	/**
+	 * 响应信息
+	 */
+
+	// 获取日志记录器
+	private static Logger logger = Logger.getLogger(CompanylContractController.class);
+
+	/**
+	 * 企业可租车位查询
+	 * 
+	 * @param size
+	 * @param cur
+	 * @return
+	 * @throws Exception
+	 */
+	@LogAnno(content = "企业查看空闲车位", operateName = LogType.查询, userPower = UserType.后台管理员)
+	@RequestMapping(value = "/company", method = RequestMethod.POST)
+	public PageBean showCompanyFreeStall(@Param(value = "size") String size, @Param(value = "cur") String cur)
+			throws Exception {
+
+		// 判断数据是否为空
+//		if("".equals(stallBean.getUserType())) {
+//			stallBean.setUserType(null);
+//		}
+
+		// 通过当前登陆用户ID和用户类型查询车位信息
+		Map<String, Object> condition = new HashMap<String, Object>();
+		condition.put("cur", cur);
+		condition.put("size", size);
+//		condition.put("userType", stallBean.getUserType());
+
+		// 调用业务
+		PageBean<StallEntity> pages = stallService.getFreeStallPage(condition);
+
+		logger.info(pages);
+		return pages;
+	}
+
+	/**
+	 * 查询所有企业名
+	 * 
+	 * @return
+	 */
+	@LogAnno(content = "所有企业名", operateName = LogType.查询, userPower = UserType.后台管理员)
+	@RequestMapping(value = "showCompanys", method = RequestMethod.POST)
+	public List<CompanyEntity> showCompany() {
+		/*
+		 * QueryWrapper<CompanylcontractEntity> queryWrapper = new QueryWrapper<>();
+		 * Map<String, Object> map = new HashMap<>(); map.put("isinvalid", "否");
+		 * queryWrapper.allEq(map); List<CompanylcontractEntity> companylcontractEntitys
+		 * = companylcontractService.list(queryWrapper); List<CompanyEntity>
+		 * companyEntities = companyService.list(); if (companylcontractEntitys != null
+		 * && companyEntities != null) {
+		 * 
+		 * for (int companylcontractEntitysIndex = 0; companylcontractEntitysIndex <
+		 * companylcontractEntitys .size(); companylcontractEntitysIndex++) { for (int
+		 * companyEntitiesIndex = 0; companyEntitiesIndex < companyEntities .size();
+		 * companyEntitiesIndex++) { if
+		 * (companylcontractEntitys.get(companylcontractEntitysIndex).getCompany() ==
+		 * companyEntities .get(companyEntitiesIndex).getId()) {
+		 * companyEntities.remove(companyEntitiesIndex); break; } } } }
+		 */
+		return companyService.list();
+	}
+
+	/**
+	 * 企业合约分页对象
+	 * 
+	 * @param request
+	 * @return 成功返回一个PageBean分页数据
+	 */
+	@LogAnno(content = "企业合约分页", operateName = LogType.查询, userPower = UserType.后台管理员)
+	@RequestMapping(value = "showCompanylcontract", method = RequestMethod.POST)
+	public PageBean<CompanylcontractEntity> showCompanylcontract(Integer curPage, Integer pageSize) {
+
+		// System.out.println("我进来了哦");
+		Map<Object, Object> condition = new HashMap<Object, Object>();
+		condition.put("curPage", curPage);
+		condition.put("pageSize", pageSize);
+		PageBean<CompanylcontractEntity> pageBean = companylcontractService.showCompanylcontractInfoByPage(condition);
+		logger.debug("企业合约分页对象:" + pageBean);
+
+		return pageBean;
+	}
+
+	/**
+	 * 添加企业合约
+	 * 
+	 * @param entity 合约实体类
+	 * @return 添加成功返回200，失败返回404
+	 */
+	Integer companylcontractEntityid = null;
+
+	@LogAnno(content = "添加企业合约", operateName = LogType.添加, userPower = UserType.后台管理员)
+	@RequestMapping(value = "addCompanylcontracts", method = RequestMethod.POST)
+	public ResponseData addCompanylcontract(@RequestParam(value = "longtime") String longtime,
+			@RequestParam(value = "companyname") String companyname, @RequestParam(value = "price") Double price,
+			// @RequestParam(value = "contractnumber") String contractnumber,
+			@RequestParam(value = "starttime") String starttime, @RequestParam(value = "endtime") String endtime,
+			@RequestParam(value = "list[]") List<Integer> list) {
+		// String contractpic = CBDUtil.uploadFile(request);
+		CompanylcontractEntity cEntity = new CompanylcontractEntity();
+		String contractnumber = "CL Ne:" + System.currentTimeMillis();
+		// cEntity.setContractpic(contractpic);
+		cEntity.setContractnumber(contractnumber);
+		cEntity.setEndtime(endtime);
+		cEntity.setStarttime(starttime);
+		cEntity.setPrice(price);
+		cEntity.setLongtime(longtime + "个月");
+
+		cEntity.setIsinvalid("否");
+
+		QueryWrapper<CompanyEntity> queryWrapper = new QueryWrapper();
+		Map<String, Object> map = new HashMap();
+		map.put("companyName", companyname);
+		queryWrapper.allEq(map);
+
+		CompanyEntity companyEntity = companyService.getOne(queryWrapper);
+
+		if (companyEntity != null) {
+			/*
+			 * QueryWrapper queryWrapper2 = new QueryWrapper(); Map<String, Object> map2 =
+			 * new HashMap(); map2.put("company", companyEntity.getId());
+			 * map2.put("isinvalid", "否"); queryWrapper2.allEq(map2); if
+			 * (companylcontractService.count(queryWrapper2) > 0) {
+			 * responseData.setCode(300); return responseData; } else {
+			 */
+
+			cEntity.setCompany(companyEntity.getId());
+			// cEntity.setStall(companyEntity.getId());
+			companylcontractService.save(cEntity);
+			// }
+
+		} else {
+			return ResponseData.notFound();
+		}
+
+		// List<StallEntity> list2 = new ArrayList<>();
+		logger.info("添加企业合约" + cEntity);
+		logger.info("添加企业合约list" + list);
+		StallEntity stallEntity = new StallEntity();
+
+		if (list.size() > 0) {
+			BillEntity billEntity = new BillEntity();
+			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+			String tradedate = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+			String tradedate2 = new SimpleDateFormat("HH:mm:ss").format(timestamp);
+			billEntity.setUserid(companyEntity.getId());
+			billEntity.setTradedate(tradedate);
+			billEntity.setTradetime(tradedate2);
+			billEntity.setIncome(price * (list.size()));
+			billEntity.setNote("企业租赁");
+			billEntity.setUsertype("企业");
+			billService.save(billEntity);
+			QueryWrapper<CompanylcontractEntity> Wrapper = new QueryWrapper();
+			Map<String, Object> map2 = new HashMap();
+			map2.put("contractnumber", contractnumber);
+			Wrapper.allEq(map2);
+			CompanylcontractEntity cEntity2 = companylcontractService.getOne(Wrapper);
+			companylcontractEntityid = cEntity2.getId();
+			for (int index = 0; index < list.size(); index++) {
+
+				stallEntity.setStalltype("已租");
+				stallEntity.setUsertype("企业");
+				stallEntity.setUserid(companyEntity.getId());
+				stallEntity.setId(list.get(index));
+
+				stallEntity.setCompanylcontractid(cEntity2.getId());
+				stallService.updateById(stallEntity);
+			}
+
+			return ResponseData.ok();
+		} else {
+
+			return ResponseData.notFound();
+		}
+
+	}
+
+	/**
+	 * 
+	 * @param request
+	 * @param session
+	 * @return
+	 */
+
+	@LogAnno(content = "添加企业合约", operateName = LogType.添加, userPower = UserType.后台管理员)
+	@RequestMapping(value = "addCompanylcontractss", method = RequestMethod.POST)
+	public ResponseData addCompanylcontracts(HttpServletRequest request) {
+	CompanylcontractEntity cEntity = companylcontractService.getById(companylcontractEntityid);
+		String contractpic = CBDUtil.uploadFile(request);
+		cEntity.setContractpic(contractpic);
+		companylcontractService.updateById(cEntity);
+
+		return ResponseData.ok();
+	}
+
+	/**
+	 * 企业合约续约
+	 * 
+	 * @param eModel
+	 * @return 成功返回200，失败返回404
+	 */
+	@LogAnno(content = "企业合约续约", operateName = LogType.添加, userPower = UserType.后台管理员)
+	@RequestMapping(value = "extendContractCompanylcontract", method = RequestMethod.POST)
+	public ResponseData extendContractCompanylcontract(@RequestParam("longtime") String longtime,
+			@RequestParam("contractnumber") String contractnumber, @RequestParam("starttime") String starttime,
+			@RequestParam("endtime") String endtime, @RequestParam("companycontact") String companycontact,
+			@RequestParam("price") Double price, @RequestParam("companphone") String companphone,
+			HttpServletRequest request) {
+		String newContractnumber = "CL Ne:" + System.currentTimeMillis();
+		CompanylcontractEntity companylcontractEntity = new CompanylcontractEntity();
+		companylcontractEntity.setContractnumber(newContractnumber);
+		companylcontractEntity.setStarttime(starttime);
+		companylcontractEntity.setEndtime(endtime);
+		companylcontractEntity.setLongtime(longtime);
+		companylcontractEntity.setPrice(price);
+
+		String contractpic = CBDUtil.uploadFile(request);
+		/*
+		 * try { contractpic = UploadFiles.fileUpload(request); } catch
+		 * (IllegalStateException | IOException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); }
+		 */
+		logger.debug(
+				"企业合约续约companylcontractEntity===>>>" + companylcontractEntity + "contractpic====>>>" + contractpic);
+		QueryWrapper<CompanylcontractEntity> queryWrapper = new QueryWrapper<>();
+		Map<String, Object> map = new HashMap<>();
+		map.put("contractnumber", contractnumber);
+		queryWrapper.allEq(map);
+		RenewalcompanycontractEntity renewalcompanycontractEntity = new RenewalcompanycontractEntity();
+		CompanylcontractEntity companylcontractEntity2 = companylcontractService.getOne(queryWrapper);
+
+		if (companylcontractEntity2 != null) {
+			// companylcontractEntity.setStall(companylcontractEntity2.getStall());
+			companylcontractEntity2.setIsinvalid("是");
+			companylcontractService.update(companylcontractEntity2, queryWrapper);
+			CompanyEntity companyEntity = companyService.getById(companylcontractEntity2.getCompany());
+			companyEntity.setCompanphone(companphone);
+			companyEntity.setCompanycontact(companycontact);
+			companyService.updateById(companyEntity);
+			renewalcompanycontractEntity.setOldcontract(companylcontractEntity2.getId());
+			companylcontractEntity.setCompany(companylcontractEntity2.getCompany());
+		} else {
+			return ResponseData.notFound();
+		}
+		companylcontractEntity.setLongtime(longtime);
+		companylcontractEntity.setIsinvalid("否");
+		companylcontractEntity.setContractpic(contractpic);
+		companylcontractEntity.setContractnumber(newContractnumber);
+		companylcontractService.save(companylcontractEntity);
+
+		QueryWrapper<CompanylcontractEntity> queryWrapper2 = new QueryWrapper<>();
+		Map<String, Object> map2 = new HashMap<>();
+		map2.put("contractnumber", newContractnumber);
+		queryWrapper2.allEq(map2);
+		companylcontractEntity = companylcontractService.getOne(queryWrapper2);
+		BillEntity billEntity = new BillEntity();
+		if (companylcontractEntity != null) {
+			billEntity.setUserid(companylcontractEntity.getCompany());
+			renewalcompanycontractEntity.setNewcontract(companylcontractEntity.getId());
+		}
+		if (renewalcompanycontractService.save(renewalcompanycontractEntity)) {
+
+			if (billEntity != null) {
+				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+				String tradedate = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+				String tradedate2 = new SimpleDateFormat("HH:mm:ss").format(timestamp);
+				billEntity.setTradedate(tradedate);
+				billEntity.setTradetime(tradedate2);
+				billEntity.setNote("企业租赁续约");
+				billEntity.setIncome(price);
+				billEntity.setUsertype("企业");
+				billService.save(billEntity);
+			}
+
+			return ResponseData.ok();
+		}
+		return ResponseData.notFound();
+	}
+
+	/**
+	 * 企业合约解约
+	 * 
+	 * @return 成功返回200，失败返回404
+	 */
+	@LogAnno(content = "企业合约解约", operateName = LogType.删除, userPower = UserType.后台管理员)
+	@RequestMapping(value = "deleteCompanylcontract", method = RequestMethod.POST)
+	public ResponseData deleteCompanylcontract(@RequestParam("id") Integer id) {
+		CompanylcontractEntity companylcontractEntity = companylcontractService.getById(id);
+		companylcontractEntity.setIsinvalid("是");
+		if (companylcontractService.updateById(companylcontractEntity)) {
+			QueryWrapper queryWrapper = new QueryWrapper();
+			Map<String, Object> map = new HashMap<>();
+			map.put("userid", companylcontractEntity.getCompany());
+			map.put("usertype", "企业");
+			queryWrapper.allEq(map);
+			List<StallEntity> list = stallService.list(queryWrapper);
+			for (int index = 0; index < list.size(); index++) {
+				list.get(index).setStalltype("空闲");
+				list.get(index).setUsertype("CBD");
+				list.get(index).setCompanylcontractid(0);
+				;
+				stallService.updateById(list.get(index));
+			}
+
+			return ResponseData.ok();
+		}
+
+		return ResponseData.notFound();
+	}
+
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+
+<hibernate-mapping package="com.my.entity.leguansuo">
+	<!-- 类和表的映射optimistic-lock="version"用于开启乐观锁机制 -->
+	<class name="InventoryOptimistic" table="t_inventroy2" optimistic-lock="version">
+		<!-- 映射主键标识属性 -->
+		<id name="id" column="pk_id">
+			<!-- 指定主键生成器策略（自增主键） -->
+			<generator class="native"/>
+		</id>
+		<!-- 必须配置在主键属性映射后 -->
+		<version name="version1"/>
+		
+		<!-- 映射普通属性 -->
+		<property name="name" column="f_name"/>
+		<property name="count" column="f_count"/>
+		
+	</class>
+</hibernate-mapping>

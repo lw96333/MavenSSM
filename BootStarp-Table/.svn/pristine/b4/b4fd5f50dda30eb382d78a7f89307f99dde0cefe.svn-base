@@ -1,0 +1,75 @@
+
+$(function () {
+
+$('#addVoteNode').click(function () {
+
+
+        $("#voteContent").append("<div><br>投票内容：<input type='text'><br><button type=\"button\" class=\"btn btn-danger\">删除</button></div >")
+
+    })
+
+    $("#voteContent").on("click",$("#voteContent>div>button"),function (event) {
+        if (event.target.nodeName=="BUTTON"){
+            if ($(event.target).attr("value")!=undefined){
+                flag.push($(event.target).attr("value"));
+            }
+            $(event.target).parent().remove();
+            //alert($(event.target).parent())
+
+        }
+    })
+
+    
+    
+    
+    
+     $("#batchAdd").click(function () {
+        var Votecontexts=$("#voteContent>div");
+        idList=[];
+        for (var i = 0; i <Votecontexts.length ; i++) {
+                con=Votecontexts.eq(i).children("input").val();
+                idList.push(con);         
+        }
+        
+        $.ajax({
+            url: "batchAdd",
+            type: "post",
+            data: {
+
+                list:idList,
+                longtime:$("#longtime").val().trim(),
+				companyname:$("#companyname").val().trim(),
+				price:$("#price").val().trim(),
+				contractnumber:$("#contractnumber").val().trim(),
+				starttime:$("#starttime").val().trim(),
+				endtime:$("#endtime").val().trim(),
+				option:$("#option").val().trim(),	
+				address:$("#address").val().trim(),
+				stallarea:$("#stallarea").val().trim(),
+				stallnumber:$("#stallnumber").val().trim(),
+				addressDouble:$("#addressDouble").val().trim(),
+				areaNumberDouble:$("#areaNumberDouble").val().trim(),
+				startNumberDouble:$("#startNumberDouble").val().trim(),
+				sumDouble:$("#sumDouble").val().trim()
+            },
+            dataType: "json",
+            success: function (data) {
+                if(data.code==200){
+                   
+                    self.location="corporateTenantContract.jsp";
+                }else{
+					
+					alert("输入有误请检查后重试");
+				}
+            }
+
+        });
+        
+        
+        
+    })
+
+    
+    
+    
+});

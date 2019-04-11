@@ -1,0 +1,15 @@
+package com.ne.service;
+
+import com.ne.entity.RenewalcompanycontractEntity;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+ * 企业续约合同实现接口
+ * 
+ *@author 班贵华
+ * 2019年3月23日
+ */
+public interface RenewalcompanycontractService extends IService<RenewalcompanycontractEntity>{
+
+    
+}

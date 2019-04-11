@@ -1,0 +1,186 @@
+$(function () {
+//	alert("1111");
+	var rentContractId = null;
+    $('#showTradingrecordSell').bootstrapTable({
+        url:'../saleofParking',         //请求后台的URL（*）
+        method: 'post',                      //请求方式（*）
+        contentType: "application/x-www-form-urlencoded",//post请求的话就加上这个句话
+        toolbar: '#toolbar',                //工具按钮用哪个容器
+        striped: false,                      //是否显示行间隔色
+        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        pagination: true,                   //是否显示分页（*）
+        sortable: true,                     //是否启用排序
+        sortOrder: "asc",                   //排序方式
+       // queryParams: oTableInit.queryParams,//传递参数（*）
+        sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+        pageNumber:1,                       //初始化加载第一页，默认第一页
+        pageSize: 5,                       //每页的记录行数（*）
+        pageList: [5, 10, 20],        //可供选择的每页的行数（*）
+        //search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+        strictSearch: true,
+        showColumns: true,                  //是否显示所有的列
+        showRefresh: true,                  //是否显示刷新按钮
+        minimumCountColumns: 2,             //最少允许的列数
+        clickToSelect: true,                //是否启用点击选中行
+        //height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+        uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+        showToggle:true,                    //是否显示详细视图和列表视图的切换按钮
+        cardView: false,                    //是否显示详细视图
+        detailView: false,
+        queryParams: function (params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
+
+            return {
+                pageSize: params.limit, // 每页要显示的数据条数 （params.limit）不可变表示开始数据位置 size可以变 对应后台的取值
+                curPage: params.offset, // 每页显示数据的开始行号 （params.offset）不可变表示结束数据位置 cur可以变 对应后台的取值
+            }
+        },
+        responseHandler: function(data) {//请求得到参数处理 res是服务器返回的参数 （可以取任何变量名（和AJAX一样））
+            console.log(data);
+            return {
+                "total": data.tolSize,//总条数 （"total"）不能变 插件特定解析字段 后面的值可根据实际情况做变化
+                "rows": data.datas //数据  （"rows"）不能变 插件特定解析字段 后面的值可根据实际情况做变化
+            };
+        },
+        columns: [{
+            field: 'value', //对象属性字段 与java对象类中字段一致
+            title: '出售车位用户名',
+            align: 'center',
+            formatter: function indexFormatter(value, row, index) {//格式化数据 得到的数据需要做特殊的处理 formatter处理关键字
+                //value 表示field 原本的值 一般会把这个值拿来做处理 （如 这个值是一个图片连接地址）
+                //row  表示改行的数据对象，相当与 我们java中的一个对象
+                //index 表示行数的索引 索引是从0开始
+        		value = row.personalEntity.name;
+                return value;
+            }
+        }, {
+            field: 'value',
+            title: '车位地址',
+            align: 'center',
+            formatter: function indexFormatter(value, row, index) {//格式化数据 得到的数据需要做特殊的处理 formatter处理关键字
+                //value 表示field 原本的值 一般会把这个值拿来做处理 （如 这个值是一个图片连接地址）
+                //row  表示改行的数据对象，相当与 我们java中的一个对象
+                //index 表示行数的索引 索引是从0开始
+        		value = row.stallEntity.stalladdress
+                return value;
+            }
+
+        }, {
+            field: 'value',
+            title: '车位区域',
+            align: 'center',
+            formatter: function indexFormatter(value, row, index) {//格式化数据 得到的数据需要做特殊的处理 formatter处理关键字
+                //value 表示field 原本的值 一般会把这个值拿来做处理 （如 这个值是一个图片连接地址）
+                //row  表示改行的数据对象，相当与 我们java中的一个对象
+                //index 表示行数的索引 索引是从0开始
+        		value = row.stallEntity.stallarea
+                return value;
+            }
+
+        }, {
+            field: 'value',
+            title: '车位编号',
+            align: 'center',
+            formatter: function indexFormatter(value, row, index) {//格式化数据 得到的数据需要做特殊的处理 formatter处理关键字
+                //value 表示field 原本的值 一般会把这个值拿来做处理 （如 这个值是一个图片连接地址）
+                //row  表示改行的数据对象，相当与 我们java中的一个对象
+                //index 表示行数的索引 索引是从0开始
+        		value = row.stallEntity.stallnumber
+                return value;
+            }
+
+        }, {
+            field: 'price',
+            title: '出售价格',
+            align: 'center',
+        }, {
+            field: 'value',
+            title: '购买车位用户名',
+            align: 'center',
+            formatter: function indexFormatter(value, row, index) {//格式化数据 得到的数据需要做特殊的处理 formatter处理关键字
+                //value 表示field 原本的值 一般会把这个值拿来做处理 （如 这个值是一个图片连接地址）
+                //row  表示改行的数据对象，相当与 我们java中的一个对象
+                //index 表示行数的索引 索引是从0开始
+        		value = row.buyer.name
+                return value;
+            }
+
+        }, {
+            field: 'value',
+            title: '车位状态',
+            align: 'center',
+            formatter: function indexFormatter(value, row, index) {//格式化数据 得到的数据需要做特殊的处理 formatter处理关键字
+                //value 表示field 原本的值 一般会把这个值拿来做处理 （如 这个值是一个图片连接地址）
+                //row  表示改行的数据对象，相当与 我们java中的一个对象
+                //index 表示行数的索引 索引是从0开始
+        		value = row.stallEntity.stalltype
+                return value;
+            }
+
+        }, {
+            field: 'time',
+            title: '交易时间',
+            align: 'center',
+
+        },{
+            field: 'operation',
+            title: '操作',
+            align: 'center',
+            formatter:addFunctionAlty,//表格中增加按钮
+            events:{
+                "click #btn_sureReserve":function(e,value,row,index) {
+                	 $.ajax({
+              		   url:"../tradingById",
+                  	   type : "POST",
+                  	   data:{id:row.id},
+                  	   success : function(data) {
+//                  		   alert(row.context);
+                  		   rentContractId = row.id;
+                  		   $("#chushou").html(row.personalEntity.name);
+                  		   $("#goumai").html(row.buyer.name);
+                  		   $("#dizhi").html(row.stallEntity.stalladdress);
+                  		   $("#bianhao").html(row.stallEntity.stallnumber);
+                  		   $("#jiage").html(row.price);
+                  		   $("#shijian").html(row.time);
+                  		   
+                  	   }
+              	   })
+                }
+
+            }//给按钮注册事件  "click #btn_delete" 对应事件 和选择器
+        
+        }]
+    });
+    $("#buttt").click(function() {
+		if ($("#context").val().trim() != "") {
+			var id = rentContractId
+			$.ajax({
+				url : "../getCompla",
+				type : "POST",
+				data : {
+					rentContractId : id,
+					context : $("#context").val().trim()
+				},
+				success : function(data) {
+					alert("投诉成功，请等待工作人员处理！");
+					$("#showTransaction").bootstrapTable("refresh");
+					$("#context").val("");
+				}
+			})
+		} else {
+			alert("投诉内容不能为空！请输入内容！");
+			$("#context").value("");
+			self.location.href = 'rendTransactionRecord.jsp';
+		}
+	})
+ 
+    function addFunctionAlty(value, row, index) {
+        return [
+             "<button class='btn btn-info' id='btn_sureReserve' data-toggle='modal' data-target='#myModal'  >查看详细信息</button>"
+        ].join('');
+    }
+  
+    
+   
+   
+ 
+    })

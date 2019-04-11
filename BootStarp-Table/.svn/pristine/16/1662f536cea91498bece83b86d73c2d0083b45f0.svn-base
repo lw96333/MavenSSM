@@ -1,0 +1,26 @@
+package com.ne.service;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.CompanyEntity;
+
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+ * 企业功能接口
+ * 
+ *@author 班贵华
+ * 2019年3月22日
+ */
+
+public interface CompanyService extends IService<CompanyEntity>{
+	
+	/**
+	 * 将查询到的企业信息封装到分页对象中
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+    PageBean<CompanyEntity> getCompanyInfoByCondition(Map<String, Object> map) throws Exception;
+}

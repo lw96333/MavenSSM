@@ -1,0 +1,70 @@
+package com.ne.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.ne.bean.PageBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ne.dao.CompanyDao;
+import com.ne.entity.CompanyEntity;
+import com.ne.service.CompanyService;
+
+/**
+ * (Company)表服务实现类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:00
+ */
+@Transactional(transactionManager = "transactionManager",rollbackFor=RuntimeException.class)
+@Rollback(value = false)
+@Service
+public class CompanyServiceImpl extends ServiceImpl<CompanyDao,CompanyEntity> implements CompanyService {
+    @Autowired
+    private CompanyDao companyDao;
+    static final String COMPANY_NAME = "companyName";
+    static final String COMPANY_ADDRESS = "companyAddress";
+    static final String COMPANY_CONTACTER = "companyContacter";
+    static final String COMPANY_PHONE = "companyPhone";
+	    /**
+	        *  条件查询并分页
+	     */
+    @Override
+	public PageBean<CompanyEntity> getCompanyInfoByCondition(Map<String, Object> map) {
+    	QueryWrapper<CompanyEntity> queryWrapper = new QueryWrapper<CompanyEntity>();
+		Map<String, Object > map1 = new HashMap<String, Object>(16);
+		if(map.get(COMPANY_NAME)!=null) {
+		map1.put("companyName", map.get(COMPANY_NAME));}
+		if(map.get(COMPANY_ADDRESS)!=null) {
+		map1.put("companyAddress", map.get(COMPANY_ADDRESS));}
+		if(map.get(COMPANY_CONTACTER)!=null) {
+		map1.put("companyContact", map.get(COMPANY_CONTACTER));}
+		if(map.get(COMPANY_PHONE)!=null) {
+		map1.put("companPhone", map.get(COMPANY_PHONE));}
+
+		PageBean<CompanyEntity> pageBean = new PageBean<CompanyEntity>();
+		//查询总条数
+		queryWrapper.allEq(map1);
+		int tolSize = companyDao.selectCount(queryWrapper);
+		pageBean.setTolSize(tolSize);
+		
+		int curPage = Integer.parseInt(map.get("curPage").toString());
+		int pageSize = Integer.parseInt(map.get("pageSize").toString());
+		pageBean.setCurPage(curPage);
+		pageBean.setPageSize(pageSize);
+		//查询数据
+		List<CompanyEntity> list = companyDao.getCompanies(map);
+		pageBean.setDatas(list);
+		return pageBean;
+	}
+
+	
+
+    
+}

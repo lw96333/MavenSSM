@@ -1,0 +1,67 @@
+package com.ne.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.ne.bean.PageBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ne.dao.LogDao;
+import com.ne.entity.LogEntity;
+import com.ne.service.LogService;
+
+/**
+ * 日志记录业务实现层
+ * @author 张晋忠
+ *
+ * 2019年3月25日
+ */
+@Transactional(transactionManager = "transactionManager",rollbackFor=RuntimeException.class)
+@Rollback(value = false)
+@Service
+public class LogServiceImpl extends ServiceImpl<LogDao,LogEntity> implements LogService {
+    @Autowired
+    private LogDao logDao;
+    static final String USER_TYPE = "userType";
+    static final String LOG_TYPE = "logType";
+    static final String TIME = "time";
+    static final String NAME = "name";
+
+    /**
+     * 查询日志列表
+     */
+	@Override
+	public PageBean<LogEntity> getLogInfoByCondition(Map<String, Object> map) throws Exception {
+		QueryWrapper<LogEntity> queryWrapper = new QueryWrapper<LogEntity>();
+		Map<String, Object > map1 = new HashMap<String, Object>(16);
+		if(map.get(USER_TYPE)!=null) {
+		map1.put("userType", map.get(USER_TYPE));}
+		if(map.get(LOG_TYPE)!=null) {
+		map1.put("logType", map.get(LOG_TYPE));}
+		if(map.get(TIME)!=null) {
+		map1.put("time", map.get(TIME));}
+		if(map.get(NAME)!=null) {
+		map1.put("name", map.get(NAME));}
+		PageBean<LogEntity> pageBean = new PageBean<LogEntity>();
+		//查询总条数
+		int tolSize =logDao.getTolSize(map1);
+		pageBean.setTolSize(tolSize);
+		
+		int curPage = Integer.parseInt(map.get("curPage").toString());
+		int pageSize = Integer.parseInt(map.get("pageSize").toString());
+		pageBean.setCurPage(curPage);
+		pageBean.setPageSize(pageSize);
+		//查询数据
+		List<LogEntity> list = logDao.getLogs(map);
+		pageBean.setDatas(list);
+		return pageBean;
+	}
+
+    
+}

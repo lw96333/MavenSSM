@@ -1,0 +1,94 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * (Level)实体类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+@TableName(value = "t_level")
+public class LevelEntity implements Serializable {
+
+	/**
+	 * 权限id
+	 */
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+    /**
+     * 用户管理权限
+     */
+    private Integer userlevel;
+    /**
+     * 车位管理权限
+     */
+    private Integer stalllevel;
+    /**
+     * 合同管理权限
+     */
+    private Integer contractlevel;
+    /**
+     * 投诉管理权限
+     */
+    private Integer complaintlevel;
+    /**
+     * 后台管理员id
+     */
+    private Integer admin;
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getUserlevel() {
+        return userlevel;
+    }
+
+    public void setUserlevel(Integer userlevel) {
+        this.userlevel = userlevel;
+    }
+
+    public Integer getStalllevel() {
+        return stalllevel;
+    }
+
+    public void setStalllevel(Integer stalllevel) {
+        this.stalllevel = stalllevel;
+    }
+
+    public Integer getContractlevel() {
+        return contractlevel;
+    }
+
+    public void setContractlevel(Integer contractlevel) {
+        this.contractlevel = contractlevel;
+    }
+
+    public Integer getComplaintlevel() {
+        return complaintlevel;
+    }
+
+    public void setComplaintlevel(Integer complaintlevel) {
+        this.complaintlevel = complaintlevel;
+    }
+
+    public Integer getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Integer admin) {
+        this.admin = admin;
+    }
+
+}

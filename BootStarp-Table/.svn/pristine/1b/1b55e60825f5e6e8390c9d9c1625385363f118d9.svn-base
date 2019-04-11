@@ -1,0 +1,143 @@
+package com.ne.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ne.bean.BillCountBean;
+import com.ne.bean.PageBean;
+import com.ne.entity.BillEntity;
+import com.ne.entity.PersonalEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.UserType;
+import com.ne.log.LogType;
+import com.ne.service.BillService;
+
+/**
+ * 个人账单记录查询控制页面
+ * @author 包杰
+ *
+ * 2019年3月24日
+ */
+@RestController
+public class PersonalBillController {
+	
+	@Autowired
+	private BillService billService;
+	
+	/**
+	 * 获取日志记录器
+	 */
+	private static Logger logger = Logger.getLogger(PersonalBillController.class);
+	
+	/**
+	 * 	(baojie)查看个人账单分页
+	 * @param size 显示数据
+	 * @param cur 当前页数
+	 * @param startDate 查看开始日期
+	 * @param endDate 查看结束日期
+	 * @param session 
+	 * @return
+	 */
+	@LogAnno(content = "查看个人账单分页页面控制器", operateName = LogType.查询, userPower =UserType.个人用户)
+	@RequestMapping(value="personalBillPage",method=RequestMethod.POST)
+	public PageBean personalBill(
+			@RequestParam(value="size") String size,
+			@RequestParam(value="cur") String cur,
+			@RequestParam(value="startDate") String startDate,
+			@RequestParam(value="endDate") String endDate,HttpSession session)
+			 {
+
+		Map< String, Object> condition = new HashMap<>();
+		//判断条件是否为空
+		if(startDate==null||startDate=="") {
+			condition.put("startDate", null);
+		}else {
+			condition.put("startDate", startDate);
+		}
+		if (endDate==null||endDate=="") {
+			condition.put("endDate", null);
+		}else {
+			condition.put("endDate", endDate);
+		}
+		//String realname=(String) session.getAttribute("realname");
+		//获取登录用户信息
+		PersonalEntity personalEntity = (PersonalEntity)SecurityUtils.getSubject().getPrincipal();
+		logger.debug(personalEntity.getName());
+		condition.put("name", personalEntity.getName());
+		condition.put("size", size);
+		condition.put("cur", cur);
+		
+		logger.debug(condition);
+		
+		PageBean<BillEntity> pages = null;
+		try {
+			pages = billService.selectPersonalPageBill(condition);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		logger.debug(pages);
+		
+		return pages;
+	}
+	
+	/**
+	 * (baojie)个人统计费用
+	 * @param startDate 查看开始日期
+	 * @param endDate 查看结束日期
+	 * @param session 获取登录用户信息
+	 * @return
+	 */
+	@LogAnno(content = "个人统计费用", operateName = LogType.查询, userPower = UserType.个人用户)
+	@RequestMapping(value="/personalBillCount",method=RequestMethod.POST)
+	public BillCountBean billCount(
+			@RequestParam(value="startDate") String startDate,
+			@RequestParam(value="endDate") String endDate,
+			HttpSession session) {
+		
+		//创建一个集合，用于封装查询条件
+		Map< String, Object> condition = new HashMap<>();
+		
+		//判断查询条件是否为空
+		if(startDate==null||startDate=="") {
+			condition.put("startDate", null);
+		}else {
+			condition.put("startDate", startDate);
+		}
+		if (endDate==null||endDate=="") {
+			condition.put("endDate", null);
+		}else {
+			condition.put("endDate", endDate);
+		}
+		//String realname=(String) session.getAttribute("realname");
+		//获取登录用户信息
+		PersonalEntity personalEntity = (PersonalEntity)SecurityUtils.getSubject().getPrincipal();
+		logger.debug(personalEntity.getName());
+		condition.put("name", personalEntity.getName());
+		logger.debug(condition);
+		
+		//掉费用统计
+		BillCountBean money = null;
+		try {
+			money = billService.personalBillCount(condition);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		logger.debug(money);
+		return money;
+	}
+}

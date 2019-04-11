@@ -1,0 +1,79 @@
+$(function(){
+	var nowTime = null;
+	var price = null;
+	var startTime = null;
+	var endTime = null;
+	var flag=false;
+	var flag1=false;
+	var flag2=false;
+	var flag3=false;
+	/**
+	 * 获取当前时间
+	 */
+	$.ajax({
+		url:"../getNowTime",
+		type:"POST",
+		success:function(data){
+			
+			nowTime=data;
+			//alert(nowTime)
+		}
+	})
+	/**
+	 * 出租价格正则判断
+	 */
+	$("#price").focusout(function(){
+		if((/^[1-9][0-9]{1,9}$/).test($("#price").val().trim())){
+			$("#error33").html("");
+			price = $("#price").val().trim();
+			flag1 = true;
+		}else{
+			$("#error33").html("只能输入数字");
+		}
+	})
+	/**
+	 * 出租起始日期判断
+	 */
+	$("#startTime").focusout(function(){
+		if(($("#startTime").val().trim()) > nowTime){
+			$("#error11").html("");
+			startTime = $("#startTime").val().trim();
+			flag2 =true;
+		}else{
+			$("#error11").html("起始日期不能小于当天日期");
+		}
+	})
+	/**
+	 * 出租截止日期判断
+	 */
+	$("#endTime").focusout(function(){
+		if(($("#endTime").val().trim()) > ($("#startTime").val().trim())){
+			$("#error22").html("");
+			endTime = $("#endTime").val().trim();
+			flag3 =true;
+		}else{
+			$("#error22").html("结束日期不能小于起始日期");
+		}
+	})
+	if(flag1 == true && flag2 == true && flag3 == true){
+		flag = true;
+	}
+	$("#rentPersonalStall").click(function(){
+		if(flag==true){
+			$.ajax({
+				url:"../rentPersonalStall",
+				type:"POST",
+				data:{
+					starttime:startTime,
+					endtime:endTime,
+					price:price
+				},
+				success:function(data){
+					self.location="table_basic.jsp";
+				}
+			})
+		}
+	})
+		
+		
+})

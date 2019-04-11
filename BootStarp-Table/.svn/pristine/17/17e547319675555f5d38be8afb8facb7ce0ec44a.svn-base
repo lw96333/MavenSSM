@@ -1,0 +1,42 @@
+package com.ne.dao;
+
+import com.ne.entity.ComplainEntity;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * (Complain)表数据库访问层
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:00
+ */
+public interface ComplainDao  extends BaseMapper<ComplainEntity>{
+	
+	/**
+	 * 查询集合条件并分页
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("<script>"
+	+ "select * from t_complain where 1=1 "
+	+ "<if test='type != null'>"
+	+ "and type=#{type}</if>"
+	+ "limit #{curPage},#{pageSize}"
+	+ "</script>")
+	List<ComplainEntity> showlistComplain (Map<String, Object>condition) throws Exception;
+	/**
+	 * 查询集合条件并分页
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("select * from t_complain limit #{curPage},#{pageSize}")
+	List<ComplainEntity> getComplainEntity(Map<String, Object>condition)throws Exception;
+}

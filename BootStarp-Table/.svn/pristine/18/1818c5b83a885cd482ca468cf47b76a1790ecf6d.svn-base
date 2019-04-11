@@ -1,0 +1,26 @@
+package com.ne.log;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+
+/**
+ * 日志注解
+ * @author 张晋忠
+ *
+ * 2019年3月25日
+ */
+@Target(ElementType.METHOD) // 方法注解
+@Retention(RetentionPolicy.RUNTIME) // 运行时可见
+public @interface LogAnno {//没设置默认值，所以使用时所有属性为必填
+	
+	    LogType[] operateName();// 记录日志的操作名称（添加、修改、删除  登录）
+
+	    UserType[] userPower() default {}; //记录用户类型（个人用户、企业用户、后台管理员、超级管理员）
+
+	    String content() default ""; //记录操作内容（如添加了一条投诉信息）
+
+	    
+}

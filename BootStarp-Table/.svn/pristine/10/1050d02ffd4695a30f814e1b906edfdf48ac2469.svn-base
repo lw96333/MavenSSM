@@ -1,0 +1,132 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+    <link rel="stylesheet" href="assets/css/amazeui.css" />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/core.css" />
+    <link rel="stylesheet" href="assets/css/menu.css" />
+    <link rel="stylesheet" href="assets/css/index.css" />
+    <link rel="stylesheet" href="assets/css/admin.css" />
+    <link rel="stylesheet" href="assets/css/page/typography.css" />
+    <link rel="stylesheet" href="assets/css/page/form.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/css/index2.css" />
+</head>
+<body>
+<!-- Begin page -->
+
+<!-- end page -->
+<div class="admin" style="background-color:#EBEFF2 " >
+    <!--<div class="am-g">-->
+    <!-- ========== Left Sidebar Start ========== -->
+    <!--<div class="left side-menu am-hide-sm-only am-u-md-1 am-padding-0">
+        <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 548px;">
+            <div class="sidebar-inner slimscrollleft" style="overflow: hidden; width: auto; height: 548px;">-->
+    <!-- sidebar start -->
+
+    <!-- sidebar end -->
+
+    <!--</div>
+</div>
+</div>-->
+    <!-- ========== Left Sidebar end ========== -->
+
+
+
+    <!--	<div class="am-g">-->
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <div class="content-page dishe " >
+        <!-- Start content -->
+        <div class="content">
+
+            <!-- row start -->
+            <div class="am-g account-pages"style="">
+                <!-- col start -->
+                <div class="bs-example" data-example-id="hoverable-table">
+                    <div class="card-box beijing"style="padding-right: 200px;text-align: center;">
+                        <h4 class="header-title m-t-0 m-b-30 ziti">个人用户信息注册</h4>
+                        <form class="am-form am-form-horizontal" >
+                            <div class="am-form-group shuru">
+                                <label for="name" class="am-u-sm-3 am-form-label am-text-right am-padding-right-0">用户名</label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" id="name" placeholder="设置你的用户名" maxlength="12">
+                                </div>
+                            </div>
+                            <div class="am-form-group shuru">
+                                <label for="password" class="am-u-sm-3 am-form-label am-text-right am-padding-right-0">密码</label>
+                                <div class="am-u-sm-9">
+                                    <input type="password" id="password" placeholder="设置你的密码" maxlength="18">
+                                </div>
+                            </div>
+                            <div class="am-form-group shuru">
+                                <label for="realname" class="am-u-sm-3 am-form-label am-text-right am-padding-right-0">真实姓名</label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" id="realname" placeholder="输入你的真实姓名" maxlength="5">
+                                </div>
+                            </div>
+                            <div class="am-form-group shuru">
+                                <label for="address" class="am-u-sm-3 am-form-label am-text-right am-padding-right-0">家庭地址</label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" id="address" placeholder="输入你的家庭地址" maxlength="40">
+                                </div>
+                            </div>
+                            <div class="am-form-group shuru">
+                                <label for="phone" class="am-u-sm-3 am-form-label am-text-right am-padding-right-0">电话号码</label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" id="phone" placeholder="输入你的电话号码" maxlength="11">
+                                </div>
+                            </div>
+                            <div class="am-form-group shuru">
+                                <label for="identitycard" class="am-u-sm-3 am-form-label am-text-right am-padding-right-0">身份证号码</label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" id="identitycard" placeholder="输入你的身份证号码" maxlength="18">
+                                </div>
+                            </div>
+                            <div class="am-form-group shuru">
+                                <label for="professional" class="am-u-sm-3 am-form-label am-text-right am-padding-right-0">职业描述</label>
+                                <div class="am-u-sm-9">
+                                    <input type="text" id="professional" placeholder="输入你的职业描述" maxlength="30">
+                                </div>
+                            </div>
+                            <div class="am-form-group shuru">
+                                <label for="email" class="am-u-sm-3 am-form-label am-text-right am-padding-right-0">邮箱地址</label>
+                                <div class="am-u-sm-9">
+                                    <input type="email" id="email" placeholder="输入你的邮箱地址" maxlength="40">
+                                </div>
+                            </div>
+ 								<div class="am-u-sm-10 am-u-sm-offset-3" style="padding-left: 400px"><br/><br/>
+                                   <button type="button"  class="btn btn-info" style="width: 300px;position: absolute;left: 240px" id="register" " >注册</button>
+								</div>
+                        </form>
+                    </div>
+                </div>
+                <!-- col end -->
+            </div>
+            <!-- row end -->
+
+        </div>
+    </div>
+    <!-- end right Content here -->
+    <!--</div>-->
+</div>
+</div>
+
+<!-- navbar -->
+<a href="admin-offcanvas" class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu" data-am-offcanvas="{target: '#admin-offcanvas'}"><!--<i class="fa fa-bars" aria-hidden="true"></i>--></a>
+
+<script type="text/javascript" src="assets/js/jquery-2.1.0.js"></script>
+<script type="text/javascript" src="assets/js/amazeui.min.js"></script>
+<script type="text/javascript" src="assets/js/blockUI.js" ></script>
+<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="ajax/login/register.js"></script>
+
+
+</body>
+
+</html>

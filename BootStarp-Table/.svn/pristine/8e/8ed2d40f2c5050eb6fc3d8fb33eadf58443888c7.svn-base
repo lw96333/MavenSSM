@@ -1,0 +1,231 @@
+package com.ne.controller;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ne.entity.PersonalEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.UserType;
+import com.ne.log.LogType;
+import com.ne.service.PersonalService;
+import com.ne.util.CBDUtil;
+import com.ne.util.ResponseData;
+
+/**
+ * 个人用户信息修改控制器
+ * @author 邓万兵
+ *
+ * 2019年3月22日
+ */
+@RestController
+public class PersonInfoUpdateController {
+	/**
+	 * 自动注入个人业务层接口
+	 */
+	@Autowired
+	private PersonalService personalService;
+	
+	/**
+	 * 日志对象
+	 */
+	private static Logger logger = Logger.getLogger(PersonInfoUpdateController.class);
+	
+	/**
+	 * ajax返回响应数据对象
+	 */
+	private ResponseData rd = new ResponseData();
+	
+	
+	/**
+	 * 修改个人用户信息
+	 * @param personid 用户id
+	 * @param oldpw 用户原密码
+	 * @param newpw1 用户新密码
+	 * @param newpw2 用户新密码
+	 * @param homeaddress 用户地址
+	 * @param phone 用户联系电话
+	 * @param jobInfo 用户职业介绍
+	 * @param personEmail 用户邮箱
+	 * @return
+	 */
+	@LogAnno(operateName= LogType.修改,userPower=UserType.个人用户,content="修改个人资料")
+	@RequestMapping(value="personUpdateInfo",method=RequestMethod.POST)
+	public ResponseData personUpdateInfo(
+			@RequestParam(value="personid")String personid,
+			@RequestParam(value="oldpw")String oldpw,
+			@RequestParam(value="newpw1")String newpw1,
+			@RequestParam(value="newpw2")String newpw2,
+			@RequestParam(value="homeaddress")String homeaddress,
+			@RequestParam(value="phone")String phone,
+			@RequestParam(value="jobInfo")String jobInfo,
+			@RequestParam(value="personEmail")String personEmail,
+			@RequestParam(value="changePw")boolean changePw){
+		
+		boolean falg = true ;
+		/**
+		 * 是否修改密码
+		 */
+	if(changePw){
+		/**
+		 * 验证数据有效性
+		 */
+		String regpw = "[a-z0-9_-]{8,16}";
+		if(personid == null || personid== ""){falg = false ;}
+		if(oldpw == null || oldpw== ""){
+			falg = false ;			
+			}
+		if(newpw1 == null || newpw1== ""||!newpw1.matches(regpw)||!newpw1.equals(newpw2)){
+			falg = false ;
+			}
+		if(homeaddress == null || homeaddress== ""){
+			falg = false ;
+			}else if(homeaddress.trim().length()<10 ||homeaddress.trim().length()>40){
+				falg = false ;	
+			}
+		if(jobInfo == null || jobInfo== ""){
+			falg = false ;
+			}else if(jobInfo.trim().length()<20 ||jobInfo.trim().length()>200){
+				falg = false ;	
+			}
+		/**
+		 * 数据匹配正则表达式
+		 */
+		String  regphone = "(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}";
+		String  regem ="[a-z\\d]+(\\.[a-z\\d]+)*@([\\da-z](-[\\da-z])?)+(\\.{1,2}[a-z]+)";
+		if(phone==null || phone==""|| !phone.trim().matches(regphone)){
+			falg = false ;
+		}
+		if(personEmail==null || personEmail==""|| !personEmail.trim().matches(regem)){
+			falg = false ;
+		}
+		if(falg){
+			
+		PersonalEntity person = null ;
+		
+		try{
+			person = personalService.getById(Integer.parseInt(personid.trim()));
+		}catch (Exception e){
+			logger.info("找不到对应的用户");
+		}
+		/**
+		 * 修改资料
+		 */
+		if(person != null ){
+			String datePW = person.getPassword();
+			String personName = person.getName();
+			String md5Pw = CBDUtil.md5(oldpw, personName);
+			if(md5Pw.equals(datePW)){
+				person.setAddress(homeaddress.trim());
+				person.setEmail(personEmail.trim());
+				person.setPassword(CBDUtil.md5(newpw1.trim(), personName));	
+				person.setPhone(phone.trim());
+				person.setProfessional(jobInfo.trim());
+				personalService.saveOrUpdate(person);
+				rd.setMessage("updateinfoOK");
+				return rd ;
+			}
+			
+		}
+		
+		} 
+		}else{
+			
+			if(homeaddress == null || homeaddress== ""){
+				falg = false ;
+				}else if(homeaddress.trim().length()<10 ||oldpw.trim().length()>40){
+					falg = false ;	
+				}
+			if(jobInfo == null || jobInfo== ""){
+				falg = false ;
+				}else if(jobInfo.trim().length()<20 ||jobInfo.trim().length()>200){
+					falg = false ;	
+				}
+			String  regphone = "(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}";
+			String  regem ="[a-z\\d]+(\\.[a-z\\d]+)*@([\\da-z](-[\\da-z])?)+(\\.{1,2}[a-z]+)";
+			if(phone==null || phone==""|| !phone.trim().matches(regphone)){
+				falg = false ;
+			}
+			if(personEmail==null || personEmail==""|| !personEmail.trim().matches(regem)){
+				falg = false ;
+			}
+			if(falg){
+			PersonalEntity person = null ;
+			
+			try{
+				person = personalService.getById(Integer.parseInt(personid.trim()));
+			}catch (Exception e){
+				logger.info("找不到对应的用户");
+			}
+			
+			if(person != null ){		
+					person.setAddress(homeaddress.trim());
+					person.setEmail(personEmail.trim());
+					person.setPhone(phone.trim());
+					person.setProfessional(jobInfo.trim());
+					personalService.saveOrUpdate(person);
+					rd.setMessage("updateinfoOK");
+					return rd ;						
+			}
+			
+			}
+		}
+		
+		return rd ;
+	}
+	/**
+	 * 查看用户输入的密码是不是正确的
+	 * @param personid 用户id
+	 * @param oldpw 用户输入的原密码
+	 * @return
+	 */
+	@LogAnno(operateName= LogType.查询,userPower=UserType.个人用户,content="查看密码是否正确")
+	@RequestMapping(value="personPasswordIsTrue",method=RequestMethod.POST)
+	public ResponseData personPasswordIsTrue(
+			@RequestParam(value="personid")Integer personid,
+			@RequestParam(value="oldpw")String oldpw){
+		
+		boolean falg = true ;
+		rd.setMessage("ok");
+		if(personid == null ){falg = false ;}
+		if(oldpw == null || oldpw== ""){
+			falg = false ;
+			}
+		PersonalEntity person = null ;
+		if(falg){
+			try{
+				person = personalService.getById(personid);
+			}catch (Exception e){
+				logger.info("找不到对应的用户");
+			}
+			
+			if(person != null){
+				
+				
+				String datePW = person.getPassword();
+				String personName = person.getName();
+				String md5Pw = CBDUtil.md5(oldpw, personName);
+				if(datePW.equals(md5Pw)){
+				
+					rd.setMessage("pwtrue");
+					return rd ;
+				}else{
+				/*	System.out.println("首次修改密码");
+					person.setPassword(md5Pw);
+					personalService.saveOrUpdate(person);*/
+				}
+				
+				
+			}
+		}
+		
+		return rd ;
+	}
+	
+}

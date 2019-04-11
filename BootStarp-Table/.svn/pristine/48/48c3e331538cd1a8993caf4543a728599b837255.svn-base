@@ -1,0 +1,140 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+/**
+ * 外部合约实体类
+ * 
+ * @author 班贵华 2019年3月21日
+ */
+@TableName(value = "t_externalcontract")
+public class ExternalcontractEntity implements Serializable {
+
+	/**
+	 * 合同ID
+	 */
+	@TableId(type = IdType.AUTO)
+	private Integer id;
+	/**
+	 * 合同编号
+	 */
+	// @TableField(exist=false)
+	private String contractnumber;
+	/**
+	 * 第三方信息外键
+	 */
+	private int thirdplatformid;
+	/**
+	 * 第三方信息
+	 */
+	@TableField(exist = false)
+	private ThirdplatformEntity thirdplatformEntity;
+	/**
+	 * 出售价格
+	 */
+	private Double price;
+	/**
+	 * 合同生效日期
+	 */
+	private String starttime;
+	/**
+	 * 合同截止日期
+	 */
+	private String endtime;
+	/**
+	 * 合同复印件
+	 */
+	private String contractpic;
+	/**
+	 * 是否作废
+	 */
+	private String isinvalid;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getContractnumber() {
+		return contractnumber;
+	}
+
+	public void setContractnumber(String contractnumber) {
+		this.contractnumber = contractnumber;
+	}
+
+	
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	public String getStarttime() {
+		return starttime;
+	}
+
+	public void setStarttime(String starttime) {
+		this.starttime = starttime;
+	}
+
+	public String getEndtime() {
+		return endtime;
+	}
+
+	public void setEndtime(String endtime) {
+		this.endtime = endtime;
+	}
+
+	public String getContractpic() {
+		return contractpic;
+	}
+
+	public void setContractpic(String contractpic) {
+		this.contractpic = contractpic;
+	}
+
+	public String getIsinvalid() {
+		return isinvalid;
+	}
+
+	public void setIsinvalid(String isinvalid) {
+		this.isinvalid = isinvalid;
+	}
+
+	public int getThirdplatformid() {
+		return thirdplatformid;
+	}
+
+	public void setThirdplatformid(int thirdplatformid) {
+		this.thirdplatformid = thirdplatformid;
+	}
+
+	public ThirdplatformEntity getThirdplatformEntity() {
+		return thirdplatformEntity;
+	}
+
+	public void setThirdplatformEntity(ThirdplatformEntity thirdplatformEntity) {
+		this.thirdplatformEntity = thirdplatformEntity;
+	}
+
+	@Override
+	public String toString() {
+		return "ExternalcontractEntity [id=" + id + ", contractnumber=" + contractnumber + ", thirdplatformid="
+				+ thirdplatformid + ", thirdplatformEntity=" + thirdplatformEntity + ", price=" + price + ", starttime="
+				+ starttime + ", endtime=" + endtime + ", contractpic=" + contractpic + ", isinvalid=" + isinvalid
+				+ "]";
+	}
+
+}

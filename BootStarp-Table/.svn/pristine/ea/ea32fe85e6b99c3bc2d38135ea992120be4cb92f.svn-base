@@ -1,0 +1,61 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="../general/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="../general/js/bootstrap-table.min.css">
+<link href="../general/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../general/style/authority/basic_layout.css" rel="stylesheet" type="text/css">
+<link href="../general/style/authority/common_style.css" rel="stylesheet" type="text/css">
+
+
+<script type="text/javascript" src="../general/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../general/js/bootstrap.min.js"></script>
+<script src="../general/js/bootstrap-table.min.js"></script>
+<script src="../general/js/bootstrap-table-zh-CN.min.js"></script>
+<script src="../ajax/log/log.js"></script>
+<script language="javascript" type="text/javascript" src="../assets/My97DatePicker/WdatePicker.js"></script>
+
+<title>日志管理</title>
+
+</head>
+<body>
+		<div id="container">
+			<div id="box_center">
+				前台/后台
+				<select name="fangyuanEntity.fyXqCode" id="userType" class="ui_select01">
+					<option value="">--请选择--</option>
+					<option value="前台">前台</option>
+					<option value="后台">后台</option>
+				</select>
+
+				操作/登录
+				<select id="logType" class="ui_select01">
+					<option value="">--请选择--</option>
+					<option value="操作">操作</option>
+					<option value="登录">登录</option>
+				</select>
+				日期
+				<input type="text" class="form-control" id="date" name="brithday" readonly="readonly"
+					    placeholder="请选择日期" onClick="WdatePicker()" style="height: 30px;width: 150px;display: inline-block">
+
+				用户名
+				<input type="text" id="userName" style="height: 30px">
+				
+			</div>
+			<div class="ui_content">
+				<div class="ui_tb">
+				
+					<table class="table table-hover" id="table_log"></table>
+				
+					
+				</div>
+				
+				<br/>
+			</div>
+
+		</div>
+</body>
+</html>

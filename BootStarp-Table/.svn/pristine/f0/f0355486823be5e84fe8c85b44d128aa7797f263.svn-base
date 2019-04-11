@@ -1,0 +1,249 @@
+package com.ne.service.impl;
+
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.PersonalrentEntity;
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.StallEntity;
+import com.ne.bean.PageBean;
+import com.ne.dao.CompanylcontractDao;
+import com.ne.dao.PersonalDao;
+import com.ne.dao.PersonalrentDao;
+import com.ne.dao.PersonalsaleDao;
+import com.ne.dao.StallDao;
+import com.ne.service.StallService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * (Stall)表服务实现类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+@Transactional(transactionManager = "transactionManager")
+@Rollback(value = false)
+@Service
+public class StallServiceImpl extends ServiceImpl<StallDao, StallEntity> implements StallService {
+	@Autowired
+	private StallDao stallDao;
+
+	@Autowired
+	private PersonalDao personalDao;
+
+	@Autowired
+	private CompanylcontractDao companylcontractDao;
+
+	@Autowired
+	private PersonalrentDao personalrentDao;
+
+	@Autowired
+	private PersonalsaleDao personalsaleDao;
+
+	private static Logger logger = Logger.getLogger(StallServiceImpl.class);
+
+	@Override
+	public PageBean<StallEntity> showPageByCondition(Map<String, Object> condition) throws Exception {
+		// TODO Auto-generated method stub
+
+		// 获取数据库查询条件的总条数
+		int curPage = (Integer) condition.get("curPage");
+		int pageSize = (Integer) condition.get("pageSize");
+
+		// 获取数据库查询条件的总条数
+		PageBean<StallEntity> pageBean = new PageBean<StallEntity>();
+
+		int tolSize = stallDao.countStall(condition);
+
+		// 获取条件查询的数据集合
+		List<StallEntity> list = stallDao.showListByCondition(condition);
+
+		// 封装PageBean对象
+		// 查询关联车位关联对象（用户信息和用户出租或者出售车位信息）
+		for (int i = 0; i < list.size(); i++) {
+			int userid = list.get(i).getUserid();
+			PersonalEntity personalEntity = personalDao.selectById(userid);
+			QueryWrapper<PersonalrentEntity> queryWrapper = new QueryWrapper<>();
+			queryWrapper.eq("personalId", personalEntity.getId());
+			List<PersonalrentEntity> rentList = personalrentDao.selectList(queryWrapper);
+			for (int j = 0; j < rentList.size(); j++) {
+				if (rentList.get(j).getStallid() == list.get(i).getId()) {
+					list.get(i).setRentEntity(rentList.get(j));
+				}
+
+			}
+			QueryWrapper<PersonalsaleEntity> queryWrapper1 = new QueryWrapper<>();
+			queryWrapper1.eq("personalId", personalEntity.getId());
+			List<PersonalsaleEntity> saleList = personalsaleDao.selectList(queryWrapper1);
+			for (int k = 0; k < saleList.size(); k++) {
+				if (saleList.get(k).getStallid() == list.get(i).getId()) {
+					list.get(i).setRsaleEntity(saleList.get(k));
+				}
+			}
+			list.get(i).setPersonal(personalEntity);
+		}
+
+		// 封装PageBean对象
+		pageBean.setCurPage(curPage);
+		pageBean.setPageSize(pageSize);
+		pageBean.setDatas(list);
+		pageBean.setTolSize(tolSize);
+		return pageBean;
+	}
+
+	@Override
+	public PageBean<StallEntity> showStallPage(Map<String, Object> condition) throws Exception {
+		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
+		PageBean<StallEntity> pageBean = new PageBean<StallEntity>();
+
+		// 获得当前页数和每页显示条数
+		int curPage = (Integer) condition.get("curPage");
+		int pageSize = (Integer) condition.get("pageSize");
+
+		// 获取数据库查询条件的总条数
+		int tolSize = stallDao.selectCount(null);
+
+		// 获取查询的数据集合
+		List<StallEntity> list = stallDao.getPage(condition);
+
+		// 封装PageBean对象
+		pageBean.setCurPage(curPage);
+		pageBean.setPageSize(pageSize);
+		pageBean.setTolSize(tolSize);
+		pageBean.setDatas(list);
+
+		return pageBean;
+	}
+
+	// baojie
+	@Override
+	public PageBean<StallEntity> getFreeStallPage(Map<String, Object> condition) throws Exception {
+
+		// 查询总条数
+		int tolSize = 0;
+
+		List<StallEntity> stallEntitys;
+
+		// 判断用户类型是否为空
+		if (condition.get("userType") != null) {
+			// 获取数据库查询条件的总条数
+			QueryWrapper<StallEntity> queryWrapper = new QueryWrapper<StallEntity>();
+			Map<String, Object> map = new HashMap<String, Object>();
+
+			// 有条件的查询分页
+			stallEntitys = stallDao.selectConditionPage(condition);
+
+			// 查询条件
+			String userType = (String) condition.get("userType");
+			map.put("userType", userType);
+
+			logger.info(map);
+
+			queryWrapper.allEq(map).or().eq("thirdplatform", "第三方");
+
+			// 查询总条数
+			tolSize = stallDao.selectCount(queryWrapper);
+		} else {
+			// 获取数据库查询条件的总条数
+			QueryWrapper<StallEntity> queryWrapper = new QueryWrapper<StallEntity>();
+			// 当条件为空时查询企业，cbd,第三方所有的空闲车位
+			tolSize = stallDao.freeStallCount();
+		}
+
+		// 创建一个pageBean用于封装数据
+		PageBean<StallEntity> pageBean = new PageBean<StallEntity>();
+
+		// 获取条件查询的数据集合
+		stallEntitys = stallDao.selectFreeStallPage(condition);
+		/*
+		 * for (StallEntity stallEntity : stallEntitys) { //获取最长租赁时间
+		 * CompanylcontractEntity clList =
+		 * companylcontractDao.getCompanylcontractByStallId(stallEntity.getId());
+		 * if(clList!=null) { CompanylcontractEntity companylcontra = new
+		 * CompanylcontractEntity(); companylcontra.setLongtime(clList.getLongtime());
+		 * stallEntity.setCompanylcontra(companylcontra); } }
+		 */
+
+		// 封装PageBean对象
+		pageBean.setTolSize(tolSize);
+		pageBean.setDatas(stallEntitys);
+
+		logger.info(pageBean);
+		return pageBean;
+	}
+
+	/**
+	 * author yanglei
+	 */
+	@Override
+	public PageBean<StallEntity> showAllUnaduitStall(Map<String, Object> condition) throws Exception {
+
+		PageBean<StallEntity> pageBean = new PageBean<StallEntity>();
+
+		// 获取数据库查询条件的总条数
+		QueryWrapper<StallEntity> queryWrapper = new QueryWrapper<StallEntity>();
+
+		Map<String, Object> map = new HashMap<>();
+
+		map.put("stallType", "未审核");
+		queryWrapper.allEq(map);
+		int tolSize = stallDao.selectCount(queryWrapper);
+		// 获取条件查询的数据集合
+
+		List<StallEntity> list = stallDao.selectAllUnaduitStall(condition);
+
+		int curPage = (Integer) condition.get("curPage");
+		int pageSize = (Integer) condition.get("pageSize");
+		// 封装PageBean对象
+		// 查询关联车位关联对象（用户信息）
+		for (int i = 0; i < list.size(); i++) {
+			int id = list.get(i).getUserid();
+			PersonalEntity personalEntity = personalDao.selectById(id);
+			list.get(i).setPersonal(personalEntity);
+		}
+		// 封装总条数和总记录数到Page
+		pageBean.setDatas(list);
+		pageBean.setCurPage(curPage);
+		pageBean.setPageSize(pageSize);
+		// 封装PageBean对象
+		pageBean.setDatas(list);
+		pageBean.setTolSize(tolSize);
+
+		return pageBean;
+	}
+
+	@Override
+	public PageBean<StallEntity> showComanyRentedStallPage(Map<String, Object> condition) throws Exception {
+		// TODO Auto-generated method stub
+		PageBean<StallEntity> pageBean = new PageBean<StallEntity>();
+
+		// 获得当前页数和每页显示条数
+		int curPage = (Integer) condition.get("curPage");
+		int pageSize = (Integer) condition.get("pageSize");
+		int comid = (Integer) condition.get("userId");
+		// 获取数据库查询条件的总条数
+
+		int tolSize = stallDao.allCompanyStallCount(comid);
+
+		// 获取查询的数据集合
+		List<StallEntity> list = stallDao.selectCompanyStallPageByCompanyId(condition);
+
+		// 封装PageBean对象
+		pageBean.setCurPage(curPage);
+		pageBean.setPageSize(pageSize);
+		pageBean.setTolSize(tolSize);
+		pageBean.setDatas(list);
+
+		return pageBean;
+	}
+}

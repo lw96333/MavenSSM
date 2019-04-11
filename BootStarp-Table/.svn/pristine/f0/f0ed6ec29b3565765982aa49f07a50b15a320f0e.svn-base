@@ -1,0 +1,64 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * 企业合约续约
+ * 
+ *@author 班贵华
+ * 2019年3月21日
+ */
+@TableName(value="t_renewalcompanycontract")
+public class RenewalcompanycontractEntity implements Serializable {
+    
+	/**
+	 * 	合同ID
+	 */
+	@TableId(type=IdType.AUTO)
+    private Integer id;
+	/**
+	 * 	原合同编号
+	 */
+    private Integer oldcontract;
+    /**
+	 * 	新合同编号
+	 */
+    private Integer newcontract;
+ 
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getOldcontract() {
+        return oldcontract;
+    }
+
+    public void setOldcontract(Integer oldcontract) {
+        this.oldcontract = oldcontract;
+    }
+
+    public Integer getNewcontract() {
+        return newcontract;
+    }
+
+    public void setNewcontract(Integer newcontract) {
+        this.newcontract = newcontract;
+    }
+
+	@Override
+	public String toString() {
+		return "RenewalcompanycontractEntity [id=" + id + ", oldcontract=" + oldcontract + ", newcontract="
+				+ newcontract + "]";
+	}
+
+}

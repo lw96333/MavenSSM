@@ -1,0 +1,26 @@
+package com.ne.service;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.AdminEntity;
+
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+ * (Admin)表服务接口
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:16:59
+ */
+public interface AdminService extends IService<AdminEntity>{
+	/**
+	 * 查看管理员
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	PageBean<AdminEntity> showAdminByPage(Map<String, Object> condition)throws Exception;
+
+	int getNewAdminEntityId(String pwd ,String tel ,String name)throws Exception;
+}

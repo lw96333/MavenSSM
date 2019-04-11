@@ -1,0 +1,47 @@
+$(function () {
+    var verifyCode = new GVerify("v_container");
+    document.getElementById("my_button").onclick = function () {
+
+
+
+        var res = verifyCode.validate(document.getElementById("code_input").value);
+        if (res) {
+            $("#verification").html('');
+            var userType= $("#userType").val().trim();
+                $.ajax({
+                url: "login",
+                type: "post",
+                data: {
+                    username:$("#username").val().trim(),
+                    password: $("#password").val().trim(),
+                    userType: userType,
+                    rememberMe:$("#rememberMe").val()
+                },
+                dataType: "json",
+                success: function (data) {
+                   console.log(data)
+                    if (data.code==200) {
+                        if (userType=="个人"){
+                            location.href="grjsp/index.jsp";
+                        }else if(userType=="企业"){
+                            location.href="company-jsp/companyindex.jsp";
+                        }else if(userType=="后台"){
+                            location.href="adminJsp/personalManage.jsp";
+                        }else if(userType=="系统"){
+                            location.href="superAdminJsp/superAdmin.jsp";
+                        }
+                    }else if (data.code==404) {
+                        $("#verification").html('账号不存在!');
+                    }else{
+                        $("#verification").html('账号密码错误!');
+
+                    }
+
+                }
+
+            });
+        } else {
+            $("#verification").html("验证码错误！")
+        }
+    }
+});

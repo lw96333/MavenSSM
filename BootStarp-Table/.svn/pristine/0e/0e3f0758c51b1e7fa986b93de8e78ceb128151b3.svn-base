@@ -1,0 +1,225 @@
+package com.ne.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.ne.log.LogType;
+import com.ne.shiro.LoginRealm;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.mgt.RealmSecurityManager;
+import org.apache.shiro.realm.Realm;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ne.bean.PageBean;
+import com.ne.entity.AdminEntity;
+import com.ne.entity.LevelEntity;
+import com.ne.entity.PersonalrentEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.UserType;
+import com.ne.service.AdminService;
+import com.ne.service.LevelService;
+import com.ne.util.CBDUtil;
+/**
+ * 超级管理员管理 管理员控制器
+ * @author 邓万兵
+ *
+ * 2019年3月25日
+ */
+import com.ne.util.ResponseData;
+
+/**
+ * 管理  后台管理员
+ * @author 邓万兵
+ *
+ * 2019年3月27日
+ */
+@RestController
+public class SuperAdminManageAdminController {
+	/**
+	 * 自动注入管理员服务层接口
+	 */
+	@Autowired
+	private AdminService adminService ;
+	
+	/**
+	 * 自动注入权限 服务层接口
+	 */
+	@Autowired
+	private LevelService  levelService ;
+	
+	/**
+	 * ajax响应对象
+	 */
+	private ResponseData  rdData = new  ResponseData();
+	
+	/**
+	 * 查看用户名是否重复
+	 * @param adminName
+	 * @return
+	 */
+	@LogAnno(operateName= LogType.查询,userPower=UserType.超级管理员,content="查看用户名是否存在")
+	@RequestMapping(value="queryInputName",method=RequestMethod.POST)
+	public ResponseData queryAdminName(@RequestParam(value="adminName")String adminName ){
+		rdData.setMessage("ok");
+		boolean falg = true ;	
+		if(adminName==null ||adminName ==""){
+			falg = false;
+		}
+		if(falg){
+			QueryWrapper<AdminEntity> queryWrapper = new QueryWrapper<AdminEntity>();		
+			queryWrapper.eq("employeeid",adminName.trim() );
+			AdminEntity ae =	adminService.getOne(queryWrapper);
+			if(ae!=null){
+				rdData.setMessage("adminNameHave");
+				return rdData;
+			}
+	}
+		return rdData;
+		}
+	/**
+	 * 新增管理员
+	 * @param adminName 管理员用户名
+	 * @param adminPassword 密码
+	 * @param trueName 真实姓名
+	 * @param adminPhone 电话号码
+	 * @param userlevel 用户权限
+	 * @param stalllevel 车位权限
+	 * @param contractlevel 投诉权限
+	 * @param complaintlevel  合同权限
+	 * @return
+	 */
+	@LogAnno(operateName= LogType.添加,userPower=UserType.超级管理员,content="添加管理员")
+	@RequestMapping(value="addNewAdminIntoDatas",method=RequestMethod.POST)
+	public ResponseData addAdmin(
+			@RequestParam(value="adminName")String adminName ,
+			@RequestParam(value="adminPassword")String adminPassword,
+			@RequestParam(value="trueName")String trueName,
+			@RequestParam(value="adminPhone")String adminPhone,
+			@RequestParam(value="userlevel")Integer userlevel,
+			@RequestParam(value="stalllevel")Integer stalllevel,
+			@RequestParam(value="contractlevel")Integer contractlevel,
+			@RequestParam(value="complaintlevel")Integer complaintlevel){
+	/**
+	 * 验证数据有效性
+	 */
+		rdData.setMessage("ok");
+		boolean falg = true ;
+		if(adminName==null ||adminName ==""||adminPassword==null||adminPassword==""
+				||trueName==null || trueName=="" ||adminPhone=="" ||adminPhone==null){			
+			falg = false ;
+		
+		}
+	
+		
+		/**
+		 * 密码电话 正则验证
+		 */
+	
+		String regpw = "([a-z0-9_-]){8,16}";
+		String  regphone = "(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}";
+		if(falg){if(!adminPassword.trim().matches(regpw)||!adminPhone.trim().matches(regphone)){
+			falg = false ;
+			}}
+		if(falg){
+			AdminEntity newAdmin = new AdminEntity();
+			String md5Pw = CBDUtil.md5(adminPassword.trim(), adminName.trim());
+			newAdmin.setEmployeeid(adminName.trim());
+			newAdmin.setName(trueName.trim());
+			newAdmin.setPassword(md5Pw);
+			newAdmin.setPhone(adminPhone.trim());
+			adminService.save(newAdmin);
+			int id = 0 ;
+		try {
+			id = adminService.getNewAdminEntityId(md5Pw, adminPhone.trim(), adminName.trim());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+			LevelEntity level = new LevelEntity();
+			level.setComplaintlevel(complaintlevel);
+			level.setContractlevel(contractlevel);
+			level.setStalllevel(stalllevel);
+			level.setUserlevel(userlevel);
+			level.setAdmin(id);
+			levelService.save(level);
+			
+			rdData.setMessage("addAdminSuccess");
+		}
+		return rdData;
+	}
+	
+	/**
+	 * 修改管理员权限
+	 * @param levelId 权限Id
+	 * @param adminId 用户ID
+	* @param userlevel 用户权限
+	 * @param stalllevel 车位权限
+	 * @param contractlevel 投诉权限
+	 * @param complaintlevel  合同权限
+	 * @return
+	 */
+	@LogAnno(operateName= LogType.修改,userPower=UserType.超级管理员,content="修改管理员权限")
+	@RequestMapping(value="updateAdminLevel",method=RequestMethod.POST)
+	public ResponseData updateAdminLevle(
+			@RequestParam(value="levelId")Integer levelId,
+			@RequestParam(value="userlevel")Integer userlevel,
+			@RequestParam(value="stalllevel")Integer stalllevel,
+			@RequestParam(value="contractlevel")Integer contractlevel,
+			@RequestParam(value="complaintlevel")Integer complaintlevel){
+	
+		LevelEntity level = null;
+		try{
+			level = levelService.getById(levelId);
+		}catch(Exception e ){
+			
+		}
+		if(level !=null){
+		level.setComplaintlevel(complaintlevel);
+		level.setContractlevel(contractlevel);
+		level.setStalllevel(stalllevel);
+		level.setUserlevel(userlevel);
+		boolean falg = levelService.saveOrUpdate(level);
+		if(falg){
+			rdData.setMessage("updateLevelSuccess");
+		}
+		}
+		RealmSecurityManager rsm = (RealmSecurityManager) SecurityUtils.getSecurityManager();
+		LoginRealm loginRealm = (LoginRealm) rsm.getRealms().iterator().next();
+		loginRealm.clearCached();
+		return rdData;
+	}
+	
+	/**
+	 * 分页显示管理员
+	 * @param modelMap
+	 * @param curPage
+	 * @param pageSize
+	 * @return
+	 */
+	@LogAnno(operateName= LogType.查询,userPower=UserType.超级管理员,content="查看后台管理员")
+	@RequestMapping(value="showAllAdminByPage",method=RequestMethod.POST)
+	public PageBean<AdminEntity> showAdminByPage(
+			ModelMap modelMap,Integer curPage,Integer pageSize){
+		
+		PageBean<AdminEntity> page = null;
+		
+		Map<String,Object> map = new HashMap<String, Object>(5);
+		map.put("curPage", curPage);
+		map.put("pageSize", pageSize);
+		try {
+			page = adminService.showAdminByPage(map);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return page;
+	}
+}

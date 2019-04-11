@@ -1,0 +1,111 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * 后台管理员实体类
+ * @author 杨雷
+ *
+ *2019年3月21日
+ */
+@TableName(value = "t_admin")
+public class AdminEntity implements Serializable {
+    /**
+     * 后台管理员Id
+     */
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+    /**
+     * 后台管理员工号
+     */
+    private String employeeid;
+    /**
+     * 密码
+     */
+    private String password;
+    /**
+     * 真实姓名
+     */
+    private String name;
+    /**
+     * 电话号码
+     */
+    private String phone;
+    /**
+     * 权限
+     */
+    private String level;
+
+    @TableField(exist=false)
+    private LevelEntity levelEntity;
+    
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+
+    public LevelEntity getLevelEntity() {
+		return levelEntity;
+	}
+
+	public void setLevelEntity(LevelEntity levelEntity) {
+		this.levelEntity = levelEntity;
+	}
+
+	public String getEmployeeid() {
+		return employeeid;
+	}
+
+	public void setEmployeeid(String employeeid) {
+		this.employeeid = employeeid;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+	@Override
+	public String toString() {
+		return "AdminEntity [id=" + id + ", employeeid=" + employeeid + ", password=" + password + ", name=" + name
+				+ ", phone=" + phone + ", level=" + level + "]";
+	}
+
+}

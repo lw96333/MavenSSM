@@ -1,0 +1,338 @@
+$(function() {
+
+	// alert(111);
+	$('#showMessage').bootstrapTable({
+		url : '../showAllStall', // 请求后台的URL（*）
+		method : 'post', // 请求方式（*）
+		contentType : "application/x-www-form-urlencoded",// post请求的话就加上这个句话
+		toolbar : '#toolbar', // 工具按钮用哪个容器
+		striped : false, // 是否显示行间隔色
+		cache : false, // 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+		pagination : true, // 是否显示分页（*）
+		sortable : true, // 是否启用排序
+		sortOrder : "asc", // 排序方式
+		// queryParams: oTableInit.queryParams,//传递参数（*）
+		sidePagination : "server", // 分页方式：client客户端分页，server服务端分页（*）
+		pageNumber : 1, // 初始化加载第一页，默认第一页
+		pageSize : 10, // 每页的记录行数（*）
+		pageList : [ 5, 10, 20 ], // 可供选择的每页的行数（*）
+		// search: true, //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+		strictSearch : true,
+		showColumns : true, // 是否显示所有的列
+		showRefresh : true, // 是否显示刷新按钮
+		minimumCountColumns : 1, // 最少允许的列数
+		clickToSelect : true, // 是否启用点击选中行
+		// height: 500, //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+		uniqueId : "id", // 每一行的唯一标识，一般为主键列
+		showToggle : true, // 是否显示详细视图和列表视图的切换按钮
+		cardView : false, // 是否显示详细视图
+		detailView : false,
+		queryParams : function(params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
+
+			return {
+				"pageSize" : params.limit, // 每页要显示的数据条数
+											// （params.limit）不可变表示开始数据位置 size可以变
+											// 对应后台的取值
+				"curPage" : params.offset, // 每页显示数据的开始行号
+											// （params.offset）不可变表示结束数据位置 cur可以变
+											// 对应后台的取值
+			// 上面两个参数后端分页不能少
+			// 可以加自己的参数
+			}
+		},
+		responseHandler : function(res) {// 请求得到参数处理 res是服务器返回的参数
+											// （可以取任何变量名（和AJAX一样））
+			console.log(res)
+			return {
+				"total" : res.tolSize,// 总条数 （"total"）不能变 插件特定解析字段
+										// 后面的值可根据实际情况做变化
+				"rows" : res.datas, // 数据 （"rows"）不能变 插件特定解析字段 后面的值可根据实际情况做变化
+			};
+		},
+		columns : [ {
+			field : 'stalladdress', // 对象属性字段 与java对象类中字段一致
+			title : '车位所在位置',
+			align : 'center'
+		}, {
+			field : 'stallarea',
+			title : '车位编号',
+			align : 'center',
+			formatter : function indexFormatter(value, row, index) {// 格式化数据
+																	// 得到的数据需要做特殊的处理
+																	// formatter处理关键字
+				// value 表示field 原本的值 一般会把这个值拿来做处理 （如 这个值是一个图片连接地址）
+				// row 表示改行的数据对象，相当与 我们java中的一个对象
+				// index 表示行数的索引 索引是从0开始
+
+				return value + row.stallnumber;
+			}
+
+		}, {
+			field : 'stalltype',
+			title : '车位状态',
+			align : 'center'
+		} ]
+	});
+	
+	/**
+	 * 单个车位添加
+	 */
+	$("#addOne").click(function() {// 绑定按钮点击事件
+		//alert(2222)
+		$("#oneSuer").click(function() {
+			if(isTrue1 && isTrue2 && isTrue3 
+				&& $("#oneAddress").val() != "" && $("#oneAreaNumber").val()!= ""
+				&& $("#oneNumber").val()!=""){
+		$.ajax({
+			url : "../addOneStall",
+			type : "POST",
+			data : {
+				"oneAddress" : $("#oneAddress").val().trim(),
+				"oneAreaNumber":$("#oneAreaNumber").val().trim(),
+				"oneNumber":$("#oneNumber").val().trim()
+			},
+			datatype : "json",
+			success : function(data) {
+				//alert("ok");
+				if (data.code == "200" && isTrue) {
+					self.location.href="parkPositionManageList.jsp";
+					alert("添加车位成功！");
+					}else if(data.code == "401"){
+						self.location.href="parkPositionManageList.jsp";
+						alert("添加的车位信息有重复！请重新添加！");
+					}else {
+						self.location.href="parkPositionManageList.jsp";
+					alert("添加车位失败！");
+				}
+
+				$("#showMessage").bootstrapTable('refresh');
+			}
+		})
+		
+			}else{
+				alert("添加车位失败！输入内容有误！");
+				self.location.href="parkPositionManageList.jsp";
+			}
+		})
+		/**
+		 * 重置输入框中的内容，为空
+		 */
+		$("#oneAddress").val("");
+		$("#oneAreaNumber").val("");
+		$("#oneNumber").val("");
+		$("#one").html("");
+		$("#two").html("");
+		$("#three").html("");
+	});
+	
+	
+
+
+	/**
+	 * 判断后端返回数据是否正确
+	 * 批量添加车位
+	 */
+	$("#addBatch").click(function() {// 绑定按钮点击事件
+		//alert(2222)
+		
+		
+		$("#batchSure").click(function() {
+			if(isTrue4 && isTrue5 && isTrue6 && isTrue7 
+				&& $("#address").val() != "" && $("#areaNumber").val()!= ""
+				&& $("#startNumber").val()!="" && $("#sum").val()!=""){
+			$.ajax({
+				url : "../addBetchStall",
+				type : "POST",
+				data : {
+					"address" : $("#address").val().trim(),
+					"areaNumber":$("#areaNumber").val().trim(),
+					"startNumber":$("#startNumber").val().trim(),
+					"sum":$("#sum").val().trim()
+				},
+				datatype : "json",
+				success : function(data) {
+					//alert("ok");
+					/**
+					 * 判断后端返回参数是否正确
+					 */
+					if (data.code == "200" ) {
+						self.location.href="parkPositionManageList.jsp";
+						alert("添加车位成功！");
+					}else if(data.code == "401"){
+						self.location.href="parkPositionManageList.jsp";
+						alert("添加的车位信息有重复！请重新添加！");
+					}else{
+						self.location.href="parkPositionManageList.jsp";
+						alert("添加车位失败！");
+					}
+					$("#showMessage").bootstrapTable('refresh');
+				}
+			})
+			}else{
+				self.location.href="parkPositionManageList.jsp";
+				alert("添加车位失败！输入内容有误！");
+			}
+		})
+		/**
+		 * 重置输入框中的内容，为空
+		 */
+		$("#address").val("");
+		$("#areaNumber").val("");
+		$("#startNumber").val("");
+		$("#sum").val("");
+		$("#four").html("");
+		$("#five").html("");
+		$("#six").html("");
+		$("#seven").html("");
+	});
+	/**
+	 * 验证车位数量的正则表达式
+	 */
+	var sum=/^[0-9]{1,4}$/;
+	/**
+	 * 验证车位开始号码的正则表达式
+	 */
+	var startNumber=/^[0-9]{1,4}$/;
+	/**
+	 * 验证车位区域编号的正则表达式
+	 */
+	var areaNumber=/^[A-Z]{1,3}$/;
+	/**
+	 * 验证车位地址的正则表达式
+	 */
+	var address=/^[\u4e00-\u9fa5_0-9a-zA-Z]{1,30}$/;
+	var isTrue1=false;
+	var isTrue2=false;
+	var isTrue3=false;
+	var isTrue4=false;
+	var isTrue5=false;
+	var isTrue6=false;
+	var isTrue7=false;
+	/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#oneAddress").blur(function(){
+		var reg1=$("#oneAddress").val();
+		var err=$("#one");
+		if(address.test(reg1)){
+			err.html("√");
+			err.css("color","green");
+			isTrue1=true;
+		}else{
+			err.html("×");
+			err.css("color","red");
+			isTrue1=false;
+		}
+	})
+	/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#oneAreaNumber").blur(function(){
+		var reg2=$("#oneAreaNumber").val();
+		var err=$("#two");
+		if(areaNumber.test(reg2)){
+			err.html("√");
+			err.css("color","green");
+			isTrue2=true;
+		}else{
+			err.html("×");
+			err.css("color","red");
+			isTrue2=false;
+		}
+	})
+	/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#oneNumber").blur(function(){
+		var reg3=$("#oneNumber").val();
+		var err=$("#three");
+		if(sum.test(reg3)){
+			err.html("√");
+			err.css("color","green");
+			isTrue3=true;
+		}else{
+			err.html("×");
+			err.css("color","red");
+			isTrue3=false;
+		}
+	})
+	/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#address").blur(function(){
+		var reg4=$("#address").val();
+		var err=$("#four");
+		if(address.test(reg4)){
+			err.html("√");
+			err.css("color","green");
+			isTrue4=true;
+		}else{
+			err.html("×");
+			err.css("color","red");
+			isTrue4=false;
+		}
+	})
+	/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#areaNumber").blur(function(){
+		var reg5=$("#areaNumber").val();
+		var err=$("#five");
+		if(areaNumber.test(reg5)){
+			err.html("√");
+			err.css("color","green");
+			isTrue5=true;
+		}else{
+			err.html("×");
+			err.css("color","red");
+			isTrue5=false;
+		}
+	})
+	/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#startNumber").blur(function(){
+		var reg6=$("#startNumber").val();
+		var err=$("#six");
+		if(sum.test(reg6)){
+			err.html("√");
+			err.css("color","green");
+			isTrue6=true;
+		}else{
+			err.html("×");
+			err.css("color","red");
+			isTrue6=false;
+		}
+	})
+	/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#sum").blur(function(){
+		var reg7=$("#sum").val();
+		var err=$("#seven");
+		if(sum.test(reg7)){
+			err.html("√");
+			err.css("color","green");
+			isTrue7=true;
+		}else{
+			err.html("×");
+			err.css("color","red");
+			isTrue7=false;
+		}
+	})
+	
+})

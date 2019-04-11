@@ -1,0 +1,206 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * 个人用户实体类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+@TableName(value="t_personal")
+public class PersonalEntity implements Serializable {
+	/**
+	 * 个人用户id
+	 */
+    @TableId(type=IdType.AUTO)
+    private Integer id;
+    /**
+     * 用户名
+     */
+    private String name;
+    /**
+     * 密码
+     */
+    private String password;
+    /**
+     * 真实姓名
+     */
+    private String realname;
+    /**
+     * 地址
+     */
+    private String address;
+    /**
+     * 电话号码
+     */
+    private String phone;
+    /**
+     * 身份证号码
+     */
+    private String  identitycard;
+
+    /**
+     * 职业
+     */
+    private String professional;
+    /**
+     * 电子邮箱
+     */
+    private String email;
+    /**
+     * 信誉度
+     */
+    private Double credibility;
+    /**
+     * 权限
+     */
+    private String level;
+    @TableField(exist=false)
+    private List<PersonalrentEntity> rentEntities = new ArrayList<PersonalrentEntity>();
+    @TableField(exist=false)
+    private List<PersonalsaleEntity> saleEntities = new ArrayList<PersonalsaleEntity>();
+    
+    @TableField(exist=false)
+    private List<StallEntity> stalls =new ArrayList<StallEntity>();
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRealname() {
+        return realname;
+    }
+
+    public void setRealname(String realname) {
+        this.realname = realname;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+ 
+    
+    public String getPhone() {
+		return phone;
+	}
+
+
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+
+	public String getIdentitycard() {
+		return identitycard;
+	}
+
+	public void setIdentitycard(String identitycard) {
+		this.identitycard = identitycard;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+
+	public String getProfessional() {
+        return professional;
+    }
+
+    public void setProfessional(String professional) {
+        this.professional = professional;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+   
+
+    public Double getCredibility() {
+		return credibility;
+	}
+
+	public void setCredibility(Double credibility) {
+		this.credibility = credibility;
+	}
+
+	public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+    
+
+	public List<StallEntity> getStalls() {
+		return stalls;
+	}
+
+	public void setStalls(List<StallEntity> stalls) {
+		this.stalls = stalls;
+	}
+	
+	
+	public List<PersonalrentEntity> getRentEntities() {
+		return rentEntities;
+	}
+
+
+	public void setRentEntities(List<PersonalrentEntity> rentEntities) {
+		this.rentEntities = rentEntities;
+	}
+
+	public List<PersonalsaleEntity> getSaleEntities() {
+		return saleEntities;
+	}
+
+	public void setSaleEntities(List<PersonalsaleEntity> saleEntities) {
+		this.saleEntities = saleEntities;
+	}
+
+	@Override
+	public String toString() {
+		return "PersonalEntity [id=" + id + ", name=" + name + ", password=" + password + ", realname=" + realname
+				+ ", address=" + address + ", phone=" + phone + ", identitycard=" + identitycard + ", professional="
+				+ professional + ", email=" + email + ", credibility=" + credibility + ", level=" + level
+				+ ", rentEntities=" + rentEntities + ", saleEntities=" + saleEntities + ", stalls=" + stalls + "]";
+	}
+
+}

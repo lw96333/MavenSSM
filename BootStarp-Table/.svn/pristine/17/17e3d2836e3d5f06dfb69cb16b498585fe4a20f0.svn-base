@@ -1,0 +1,123 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+ <!--bootstrap样式 必须先引用它 -->
+    <link rel="stylesheet" href="../general/js/bootstrap.min.css">
+    <!--bootstrap-table插件样式 必须引用它在上面之后 -->
+    <link rel="stylesheet" href="../general/js/bootstrap-table.min.css">
+<link href="../general/style/authority/basic_layout.css" rel="stylesheet" type="text/css">
+<link href="../general/style/authority/common_style.css" rel="stylesheet" type="text/css">
+
+<title>信息管理系统</title>
+
+</head>
+<body>
+		<!-- <div id="container">
+			<div class="ui_content">
+				<div class="ui_tb"> -->
+					<table class="table table-hover"  id="tables"></table>
+					
+<!--按照下面顺序引用jquery必须先引用 -->
+<script  src="../general/js/jquery-3.3.1.min.js"></script>
+<script  src="../general/js/bootstrap.min.js"></script>
+<script src="../general/js/bootstrap-table.min.js"></script>
+<script src="../general/js/bootstrap-table-zh-CN.min.js"></script>
+<script src="../ajax/Complain/Complain.js"></script>
+    
+    
+					 <!-- 模态框-->
+					<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title" id="myModalLabel">投诉详情</h4>
+								</div>
+								<div class="modal-body">
+									<h3>事件记录</h3>
+									<table class="table table-hover" cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
+										<thead>
+										<tr>
+											<td>车位小区地址:</td>
+											<td><span id="dz"></span></td>
+											<td>车位编号:</td>
+											<td><span id="bh"></span></td>
+										</tr>
+										<tr>
+											<td>车位区域:</td>
+											<td><span id="qy"><span></td>
+											<td>车位产权编号:</td>
+											<td><span id="cq"></span></td>
+										</tr>
+										</thead>
+										<tbody id="">
+										</tbody>
+									</table>
+
+									<h3>投诉方</h3>
+									<table class="table table-hover" cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
+										<thead>
+										<tr>
+											<td>用户名:</td>
+											<td><span id="user"></span></td>
+											<td>真实姓名:</td>
+											<td><span id="userer"></span></td>
+										</tr>
+										<tr>
+											<td>身份证号码:</td>
+											<td><span id="sf"></span></td>
+											<td>职业:</td>
+											<td><span id="zy"></span></td>
+										</tr>
+										<tr>
+											<td>电话号码:</td>
+											<td><span id="phone"></span></td>
+											<td>投诉理由:</td>
+											<td><span id="ly"></span></td>
+										</tr>
+
+										</thead>
+									</table>
+
+									<h3>被投诉方</h3>
+									<table class="table table-hover" cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
+										<thead>
+										<tr>
+											<td>用户名:</td>
+											<td><span id="user2"></span></td>
+											<td>真实姓名:</td>
+											<td><span id="userer2"></span></td>
+										</tr>
+										<tr>
+											<td>身份证号码:</td>
+											<td><span id="sf2"></span></td>
+											<td>职业:</td>
+											<td><span id="zy2"></span></td>
+										</tr>
+										<tr>
+											<td>电话号码:</td>
+											<td><span id="phone2"></span></td>
+										</tr>
+									</table>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal" id="btn">投诉无效</button>
+									<button type="button" class="btn btn-primary" data-dismiss="modal" id="btn1">暂缓处理</button>
+									<button type="button" class="btn btn-primary" data-dismiss="modal" id="btn2">投诉生效</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				
+			</div>
+
+		</div> 
+		 
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+package com.ne.service.impl;
+
+import com.ne.entity.AdminEntity;
+import com.ne.bean.PageBean;
+import com.ne.dao.AdminDao;
+import com.ne.dao.LevelDao;
+import com.ne.service.AdminService;
+
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * (Admin)表服务实现类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:16:59
+ */
+@Transactional(transactionManager = "transactionManager")
+@Rollback(value = false)
+@Service
+public class AdminServiceImpl extends ServiceImpl<AdminDao,AdminEntity> implements AdminService {
+    @Autowired
+    private AdminDao adminDao;
+    
+    @Autowired
+    private LevelDao leveDao ;
+	@Override
+	public PageBean<AdminEntity> showAdminByPage(Map<String, Object> condition) throws Exception {
+		// TODO Auto-generated method stub
+		PageBean<AdminEntity> pageBean = new PageBean<AdminEntity>();
+
+		// 获得当前页数和每页显示条数
+		int curPage = (Integer) condition.get("curPage");
+		int pageSize = (Integer) condition.get("pageSize");
+
+		// 获取数据库查询条件的总条数
+		int tolSize = adminDao.selectCount(null);
+
+		// 获取查询的数据集合
+		List<AdminEntity> list = adminDao.showAdminEntityByPage(condition);
+		List<AdminEntity> lis = new ArrayList<AdminEntity>();
+		if(list !=null){
+			for(int i = 0 ;i<list.size();i++){
+				AdminEntity aEntity =list.get(i);
+				int aid = aEntity.getId();				
+				aEntity.setLevelEntity(leveDao.getLevelEntityByAdminId(aid));
+				lis.add(aEntity);
+			}
+		}
+		// 封装PageBean对象
+		pageBean.setCurPage(curPage);
+		pageBean.setPageSize(pageSize);
+		pageBean.setTolSize(tolSize);
+		pageBean.setDatas(lis);
+
+		return pageBean;
+	}
+	@Override
+	public int getNewAdminEntityId(String pwd, String tel, String name) throws Exception {
+		// TODO Auto-generated method stub
+		AdminEntity aEntity = adminDao.getOneAdminEntityByPwdAndPhoneAndName(pwd, tel, name);
+		return aEntity.getId();
+	}
+
+
+   
+}

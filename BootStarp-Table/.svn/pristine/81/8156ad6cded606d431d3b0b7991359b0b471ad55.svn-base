@@ -1,0 +1,102 @@
+package com.ne.service.impl;
+
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.StallEntity;
+import com.ne.bean.PageBean;
+import com.ne.dao.PersonalDao;
+import com.ne.dao.PersonalsaleDao;
+import com.ne.dao.StallDao;
+import com.ne.service.PersonalsaleService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * (Personalsale)表服务实现类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+@Transactional(transactionManager = "transactionManager",rollbackFor=Exception.class)
+@Rollback(value = false)
+@Service
+public class PersonalsaleServiceImpl extends ServiceImpl<PersonalsaleDao,PersonalsaleEntity> implements PersonalsaleService {
+    @Autowired
+    private PersonalsaleDao personalsaleDao;
+
+	@Autowired
+	private StallDao stallDao;
+	
+	@Autowired
+	private PersonalDao personalDao;
+	
+	
+	
+	@Override
+	public PageBean<PersonalsaleEntity> showPersonalSale(Map<String, Object> condition) throws Exception {
+		// TODO Auto-generated method stub
+		PageBean<PersonalsaleEntity> pageBean = new PageBean<PersonalsaleEntity>();
+
+		// 获得当前页数和每页显示条数
+		int curPage = (Integer) condition.get("curPage");
+		int pageSize = (Integer) condition.get("pageSize");
+
+		// 获取数据库查询条件的总条数
+		int tolSize = personalsaleDao.countSale(condition);
+
+		// 获取查询的数据集合
+		List<PersonalsaleEntity> list = personalsaleDao.showPersonalSaleStall(condition);
+		// 封装PageBean对象
+		pageBean.setCurPage(curPage);
+		pageBean.setPageSize(pageSize);
+		pageBean.setTolSize(tolSize);
+		pageBean.setDatas(list);
+
+		return pageBean;
+	}
+
+	/**
+	 * author yanglei
+	 */
+	@Override
+	public PageBean<PersonalsaleEntity> showAllPendingStall(Map<String, Object> condition) throws Exception {
+		PageBean<PersonalsaleEntity> pageBean = new PageBean<PersonalsaleEntity>();
+		
+		int curPage = (Integer) condition.get("curPage");
+		int pageSize = (Integer) condition.get("pageSize");
+		
+		QueryWrapper<StallEntity> queryWrapper =new QueryWrapper<StallEntity>();
+		Map<String, Object> map=new HashMap<String ,Object>(16);
+		map.put("stallType","未签约");
+		queryWrapper.allEq(map);
+		int tolSize = stallDao.selectCount(queryWrapper);
+		List<PersonalsaleEntity> list = personalsaleDao.selectAllPendingStall(condition);
+		for (int i=0;i<list.size();i++) {
+			PersonalEntity seller = personalDao.selectById(list.get(i).getPersonalid());
+			list.get(i).setPersonalEntity(seller);
+			PersonalEntity buyer = personalDao.selectById(list.get(i).getBuyerid());
+			list.get(i).setBuyer(buyer);
+		}
+		
+		//封装总条数和总记录数到Page
+		pageBean.setDatas(list);
+		pageBean.setCurPage(curPage);
+		pageBean.setPageSize(pageSize);
+		//封装PageBean对象
+		pageBean.setDatas(list);
+		pageBean.setTolSize(tolSize);
+		
+		return pageBean;
+	}
+
+    
+}

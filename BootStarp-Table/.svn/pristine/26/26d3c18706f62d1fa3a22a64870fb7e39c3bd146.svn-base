@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="CBD:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>CBD</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="CBD.war">
+      <element id="artifact" artifact-name="CBD:war exploded" />
+    </root>
+  </artifact>
+</component>

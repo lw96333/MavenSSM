@@ -1,0 +1,147 @@
+
+function judge(obj,str){
+    var my = obj;
+    if(my.val() != "" && my.val() != null){
+        my.css({
+            "border": "1px solid gainsboro"
+        });
+        return true;
+    }else{
+        my.attr("placeholder",str);
+        my.css({
+            "border": "1px solid red"
+        });
+        return false;
+    }
+}
+
+$(function(){
+	
+    $("#adminid3").on("blur",function(){
+    	var adminid3 = $("#adminid3").val();
+    	if(adminid3==null || adminid3==""){
+        judge($(this),"请输入管理员用户名，字母数字，6-16位");
+        }else{
+        	$.ajax({
+				type:"post",
+				url:"../queryInputName",
+				data:{
+					"adminName":adminid3.trim()					
+				},
+				dataType:"json",
+				success:queryAdminNameSuccess
+			});
+
+        }
+    });
+    $("#adminPassword3").on("blur",function(){
+        judge($(this),"请输入登陆密码，字母数字下划线，8-16位!");
+    });
+    
+    $("#admintrueName3").on("blur",function(){
+        judge($(this),"请输入管理员真实姓名，仅限汉字最多6位");
+    });
+    $("#adminPhone3").on("blur",function(){
+        judge($(this),"请输入管理员电话号码");
+    });
+    
+    $("#surechange").click(function(){
+    	
+        var falg = true;
+        var adminid3 = $("#adminid3").val();
+        var adminPassword3 = $("#adminPassword3").val();
+        var admintrueName3 = $("#admintrueName3").val();
+        var adminPhone3 = $("#adminPhone3").val();
+        var reg = /^[a-z0-9]{6,16}$/;
+        var regpw = /^[a-z0-9_-]{8,16}$/;
+        var regphone = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/;
+        var regName =/^[\u4e00-\u9fa5]{2,6}$/;
+       
+        if(adminid3==null || adminid3== ""||!reg.test(adminid3.trim())){
+        	$("#adminid3").css({
+    			"border": "1px solid red"
+    		});;
+        	falg =false;
+        }      
+        if(adminPassword3==null || adminPassword3 == ""||!regpw.test(adminPassword3.trim())){
+            $("#adminPassword3").css({
+    			"border": "1px solid red"
+    		});; 
+            falg =false;
+        }
+        if(adminPhone3==null || adminPhone3 == ""||!regphone.test(adminPhone3.trim())){
+            $("#adminPhone3").css({
+    			"border": "1px solid red"
+    		});;
+            falg =false;  
+        }
+        if(admintrueName3==null || admintrueName3 == ""||!regName.test(admintrueName3.trim())){
+            $("#admintrueName3").css({
+    			"border": "1px solid red"
+    		});;
+            falg =false;  
+        }
+        
+     var userlevel =0;
+   	 var stalllevel =0;
+   	 var contractlevel =0;
+   	 var complaintlevel =0;
+   	 if($("#userlevel3").prop("checked")){
+   		 userlevel = 1 ;
+   	 }
+   	 if($("#stalllevel3").prop("checked")){
+   		 stalllevel = 1 ;
+   	 }
+   	 if($("#contractlevel3").prop("checked")){
+   		 contractlevel = 1 ;
+   	 }
+   	 if($("#complaintlevel3").prop("checked")){
+   		 complaintlevel = 1 ;
+   	 }
+        if(falg){
+        	
+			$.ajax({
+				type:"post",
+				url:"../addNewAdminIntoDatas",
+				data:{
+					"adminName":adminid3.trim(),
+					"adminPassword":adminPassword3.trim(),
+					"trueName":admintrueName3.trim(),					
+					"adminPhone":adminPhone3.trim(),
+					"userlevel":userlevel,
+					"stalllevel":stalllevel,					
+					"contractlevel":contractlevel,
+					"complaintlevel":complaintlevel
+				},
+				dataType:"json",
+				success:addAdminSuccess
+			});
+
+        }else{
+            return false;
+        }
+    });
+    
+    function queryAdminNameSuccess(rdData){
+    	
+        if(rdData.message=="adminNameHave"){
+        	$("#adminid3").val("");
+        	$("#adminid3").css({
+                  "border": "1px solid gainsboro"
+              });
+        	$("#adminid3").attr("placeholder","用户名已经存在，请重新输入！");
+        }
+    
+    }
+   
+    function addAdminSuccess(rdData){
+    	$("#adminid3").val("");
+        $("#adminPassword3").val("");
+        $("#admintrueName3").val("");
+        $("#adminPhone3").val("");     
+    	$("#showallAdminBypage").bootstrapTable("refresh");
+    
+    }
+ 
+   
+});

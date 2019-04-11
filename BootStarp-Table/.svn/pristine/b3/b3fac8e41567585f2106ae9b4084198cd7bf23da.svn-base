@@ -1,0 +1,61 @@
+package com.ne.dao;
+
+import com.ne.entity.PersonalrentEntity;
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.StallEntity;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * (Personalsale)表数据库访问层
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+public interface PersonalsaleDao  extends BaseMapper<PersonalsaleEntity>{
+
+	/**
+	 * 根据条件查询登陆用户所有出售车位发布信息
+	 * @param condition
+	 * @return
+	 */
+	@Select("<script>select sale.id as id,sale.stallId as stallid ,sale.personalId as personalid ,sale.message as message,"
+			+ "sale.price as price,sale.time as time ,sale.buyerId as buyerid   from "
+			+ "(t_stall as stall left join t_personal as personal on stall.userId = personal.id) "
+			+ "left join t_personalsale as sale on stall.id = sale.stallId where 1=1 and stall.userType= '个人'  "
+			+ "<if test='personalId != null'>"
+			+ " and sale.personalId=#{personalId}</if>"
+			+ "<if test='stallType != null'>"
+			+ " and stall.stallType=#{stallType}</if>"
+			+ "<if test='publishTime != null'>"
+			+ " and time=#{publishTime}</if>"
+			+ " limit #{curPage},#{pageSize}</script>")
+    List<PersonalsaleEntity> showPersonalSaleStall(Map<String , Object> condition) throws Exception;
+	
+	@Select("<script>select count(*) from "
+			+ "(t_stall as stall left join t_personal as personal on stall.userId = personal.id) "
+			+ "left join t_personalsale as sale on stall.id = sale.stallId where 1=1 and stall.userType= '个人'  "
+			+ "<if test='personalId != null'>"
+			+ " and sale.personalId=#{personalId}</if>"
+			+ "<if test='stallType != null'>"
+			+ " and stall.stallType=#{stallType}</if></script>")
+	int countSale(Map<String, Object> condition) throws Exception;
+
+	/**
+	 * author yanglei 
+	 * @param condition 分页条件
+	 * @return 车位买卖表
+	 * @throws Exception
+	 */
+	@Select("select * from t_personalsale as ps "
+			+ " join t_stall as st on ps.stallId=st.id "
+			+ "where st.stallType='未签约'"
+			+ " limit #{curPage},#{pageSize}")
+	List<PersonalsaleEntity>  selectAllPendingStall(Map<String, Object> condition)  throws Exception ;
+}

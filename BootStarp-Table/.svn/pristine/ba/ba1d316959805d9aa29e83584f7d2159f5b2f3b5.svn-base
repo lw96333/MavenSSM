@@ -1,0 +1,100 @@
+package com.ne.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.CompanyEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.UserType;
+import com.ne.log.LogType;
+import com.ne.service.CompanyService;
+
+/**
+ * 查询企业信息（模糊查询并分页）
+ * @author 张晋忠
+ *
+ * 2019年3月21日
+ */
+@RestController
+public class QueryCompanyInfoByCondition {
+	@Autowired
+	private CompanyService companyService;
+	/**
+	 * 获取日志记录器
+	 */
+	private static Logger logger = null;
+	static {
+		logger = Logger.getLogger(QueryCompanyInfoByCondition.class);
+	}
+	/**
+	 * 分页查询企业信息
+	 * @param curPage
+	 * @param pageSize
+	 * @param name
+	 * @param address
+	 * @param contacter
+	 * @param phone
+	 * @return
+	 * @throws Exception
+	 */
+	@LogAnno(operateName=LogType.查询,userPower=UserType.后台管理员,content="查询企业用户")
+	@RequestMapping(value="queryCompany")
+	public PageBean<CompanyEntity> queryCompany(
+			@RequestParam(value="pageSize") String pageSize,
+			@RequestParam(value="curPage") String curPage,
+			@RequestParam(value="companyName") String companyName,
+			@RequestParam(value="companyAddress") String address,
+			@RequestParam(value="companyContacter") String contacter,
+			@RequestParam(value="companyPhone") String phone
+			){
+			logger.info("收到查询企业信息请求");
+			Map<String, Object> map = new HashMap<String, Object>(16);
+			if(curPage==null||curPage=="") {
+				map.put("curPage", 0);
+			}else {
+				map.put("curPage", curPage);
+			}
+			if(pageSize==null||pageSize=="") {
+				map.put("pageSize", 5);
+			}else {
+				map.put("pageSize", pageSize);
+			}
+			if(companyName==null||companyName=="") {
+				map.put("companyName", null);
+			}else {
+				map.put("companyName", companyName);
+			}
+			if(address==null||address=="") {
+				map.put("companyAddress", null);
+			}else {
+				map.put("companyAddress", address);
+			}
+			if(contacter==null||contacter=="") {
+				map.put("companyContacter", null);
+			}else {
+				map.put("companyContacter", contacter);
+			}
+			if(phone==null||phone=="") {
+				map.put("companyPhone", null);
+			}else {
+				map.put("companyPhone", phone);
+			}
+			//查询分页对象
+			PageBean<CompanyEntity> pageBean = null;
+			try {
+				pageBean = companyService.getCompanyInfoByCondition(map);
+			} catch (Exception e) {
+				
+				e.printStackTrace();
+			}
+			return pageBean;
+	}
+}

@@ -1,0 +1,96 @@
+package com.ne.test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ne.bean.PageBean;
+import com.ne.dao.CompanyDao;
+import com.ne.entity.CompanyEntity;
+import com.ne.service.CompanyService;
+
+/**
+ *  个人测试类
+ * @author 张晋忠
+ *
+ * 2019年3月29日
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/application.xml"})
+@Transactional(transactionManager="transactionManager",rollbackFor=RuntimeException.class)
+@Rollback(value = false)
+public class CompanyTest extends AbstractTransactionalJUnit4SpringContextTests{
+	@Autowired
+	private CompanyService companyService;
+	@Autowired
+    private CompanyDao companyDao;
+	private static Logger logger = null;
+
+	static {
+		logger = Logger.getLogger(CompanyTest.class);
+	
+}
+	/**
+	 * 添加企业测试
+	 */
+		@Test
+	public void getAddCompanyTest() {
+		CompanyEntity entity = new CompanyEntity();
+		entity.setCompanphone("1588294222");
+		entity.setCompanyaddress("11楼");
+		entity.setCompanycontact("MrWang");
+		entity.setCompanyname("langwo");
+		entity.setLoginname("211");
+		entity.setLoginpassword("1234");
+		
+		boolean flag = companyService.save(entity);
+		logger.info(flag);
+	}
+	
+	/**
+	 * 删除企业测试
+	 */
+	@Test
+	public void getDeleteCompanyTest() {
+		boolean flag = companyService.removeById(1);
+		logger.info(flag);
+	}
+			/**
+			 * 查询测试
+			 * @throws Exception
+			 */
+			@Test
+			public void queryCompanyTest() throws Exception {
+				Map<String, Object> map =  new  HashMap<String, Object>(16);
+				map.put("curPage", 0);
+				map.put("pageSize", 5);
+//				map.put("companyName", "李四");
+//				map.put("companyAddress","11楼");
+//				map.put("companyContacter", "1588294222");
+//				map.put("companyPhone", "1588294223");
+				PageBean<CompanyEntity> pageBean = companyService.getCompanyInfoByCondition(map);
+				System.out.println(pageBean);
+				
+				//List<CompanyEntity> list1 = companyDao.getCompanies(map);
+				//logger.log(Priority.DEBUG, list1);
+				//System.out.println(list1);
+/*				QueryWrapper<CompanyEntity> queryWrapper = new QueryWrapper<CompanyEntity>();
+				Map<String, Object > map1 = new HashMap<String, Object>();
+				map1.put("companyName", "langwo");
+
+				//查询总条数
+				queryWrapper.allEq(map1);
+				int tolSize = companyDao.selectCount(queryWrapper);
+				System.out.println(tolSize);*/
+			}
+			
+}

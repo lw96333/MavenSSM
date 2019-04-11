@@ -1,0 +1,113 @@
+package com.ne.dao;
+
+import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ne.entity.StallEntity;
+
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+
+/**
+ * (Stall)表数据库访问层 
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+public interface StallDao  extends BaseMapper<StallEntity>{
+
+
+	/**
+	 * chenshuo
+	 *    根据条件查询车位分页
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("<script> select * from t_stall where 1=1 and userType ='个人'"
+			+ "<if test = 'userId != null'>"
+			+ " and userId = #{userId} </if>"
+			+ "<if test = 'stallType != null'>"
+			+ " and stallType = #{stallType} </if>"
+			+ "limit #{curPage},#{pageSize} </script>")
+    List<StallEntity> showListByCondition(Map<String, Object> condition) throws Exception;
+	/**
+	 * 根据条件查询车位数
+	 * @param condition(车位类型/用户ID/用户类型)
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("<script> select count(id) from t_stall where 1=1 "
+			+ "<if test='userId != null'>"
+			+ " and userId = #{userId} </if>"
+			+ "<if test='userType != null'>"
+			+ " and userType = #{userType} </if>"
+			+ "<if test='stallType != null'>"
+			+ " and stallType = #{stallType} </if></script>")
+	int countStall(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 *  (baojie)企业查询空闲车位
+	 * @param page 查询条件
+	 * @return 车位信息
+	 * @throws Exception
+	 */
+	@Select("select * from t_stall where (ISNULL(userType) or userType <> '个人' ) and stallType = '空闲'  limit ${cur},${size}")
+	 List<StallEntity> selectFreeStallPage(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 * (dwb)企业查询已租车位
+	 * @param condition 查询条件
+	 * @return 返回车位集合
+	 * @throws Exception
+	 */
+	@Select("select * from t_stall where (userType = '企业' or userType = 'CBD'  or userType = '第三方')  and userId = #{userId} and stallType ='已租' limit #{curPage},#{pageSize}")
+	 List<StallEntity> selectCompanyStallPageByCompanyId(Map<String, Object> condition) throws Exception;
+
+	/**
+	 * (baojie)  统计空闲车位数
+	 * @return
+	 */
+	@Select("select count(*) from t_stall where (ISNULL(userType) or userType <> '个人' ) and stallType = '空闲'")
+	int freeStallCount();
+
+	/**
+	 * 查看企业已租车位总数
+	 * @param cid
+	 * @return
+	 */
+	@Select("select count(*) from t_stall where userId = #{id} and stallType = '已租' ")
+	int allCompanyStallCount(@Param(value="id") int cid);
+	/**
+	 *  (baojie)企业条件查询分页
+	 * @param condition 查询条件
+	 * @return 车位信息
+	 * @throws Exception
+	 */
+	@Select("<script>select * from t_stall where 1=1 "
+			+ "<if test = 'userType != null'>"
+			+ "and userType=#{userType} </if>"
+			+ "and stallType = '空闲'  limit #{cur},#{size}</script>")
+	List<StallEntity> selectConditionPage(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 * 显示车位分页
+	 * @param page 分页对象
+	 * @return   分页对象集合
+	 */
+	@Select("select * from t_stall limit #{curPage},#{pageSize}")
+    List<StallEntity> getPage(Map<String, Object> condition);
+
+	/**
+	 * author yanglei
+	 * 个人待审核新增车位信息分页显示
+	 * @param condition   查询条件
+	 * @return 未审核新增车位信息
+	 * @throws Exception
+	 */
+	@Select("select * from t_stall where   stalltype ='未审核' limit  #{curPage},#{pageSize} ")
+	List<StallEntity> selectAllUnaduitStall(Map<String, Object> condition) throws Exception;
+}

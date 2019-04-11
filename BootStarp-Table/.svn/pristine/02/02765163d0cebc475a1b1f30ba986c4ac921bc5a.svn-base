@@ -1,0 +1,77 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+        <%@ taglib uri="http://shiro.apache.org/tags" prefix="shiro" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="../general/css/bootstrap.min.css" rel="stylesheet"
+	type="text/css">
+<link href="../general/style/authority/basic_layout.css"
+	rel="stylesheet" type="text/css">
+<link href="../general/style/authority/common_style.css" rel="stylesheet" type="text/css">
+<link href="../general/js/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../general/js/bootstrap-table.min.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="../general/css/naranja.min.css">
+	
+<script type="text/javascript" src="../general/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../general/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../general/js/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../general/js/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../ajax/personalManage/getAllPendingStall.js"></script>
+<script type="text/javascript" src="../ajax/personalManage/notpending.js"></script>
+<script type="text/javascript" src="../ajax/personalManage/sendContract.js"></script>
+<script type="text/javascript" src="../general/js/naranja.js"></script>
+    <title>车位出售审批</title>
+
+</head>
+<body>
+<div id="container">
+    <div class="ui_content">
+        <div class="ui_tb">
+            <h2>个人用户车位出售网上签约申请</h2>
+            <table class="table table-hover" cellspacing="0" cellpadding="0" width="100%" align="center" border="0" id="showAllPendingStall">
+                
+               
+
+            </table>
+
+            <!-- 模态框-->
+            <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">个人车位出售网上签约申请</h4>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-hover" >
+                                <tr>
+                                    <th>出售方用户信息</th>
+                                    <th>购买方用户信息</th>
+                                    <th>车位信息</th>
+                                </tr>
+                                <tbody id="table">
+
+								</tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" id="send">审核通过并发送合同</button>
+                            <button type="button" class="btn btn-default" id="notpengding">审核未通过</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br/>
+    </div>
+
+	<div style="display:none">
+		 发送人：<label id="sendUser"><shiro:principal property="name"/></label>
+   		 购买 接收人：<label id="getBuyerUser">${personalcontractEntity.personalBuyer.name }</label>
+   		 出售 接收人：<label id="getSellerUser">${personalcontractEntity.personalSeller.name }</label>
+	</div>
+</div>
+</body>
+</html>

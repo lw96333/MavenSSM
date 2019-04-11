@@ -1,0 +1,100 @@
+$(function() {
+
+	$("#addCompanylcontract").click(
+			function() {
+				//alert("进来了哦");
+				var checkID = [];// 定义一个空数组
+
+				$("input[name='vehicle']:checked").each(function(i) {// 把所有被选中的复选框的值存入数组
+					checkID[i] = $(this).val();
+					// alert("checkID[i]====>>>>>"+checkID[i])
+				});
+
+				if (
+						$("#file-pic2")[0].files[0] == null
+						||  $("#longtime").val().trim() == null
+						|| $("#companyname").val().trim() == null
+						|| $("#endtime").val().trim() == null
+						|| $("#price").val().trim() == null
+						|| $("#starttime").val().trim() == null) {
+					alert("所有内容不能为空");
+				} else if ($("#starttime").val().trim() > $("#endtime").val()
+						.trim()) {
+
+					alert("结束时间不能比生效日期小");
+				} else if (checkID.length < 1) {
+
+					alert("至少选择一个车位")
+				} else {
+
+					//alert("景来AJAX");
+					$.ajax({
+						url : "../addCompanylcontracts",
+						type : "POST",
+						data : {
+							longtime : $("#longtime").val().trim(),
+							companyname : $("#companyname").val().trim(),
+							price : $("#price").val().trim(),
+							// contractnumber:$("#contractnumber").val().trim(),
+							starttime : $("#starttime").val().trim(),
+							endtime : $("#endtime").val().trim(),
+							list : checkID
+						/*
+						 * option:$("#option").val().trim(),
+						 * address:$("#address").val().trim(),
+						 * stallarea:$("#stallarea").val().trim(),
+						 * stallnumber:$("#stallnumber").val().trim(),
+						 * addressDouble:$("#addressDouble").val().trim(),
+						 * areaNumberDouble:$("#areaNumberDouble").val().trim(),
+						 * startNumberDouble:$("#startNumberDouble").val().trim(),
+						 * sumDouble:$("#sumDouble").val().trim()
+						 */
+
+						},
+						dataType : "json",
+						success : function(data) {
+							// alert("回来了来了");
+							if (data.code == 200) {
+								var formData = new FormData();
+								formData.append("contractpic",$("#file-pic2")[0].files[0]);
+								$.ajax({
+									url:"../addCompanylcontractss",
+									type:"POST",
+									cache:false,
+									async:false,
+									processData:false,
+									contentType:false,
+									data:
+										formData,
+									
+									dataType:"json",
+									success:function(data){
+									
+										
+										if(data.code == 200){
+											self.location="corporateTenantContract.jsp";
+										}else{
+											
+											alert("输入有误请检查后重试");
+										}
+										
+										
+									}
+								})
+												
+								
+							} else if (data.code == 400) {
+								alert("至少添加一个车位");
+							} else {
+
+								alert("输入有误请检查后重试");
+							}
+
+						}
+
+					})
+
+				}
+			})
+
+})

@@ -1,0 +1,32 @@
+package com.ne.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ne.entity.CompanylcontractEntity;
+
+/**
+ * 企业合约Dao层接口
+ * 
+ * @author 班贵华 2019年3月21日
+ */
+public interface CompanylcontractDao extends BaseMapper<CompanylcontractEntity> {
+
+	@Select("SELECT * FROM t_companylcontract where isinvalid = '否' LIMIT ${curPage},#{pageSize}")
+	public List<CompanylcontractEntity> getCompanylcontractInfos(Map<Object, Object> condition);
+	
+	/**
+	 * (baojie)
+	 * @param stallId 根据车位id获取最长可住日期
+	 * @return
+	 */
+	@Select("select * from t_companylcontract where stall = #{stallId}")
+	CompanylcontractEntity getCompanylcontractByStallId(int stallId);
+
+	@Select("select * from t_companylcontract where stall=#{id} and company = #{cid}")
+	CompanylcontractEntity getCompanylcontractEntityByStallId(@Param(value="id")int id,@Param(value="cid")int cid); 
+}

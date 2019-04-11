@@ -1,0 +1,35 @@
+$(function(){
+	
+	var saleprice = null;
+	var flag=false;
+	/**
+	 * 出售价格正则判断
+	 */
+	$("#saleprice").focusout(function(){
+		if((/^[1-9][0-9]{1,9}$/).test($("#saleprice").val().trim())){
+			$("#error33").html("");
+			saleprice = $("#saleprice").val().trim();
+			flag=true;
+		}else{
+			$("#error33").html("只能输入中文、字母和数字(1-20个字符)");
+		}
+	})
+	
+	
+	$("#salePersonalStall").click(function(){
+		//alert("11")
+		if(flag=true){
+			$.ajax({
+				url:"../salePersonalStall",
+				type:"POST",
+				data:{
+					saleprice:saleprice
+				},
+				success:function(data){
+					self.location="table_basic.jsp";
+				}
+			})
+		}
+		
+	})
+})

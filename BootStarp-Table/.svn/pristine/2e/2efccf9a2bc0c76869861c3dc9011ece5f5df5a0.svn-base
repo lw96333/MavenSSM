@@ -1,0 +1,336 @@
+package com.ne.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.ne.log.LogType;
+import org.apache.ibatis.annotations.Param;
+import org.apache.log4j.Logger;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttributes;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.PersonalcontractEntity;
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.StallEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.UserType;
+import com.ne.service.PersonalService;
+import com.ne.service.PersonalcontractService;
+import com.ne.service.PersonalsaleService;
+import com.ne.service.StallService;
+import com.ne.util.ResponseData;
+
+/**
+ * 个人用户管理控制器
+ * 
+ * @author 杨雷
+ *
+ *         2019年3月21日
+ */
+@RestController
+@SessionAttributes({"stallEntity","personalcontractEntity"})
+public class PersonManageController {
+
+	/**
+	 * 车位对象依赖注入
+	 */
+	@Autowired
+	private StallService stallService;
+	/**
+	 * 个人用户对象依赖注入
+	 */
+	@Autowired
+	private PersonalService personalService;
+	/**
+	 * 个人出售车位信息对象依赖注入
+	 */
+	@Autowired
+	private PersonalsaleService personalsaleService;
+	/**
+	 * 个人车位买卖合同对象依赖注入
+	 */
+	@Autowired
+	private PersonalcontractService personalcontractService;
+
+	private static Logger logger = Logger.getLogger(PersonManageController.class);
+
+	/**
+	 * 分页显示所有待审核新增车位
+	 * 
+	 * @param cur 当前页
+	 * @param size 每页显示的条数
+	 * @return 待审核新增车位信息集合
+	 */
+	@LogAnno(content = "查询个人新增未审核车位信息", operateName= LogType.查询, userPower = UserType.后台管理员)
+	@RequestMapping(value="getAllUnaduitStall",method=RequestMethod.POST)
+	public PageBean<StallEntity> getAllUnaduitStall( @Param("curPage")Integer curPage, @Param("pageSize")Integer pageSize,ModelMap modelMap) {
+
+		logger.debug("得到未审核方法");
+		/**
+		 * 获取分页对象
+		 */
+		PageBean<StallEntity> pageBean = new PageBean<StallEntity>();
+		/**
+		 * 分页查询条件
+		 */
+		Map<String, Object> condition = new HashMap<String, Object>(16);
+		condition.put("stallType", "未审核");
+		condition.put("curPage", curPage);
+		condition.put("pageSize", pageSize);
+		
+		try {
+			pageBean = stallService.showAllUnaduitStall(condition);
+			/**
+			 * 获取全部符合条件车位信息
+			 */
+			List<StallEntity> list = pageBean.getDatas();
+			/**
+			 * 通过车位的用户ID获取用户信息
+			 */
+			for (int i = 0; i < list.size(); i++) {
+				int id = list.get(i).getUserid();
+				PersonalEntity personalEntity = personalService.getById(id);
+				StallEntity stallEntity = list.get(i);
+				stallEntity.setPersonal(personalEntity);
+			}
+			pageBean.setDatas(list);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// PageBean<StallEntity> pageBean1 = stallService.showStallPage(pageBean);
+		
+
+		return pageBean;
+	}
+
+	/**
+	 *  新增个人车位申请审核通过，修改车位状态
+	 * @param id 车位id
+	 * @return 
+	 */
+	@LogAnno(content = "修改个人新增车位审核通过状态", operateName= LogType.删除, userPower = UserType.后台管理员)
+	@RequestMapping("updateStallType")
+	public ResponseData updateStallType(int id,ModelMap modelMap) {
+
+		ResponseData responseData = new ResponseData();
+		/**
+		 * 通过id获取车位信息
+		 */
+		StallEntity stallEntity = stallService.getById(id);
+		/**
+		 * 修改车位状态
+		 */
+		stallEntity.setStalltype("空闲");
+		boolean flag = stallService.updateById(stallEntity);
+		/**
+		 * 封装当前车位主人信息到车位实体类
+		 */
+		PersonalEntity personalEntity = personalService.getById(stallEntity.getUserid());
+		stallEntity.setPersonal(personalEntity);
+		/**
+		 * 保存车位信息到session中
+		 */
+		modelMap.addAttribute(stallEntity);
+		
+		if (flag) {
+			responseData.getData().put("stallEntity", stallEntity);
+		}
+
+		return responseData;
+
+	}
+	/**
+	 * 通过ID 查询车位信息并保存到session中
+	 * @param modelMap
+	 * @param id
+	 * @return
+	 */
+//	@RequestMapping(value="getStallEntityById",method=RequestMethod.POST)
+//	public StallEntity getStallEntityById(ModelMap modelMap,int id) {
+//		StallEntity stallEntity = stallService.getById(id);
+//		modelMap.addAttribute(stallEntity);
+//		return stallEntity;
+//	}
+	/**
+	 *   审核未通过修改车位状态
+	 * @param id 车位id
+	 * @return
+	 */
+	@LogAnno(content = "修改个人新增、交易车位审核未通过状态", operateName= LogType.修改, userPower = UserType.后台管理员)
+	@RequestMapping("notPassStallType")
+	public ResponseData notPassStallType(int id) {
+
+		ResponseData responseData = new ResponseData();
+		/**
+		 * 通过id获取车位信息
+		 */
+		StallEntity stallEntity = stallService.getById(id);
+		/**
+		 * 修改车位状态
+		 */
+		stallEntity.setStalltype("审核不通过");
+		boolean flag = stallService.updateById(stallEntity);
+
+		if (flag) {
+			responseData.getData().put("stallEntity", stallEntity);
+		}
+
+		return responseData;
+
+	}
+
+	/**
+	 * 获取全部待审核个人车位买卖信息
+	 * 
+	 * @param cur  当前页
+	 * @param size 每页显示条数
+	 * @return
+	 */
+	@LogAnno(content = "查询个人车位交易未审核交易信息", operateName= LogType.查询, userPower = UserType.后台管理员)
+	@RequestMapping(value="getAllPendingStall",method=RequestMethod.POST)
+	public PageBean<PersonalsaleEntity> getAllPendingStall( @Param("curPage")Integer curPage, @Param("pageSize")Integer pageSize,ModelMap modelMap) {
+
+		logger.debug("得到未审核方法");
+
+		/**
+		 * 获取分页对象
+		 */
+		PageBean<PersonalsaleEntity> pageBean = new PageBean<PersonalsaleEntity>();
+		/**
+		 * 设置分页条件
+		 */
+		Map<String, Object> map1 = new HashMap<String, Object>(16);
+		map1.put("stallType", "未签约");
+		map1.put("curPage", curPage);
+		map1.put("pageSize", pageSize);
+
+		try {
+			pageBean = personalsaleService.showAllPendingStall(map1);
+			List<PersonalsaleEntity> list = pageBean.getDatas();
+			/**
+			 * 通过车位买卖信息获取卖方买方和车位信息
+			 */
+			for (int i = 0; i < list.size(); i++) {
+				PersonalsaleEntity personalsaleEntity = list.get(i);
+
+				/**
+				 * 获取并封装买方个人信息
+				 */
+				int buyerId = personalsaleEntity.getBuyerid();
+				PersonalEntity buyer = personalService.getById(buyerId);
+				personalsaleEntity.setBuyer(buyer);
+
+				/**
+				 * 获取并封装卖方个人信息
+				 */
+				int sellId = personalsaleEntity.getPersonalid();
+				PersonalEntity seller = personalService.getById(sellId);
+				personalsaleEntity.setPersonalEntity(seller);
+
+				/**
+				 * 获取并封装车位信息
+				 */
+				personalsaleEntity.setStallEntity(stallService.getById(personalsaleEntity.getStallid()));
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		return pageBean;
+	}
+
+	/**
+	 * 修改买卖车位审核通过后车位状态并封装合同
+	 * @param id 车位交易申请的id
+	 * @return
+	 */
+	@LogAnno(content = "修改个人车位交易审核通过车位状态", operateName=LogType.修改, userPower = UserType.后台管理员)
+	@RequestMapping(value="updateDelledStallType",method=RequestMethod.POST)
+	public ResponseData updateDelledStallType(int id,ModelMap modelMap) {
+
+		ResponseData responseData = new ResponseData();
+		/**
+		 * 创建一个新合同
+		 */
+		PersonalcontractEntity personalcontractEntity = new PersonalcontractEntity();
+
+		/**
+		 * 获取交易信息
+		 */
+		PersonalsaleEntity personalsaleEntity = personalsaleService.getById(id);
+
+		/**
+		 * 获取买方id
+		 */
+		personalcontractEntity.setBuyer(personalsaleEntity.getBuyerid());
+		/**
+		 * 获取卖方id
+		 */
+		personalcontractEntity.setSellers(personalsaleEntity.getPersonalid());
+		/**
+		 * 获取车位id
+		 */
+		personalcontractEntity.setStall(personalsaleEntity.getStallid());
+		/**
+		 * 封装买方个人信息
+		 */
+		personalcontractEntity.setPersonalBuyer(personalService.getById(personalsaleEntity.getBuyerid()));
+		/**
+		 * 封装卖方个人信息
+		 */
+		personalcontractEntity.setPersonalSeller(personalService.getById(personalsaleEntity.getPersonalid()));
+
+		/**
+		 * 封装车位信息
+		 */
+		personalcontractEntity.setStallEntity(stallService.getById(personalsaleEntity.getStallid()));
+
+		/**
+		 * 获取交易价格
+		 */
+		personalcontractEntity.setPrice(personalsaleEntity.getPrice());
+		/**
+		 * 设置默认值
+		 */
+		personalcontractEntity.setSellersure("0");
+		personalcontractEntity.setBuyersure("0");
+
+		/**
+		 * 获取当前时间作为合同编号
+		 */
+		
+		String contractnumber = System.currentTimeMillis() + "";
+		personalcontractEntity.setContractnumber(contractnumber);
+		/**
+		 * 保存合同
+		 */
+		personalcontractService.save(personalcontractEntity);
+		/**
+		 * 将合同存放到session中
+		 */
+		modelMap.addAttribute(personalcontractEntity);
+		/**
+		 * 修改车位信息
+		 */
+		StallEntity stallEntity = stallService.getById(personalsaleService.getById(id).getStallid());
+		stallEntity.setStalltype("已审核");
+		boolean flag = stallService.updateById(stallEntity);
+
+		if (flag) {
+			responseData.getData().put("stallEntity", stallEntity);
+		}
+		return responseData;
+
+	}
+}

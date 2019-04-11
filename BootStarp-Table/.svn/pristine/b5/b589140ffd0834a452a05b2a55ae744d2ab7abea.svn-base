@@ -1,0 +1,200 @@
+package com.ne.log;
+
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.shiro.SecurityUtils;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+
+import com.ne.entity.AdminEntity;
+import com.ne.entity.CompanyEntity;
+import com.ne.entity.LogEntity;
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.SuperadminEntity;
+import com.ne.service.LogService;
+/**
+ * 日志切面类
+ * 
+ * @author 张晋忠
+ *
+ * 2019年3月25日
+ */
+@Component
+@Aspect
+public class MyAspect {
+	static final String OPERATE = "操作";
+	static final String FORWARD = "前台";
+	static final String BACK = "后台";
+	static final String ADD = "添加";
+	static final String DELETE = "删除";
+	static final String UPDATE = "修改";
+	static final String QUERY = "查询";
+	static final String LOGIN = "登录";
+	static final String PERSONAL = "个人";
+	static final String COMPANY = "企业";
+	static final String SYSTEM = "系统";
+	static final String PERSONUSER = "个人用户";
+	static final String COMPANYUSER = "企业用户";
+	static final String BACKUSER = "后台管理员";
+	static final String SUPERADMIN = "超级管理员";
+	static final String LOGINSYSTEM = "登录系统";
+	
+	@Autowired
+	private LogService logService;
+	/**
+	 * 后置通知记录日志通过注解匹配到需要增加日志功能的方法
+	 * 
+	 * @param jp
+	 * @return
+	 * @throws Throwable
+	 */
+	@After("execution(* com.ne.controller.*.*(..))")
+	public void afterAdvice(JoinPoint jp) throws Throwable {
+		// 获取方法签名
+		MethodSignature methodSignature = (MethodSignature) jp.getSignature();
+		// 获取方法
+		Method method = methodSignature.getMethod();
+		// 获取方法上面的注解
+		LogAnno logAnno = method.getAnnotation(LogAnno.class);
+        // 创建一个日志对象(准备记录日志)
+        LogEntity logEntity = new LogEntity();
+        // 获取操作描述的属性值(得到操作名称（通过名称判断是操作还是登录）(将枚举类型数组里的值转为String类型))
+        String operateName = null;
+        if(logAnno!=null) {
+        	operateName = logAnno.operateName()[0].toString();
+        
+        if(logAnno!=null) {
+        	//记录日志的操作类型
+	        if(ADD.equals(operateName.trim())) {
+	        	logEntity.setLogtype(OPERATE); 
+	        }
+	        if(DELETE.equals(operateName.trim())) {
+	        	logEntity.setLogtype(OPERATE); 
+	        }
+	        if(UPDATE.equals(operateName.trim())) {
+	        	logEntity.setLogtype(OPERATE); 
+	        }
+	        if(QUERY.equals(operateName.trim())) {
+	        	logEntity.setLogtype(OPERATE); 
+	        }
+	        if(LOGIN.equals(operateName.trim())){
+	        	logEntity.setLogtype(LOGIN); 
+	        	//得到目标对象方法参数值
+	    		Object[] args = jp.getArgs();
+	    		String userType = (String) args[2];
+	    		 	if(PERSONAL.equals(userType.trim())) {
+	    		 		//记录用户类型
+			        	logEntity.setUsertype(FORWARD);
+			        	try {
+			        		//获取登录用户实体对象
+			        		PersonalEntity personalEntity= (PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+			        		//设置用户名称
+			        		logEntity.setName(personalEntity.getName());
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+			        }
+					if(COMPANY.equals(userType.trim())) {
+						logEntity.setUsertype(FORWARD);   
+						try {
+							CompanyEntity companyEntity= (CompanyEntity) SecurityUtils.getSubject().getPrincipal();
+							logEntity.setName(companyEntity.getCompanyname());
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+					}
+					if(BACK.equals(userType.trim())) {
+						logEntity.setUsertype(BACK);
+						try {
+							AdminEntity admin= (AdminEntity) SecurityUtils.getSubject().getPrincipal();
+							logEntity.setName(admin.getName());
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+					}
+					if(SYSTEM.equals(userType.trim())) {
+						logEntity.setUsertype(BACK);
+						try {
+							SuperadminEntity superAdmin= (SuperadminEntity) SecurityUtils.getSubject().getPrincipal();
+							logEntity.setName(superAdmin.getName());
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+				    }
+					logEntity.setContent(LOGINSYSTEM);
+	        }
+        }
+   	    //获取RequestAttributes  
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();  
+        //从获取RequestAttributes中获取HttpServletRequest的信息  
+        HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);  
+        //何地（获取ip地址）
+        String ip = request.getLocalAddr();
+        //操作ip
+        logEntity.setIp(ip);
+       /* 获取Session信息  
+        HttpSession session = (HttpSession) requestAttributes.resolveReference(RequestAttributes.REFERENCE_SESSION); */
+        if(!LOGIN.equals(operateName.trim())) {
+	        if(logAnno!=null) {
+	        	//得到用户类（通过个人用户、企业用户等判断是前台还是后台）
+		        String userPower = logAnno.userPower()[0].toString();
+		        if(PERSONUSER.equals(userPower.trim())) {
+		        	logEntity.setUsertype(FORWARD);
+		        	try {
+		        		//获取登录用户实体对象
+		        		PersonalEntity personalEntity= (PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+		        		logEntity.setName(personalEntity.getName());
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+		        }
+				if(COMPANYUSER.equals(userPower.trim())) {
+					logEntity.setUsertype(FORWARD); 
+					try {
+						CompanyEntity companyEntity= (CompanyEntity) SecurityUtils.getSubject().getPrincipal();
+						logEntity.setName(companyEntity.getCompanyname());
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+				}
+				if(BACKUSER.equals(userPower.trim())) {
+					logEntity.setUsertype(BACK);
+					try {
+						AdminEntity admin= (AdminEntity) SecurityUtils.getSubject().getPrincipal();
+						logEntity.setName(admin.getName());
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+				}
+				if(SUPERADMIN.equals(userPower.trim())) {
+					logEntity.setUsertype(BACK);
+					try {
+						SuperadminEntity superAdmin= (SuperadminEntity) SecurityUtils.getSubject().getPrincipal();
+						logEntity.setName(superAdmin.getName());
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
+			    }
+	        }
+	        //日志内容
+	        String content = logAnno.content();
+	        //记录操作内容（如添加了一条投诉信息）
+	        logEntity.setContent(content);
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = sdf.format(System.currentTimeMillis());
+        //记录操作日期
+		logEntity.setTime(time);
+        logService.save(logEntity);
+        }
+    }
+}

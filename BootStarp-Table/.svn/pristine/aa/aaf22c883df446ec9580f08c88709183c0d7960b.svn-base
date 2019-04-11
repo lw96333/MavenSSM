@@ -1,0 +1,108 @@
+package com.ne.service.impl;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.ComplainEntity;
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.StallEntity;
+import com.ne.dao.ComplainDao;
+import com.ne.dao.PersonalDao;
+import com.ne.dao.StallDao;
+import com.ne.service.ComplainService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * (Complain)表服务实现类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:00
+ */
+@Transactional(transactionManager = "transactionManager",rollbackFor = Exception.class)
+@Rollback(value = false)
+@Service
+public class ComplainServiceImpl extends ServiceImpl<ComplainDao,ComplainEntity> implements ComplainService {
+    @Autowired
+    private ComplainDao complainDao;
+    @Autowired
+	private ComplainService complainService;
+	@Autowired
+	private PersonalDao personalDao;
+	@Autowired
+	private StallDao stallDao;
+    
+   /* *//**
+     * 查询封装分页对象
+     */
+    @Override
+    public PageBean<ComplainEntity> showlistComplain(Map<String, Object> condition) throws Exception {
+		
+		  PageBean<ComplainEntity>pageBean = new PageBean<ComplainEntity>();
+		  
+		  	int curPage = (Integer) condition.get("curPage");
+			int pageSize = (Integer) condition.get("pageSize");
+		   
+		  //获取数据库查询条件的总条数
+		  QueryWrapper<ComplainEntity> queryWrapper = new QueryWrapper<ComplainEntity>();
+		  String complainant = (String) condition.get("complainant");
+		  if(complainant != null) {
+			  queryWrapper.like("complainant", complainant);
+		  }
+		  int tolSize = complainDao.selectCount(queryWrapper);
+		  	System.out.println(tolSize);
+			System.out.println(complainant);
+		  //获取条件查询的数据集合
+		  List<ComplainEntity> list = complainDao.showlistComplain(condition);
+		  
+		  //封装PageBean对象		  
+		  pageBean.setTolSize(tolSize);
+		  pageBean.setDatas(list);
+		  pageBean.setCurPage(curPage);
+		  pageBean.setPageSize(pageSize);
+		
+		return pageBean;
+	}
+
+/**
+ * 查看分页
+ */
+@Override
+public PageBean<ComplainEntity> getComplainEntity(Map<String ,Object>condition) throws Exception {
+	PageBean<ComplainEntity>pageBean = new PageBean<ComplainEntity>();
+	int curPage = (Integer) condition.get("curPage");
+	int pageSize = (Integer) condition.get("pageSize");
+	 int tolSize = complainDao.selectCount(null);
+	 
+	//获取条件查询的数据集合
+	 List<ComplainEntity> list= complainDao.getComplainEntity(condition);
+	 for (int i = 0; i < list.size(); i++) {
+			PersonalEntity personalEntity=personalDao.selectById(list.get(i).getComplainant());
+			System.out.println(personalEntity);
+			PersonalEntity personalEntity1=personalDao.selectById(list.get(i).getBycomplainant());
+			StallEntity personalEntity2=stallDao.selectById(list.get(i).getStallid());
+			list.get(i).setComplainanter(personalEntity);
+			list.get(i).setBycomplainanter(personalEntity1);
+			list.get(i).setStallEntity(personalEntity2);
+			
+			
+	 }
+	 //封装PageBean对象	
+	  pageBean.setTolSize(tolSize);
+	  pageBean.setDatas(list);
+	  pageBean.setCurPage(curPage);
+	  pageBean.setPageSize(pageSize);
+	  
+	return pageBean;
+	 
+}
+
+
+
+}

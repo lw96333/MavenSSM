@@ -1,0 +1,246 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="../general/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../general/style/authority/basic_layout.css" rel="stylesheet" type="text/css">
+<link href="../general/style/authority/common_style.css" rel="stylesheet" type="text/css">
+
+ <!--bootstrap-table插件样式 必须引用它在上面之后 -->
+    <link rel="stylesheet" href="../general/js/bootstrap-table.min.css">
+<link href="../general/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../general/style/authority/basic_layout.css" rel="stylesheet" type="text/css">
+<link href="../general/style/authority/common_style.css" rel="stylesheet" type="text/css">
+
+	<link rel="stylesheet" href="../general/css/fileinput.min.css"/>
+	
+	<!--按照下面顺序引用jquery必须先引用 -->
+	 <script src="../general/js/jquery-3.3.1.min.js"></script>
+    <script src="../general/js/bootstrap.min.js"></script>
+    <script src="../general/js/bootstrap-table.min.js"></script>
+    <script src="../general/js/bootstrap-table-zh-CN.min.js"></script>
+	
+	<script language="javascript" type="text/javascript" src="../assets/My97DatePicker/WdatePicker.js"></script>
+	<script type="text/javascript" src="../general/js/fileinput.min.js"></script>
+	<script type="text/javascript" src="../general/js/zh.js"></script>
+	<script type="text/javascript" src="../ajax/CompanylContract/showExternalcontract.js"></script>
+	<script type="text/javascript" src="../ajax/CompanylContract/addExternalcontract.js"></script>
+	<script type="text/javascript" src="../ajax/CompanylContract/ExtendExternalcontract.js"></script>
+
+<title>外部合约管理系统</title>
+
+</head>
+<body>
+		<div id="container">
+			<div class="ui_content">
+				<div class="ui_tb">
+					<div class="btn btn-info"  data-toggle="modal" data-target="#myModal2">新增外部合约</div>
+					
+					<table id="showExternalcontract" class="table table-hover" cellspacing="0" cellpadding="0" width="100%" align="center" border="0">
+			
+					</table>
+
+					<!-- 模态框-->
+					<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title" id="myModalLabel">外部合约续约</h4>
+								</div>
+								<div class="modal-body">
+									<table>
+										<tr>
+											<td><span>原合同编号：</span></td>
+											<td><input id="contractnumbers" class="form-control" readonly="readonly"  type="text"/></td>
+											
+											<td><span>合同生效期：</span></td>											
+     										<td><input type="text" class="form-control"  id="starttimes" name="starttimes" readonly="readonly">
+     										</td>
+										</tr>
+										<tr>
+											<td><span>对方联系人：</span></td>
+											<td><input   placeholder="只能输入中文"    id="companycontacts" class="form-control"   type="text"  onkeyup="value=value.replace(/[^\u4E00-\u9FA5]/g,'')" maxlength=11 /></td>
+     										<td><span>合同截止日期：</span></td>
+     										<td><input type="text" class="form-control"  id="endtimes" name="starttime" readonly="readonly"
+     											  placeholder="请选择合同截止日期" onClick="WdatePicker()"  />
+     										</td>
+										</tr>
+										<tr>
+											<td><span>对方联系电话：</span></td>
+											<td><input   placeholder="只能输入数字"    id="companphones" class="form-control"   type="text"  onkeyup="this.value=this.value.replace(/\D/g,'')"  maxlength=11/></td>
+											<td><span>成交总价：</span></td>
+											<td><input   placeholder="只能输入数字"    id="pricess" class="form-control"   type="text"  onkeyup="this.value=this.value.replace(/\D/g,'')"  /></td>
+										</tr>
+										<tr>
+										
+											
+     										
+											<td><span>上传合同复印件：</span></td>
+											<td><input id="file-pic11" class="file-pic1" name="uploadImgFile" type="file"  value="上传"  multiple /></td>
+										
+										</tr>
+									</table>
+
+
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+									<button id="renewal" type="button" class="btn btn-primary">续约</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+
+					<!-- 模态框-->
+					<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title" id="myModalLabel2">添加外部合约</h4>
+								</div>
+								<div class="modal-body">
+									<table>
+										<tr>
+										<td><span>合同单位:</span></td>
+											<td><input   placeholder="只能输入中文"    id="companyname" class="form-control"   type="text"  onkeyup="value=value.replace(/[^\u4E00-\u9FA5]/g,'')" maxlength=11 /></td>
+											<!-- <td><span>合同编号：</span></td>
+											<td><input id="contractnumber" class="form-control"   type="text"/></td> -->
+											<td><span>合同生效日期：</span></td>
+											<td><input type="text" class="form-control"  id="starttime" name="starttime" readonly="readonly"
+     											  placeholder="请选择合同生效期" onClick="WdatePicker()"   />
+     										</td>
+										</tr>
+										<tr>
+											<td><span>对方联系人：</span></td>
+											<td><input   placeholder="只能输入中文"    id="companycontact" class="form-control"   type="text" onkeyup="value=value.replace(/[^\u4E00-\u9FA5]/g,'')" maxlength=11  /></td>
+											<td><span>合同截止时间：</span></td>
+											<td><input type="text" class="form-control"  id="endtime" name="endtime" readonly="readonly"
+     											  placeholder="请选择合同截止日期" onClick="WdatePicker()"  >
+     										</td>
+										</tr>
+										<tr>
+											<td><span>对方联系人电话：</span></td>
+											<td><input   placeholder="只能输入数字"    id="companphone" class="form-control"   type="text"  onkeyup="this.value=this.value.replace(/\D/g,'')"  maxlength=11/></td>
+											<td><span>成交价格总价：</span></td>
+											<td><input   placeholder="只能输入数字"    id="price" class="form-control"   type="text"   onkeyup="this.value=this.value.replace(/\D/g,'')" /></td>
+										</tr>
+										<tr>
+											
+											<td><span>最长可租时间(月)：</span></td>
+										<td><input placeholder="只能输入数字"   id="longtime" name="longtime"  class="form-control"   type="text"  onkeyup="this.value=this.value.replace(/\D/g,'')"  maxlength=5/></td>										
+										
+											
+											<td><span>单位楼层位置：</span></td>
+											<td><input   placeholder="只能输入中文数字"    id="companyaddress" class="form-control"   type="text"   onkeyup="value=value.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5\@\.]/g,'')" maxlength=11  /></td>
+										</tr>
+										<tr>
+										
+										<td><span>上传合同复印件：</span></td>
+											<td><input id="file-pic2" class="file-pic1" name="uploadImgFile" type="file"  value="上传"  multiple /></td>
+											
+										
+										</tr>
+										
+									</table>
+									<hr/>
+				                     <select id="option" class="form-control" >
+										  <option value ="单车位添加">单车位添加</option>
+										  <option value ="批量添加车位">批量添加车位</option>										
+										</select>
+										<div class="modal-body">
+										<p>单车位添加</p>
+									<table  class="table table-hover">
+										<tr>
+											<td>车位所在地址</td>
+											<td><input   placeholder="只能输入中文数字"    id="address" class="form-control"   type="text "   onkeyup="value=value.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5\@\.]/g,'')" maxlength=15  /></td>
+										</tr>
+										<tr>
+											<td>区域编号号</td>
+											<td><input   placeholder="只能输入大写字母（如：CK"    id="stallarea" class="form-control"   type="text "  onkeyup="value=value.replace(/[^\A-\Z]/g,'')"  maxlength=3/></td>
+										</tr>
+										<tr>
+											<td>车位号</td>
+											<td><input   placeholder="只能输入数字"    id="stallnumber" class="form-control"   type="text "   onkeyup="this.value=this.value.replace(/\D/g,'')"  maxlength=4/></td>
+										</tr>
+									</table>
+								</div>
+								<div class="modal-body">
+									<p>批量车位添加</p>
+									<table  class="table table-hover">
+										<tr>
+											<td>车位所在地址</td>
+											<td><input   placeholder="只能输入中文和数字（最长15个字）"    id="addressDouble" class="form-control"   type="text "   onkeyup="value=value.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5\@\.]/g,'')" maxlength=15 /></td>
+										</tr>
+										<tr>
+											<td>车位区域编号</td>
+											<td><input   placeholder="只能输入大写字母（如：CK）"    id="areaNumberDouble" class="form-control"   type="text "  onkeyup="value=value.replace(/[^\A-\Z]/g,'')"  maxlength=3/></td>
+										</tr>
+										<tr>
+											<td>车位起始号</td>
+											<td><input   placeholder="只能输入数字"    id="startNumberDouble" class="form-control"   type="text "   onkeyup="this.value=this.value.replace(/\D/g,'')"  maxlength=4/></td>
+										</tr>
+										<tr>
+											<td>车位总数</td>
+											<td><input   placeholder="只能输入数字"    id="sumDouble" class="form-control"   type="text "  onkeyup="this.value=this.value.replace(/\D/g,'')"  maxlength=5/></td>
+										</tr>
+									</table>
+								</div>
+								</div>
+								<div class="modal-footer">
+									
+									<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+									<button id="addExternalcontract" type="button" class="btn btn-primary">新增</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+
+
+
+
+				</div>
+
+		</div>
+</body>
+
+<script>
+    $(function(){
+        $('.file-pic1').fileinput({
+
+            //初始化上传文件框
+            language: "zh",//配置语言
+            showPreview: false,//是否显示预览
+            showUpload: true, //显示整体上传的按钮
+            showRemove: false,//显示整体删除的按钮
+            uploadAsync: false,//默认异步上传
+//            uploadLabel: "上传",//设置整体上传按钮的汉字
+            removeLabel: "移除",//设置整体删除按钮的汉字
+            uploadClass: "btn btn-primary",//设置上传按钮样式
+            showCaption: true,//是否显示标题
+            dropZoneEnabled: false,//是否显示拖拽区域
+            showUpload: false,//是否显示上传按钮
+//                    uploadUrl: getPath('/gz/tool/toolAction/uploadImgFile'),//这个是配置上传调取的后台地址，本项目是SSM搭建的
+            maxFileSize : 9999,//文件大小限制
+            maxFileCount: 1,//允许最大上传数，可以多个，
+            enctype: 'multipart/form-data',
+            allowedFileExtensions : ["jpg", "png","gif","docx","zip","xlsx","txt"],/*上传文件格式限制*/
+            msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
+            showBrowse: true,
+            browseOnZoneClick: true,
+            initialCaption: "请选择上传图片",//输入提示
+            slugCallback : function(filename) {
+                return filename.replace('(', '_').replace(']', '_');
+            }
+        });
+    });
+</script>
+
+</html>

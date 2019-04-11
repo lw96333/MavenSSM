@@ -1,0 +1,98 @@
+package com.ne.controller;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.LogEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.LogType;
+import com.ne.log.UserType;
+import com.ne.service.LogService;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 日志记录前端控制器
+ * @author 张晋忠
+ *
+ * 2019年3月25日
+ */
+@RestController
+public class LogController {
+	@Autowired
+	private LogService logService;
+	/**
+	 * 获取日志记录器
+	 */
+	private static Logger logger = null;
+	static {
+		logger = Logger.getLogger(LogController.class);
+	}
+	/**
+	 * 分页查询日志信息
+	 * @param pageSize
+	 * @param curPage
+	 * @param companyName
+	 * @param address
+	 * @param contacter
+	 * @param phone
+	 * @return
+	 */
+	@LogAnno(operateName = LogType.查询,userPower=UserType.后台管理员,content="查询日志记录")
+	@RequestMapping(value="queryLogs",method=RequestMethod.POST)
+	public PageBean<LogEntity> queryLogs(
+			@RequestParam(value="pageSize") String pageSize,
+			@RequestParam(value="curPage") String curPage,
+			String userType,String logType,String time,String name
+			){
+		System.out.println(logType);
+			logger.info("收到查询日志信息请求");
+			Map<String, Object> map = new HashMap<String, Object>(16);
+			if(curPage==null||curPage=="") {
+				map.put("curPage", 0);
+			}else {
+				map.put("curPage", curPage);
+			}
+			if(pageSize==null||pageSize=="") {
+				map.put("pageSize", 5);
+			}else {
+				map.put("pageSize", pageSize);
+			}
+			if(userType==null||userType=="") {
+				map.put("userType", null);
+			}else {
+				map.put("userType", userType);
+			}
+			if(logType==null||logType=="") {
+				map.put("logType", null);
+			}else {
+				map.put("logType", logType);
+			}
+			if(time==null||time=="") {
+				map.put("time", null);
+			}else {
+				map.put("time", time);
+			}
+			if(name==null||name=="") {
+				map.put("name", null);
+			}else {
+				map.put("name", name);
+			}
+			//查询分页对象
+			PageBean<LogEntity> pageBean = null;
+			try {
+				pageBean = logService.getLogInfoByCondition(map);
+				System.out.println(pageBean);
+			} catch (Exception e) {
+				
+				e.printStackTrace();
+			}
+			return pageBean;
+	}
+	
+}

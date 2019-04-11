@@ -1,0 +1,746 @@
+package com.ne.controller;
+
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttributes;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ne.bean.PageBean;
+import com.ne.entity.BillEntity;
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.PersonalcontractEntity;
+import com.ne.entity.PersonalrentEntity;
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.StallEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.LogType;
+import com.ne.log.UserType;
+import com.ne.service.BillService;
+import com.ne.service.PersonalService;
+import com.ne.service.PersonalcontractService;
+import com.ne.service.PersonalrentService;
+import com.ne.service.PersonalsaleService;
+import com.ne.service.StallService;
+import com.ne.util.CBDUtil;
+import com.ne.util.ResponseData;
+
+/**
+ * 个人用户页面控制器
+ * @author 陈硕
+ * 2019年3月21日
+ */
+@RestController
+@Transactional(transactionManager="transactionManager",rollbackFor=Exception.class)
+@Rollback(value=false)
+@SessionAttributes({"stallEntity","personalcontractEntity","personalEntity","personalrentEntity","personalsaleEntity"})
+public class PersonalStallController {
+	@Autowired
+	private StallService stallService;
+	@Autowired
+	private PersonalService personalService;
+	@Autowired
+	private PersonalrentService personalrentService;
+	@Autowired
+	private PersonalsaleService personalsaleService;
+	@Autowired
+	PersonalcontractService personalcontractService;
+	@Autowired
+	BillService billService;
+	/**
+	 * 获取日志记录器
+	 */
+	private static Logger logger = Logger.getLogger(PersonalStallController.class);
+	
+	/**
+	 * 封装分页方法
+	 * @param curPage
+	 * @param pageSize
+	 * @return
+	 */
+	public PageBean<StallEntity> showStallPage(Integer curPage,Integer pageSize){
+		logger.info("收到显示车位信息请求");
+		logger.info("当前页"+curPage+",当前页条数"+pageSize);
+		//通过当前登陆用户ID和用户类型查询车位信息
+		//PersonalEntity personalEntity = personalService.getById(1);
+		PersonalEntity personalEntity=(PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+		Map<String,Object> map = new HashMap<String, Object>(16);
+		map.put("userId", personalEntity.getId());
+		map.put("userType", "个人");
+		map.put("curPage", curPage);
+		map.put("pageSize", pageSize);
+		PageBean<StallEntity> pageBean = null;
+		try {
+			pageBean = stallService.showPageByCondition(map);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//System.out.println(pageBean);
+		
+		return pageBean;
+	}
+	
+	/**
+	 * 获取登陆用用户信息 
+	 * @param modelMap
+	 * @return
+	 */
+	@LogAnno(content = "获取用户登陆信息",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showLoginPersonalId",method=RequestMethod.POST)
+	public PersonalEntity showLoginPersonalId(ModelMap modelMap){
+		PersonalEntity personalEntity=(PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+		return personalEntity;
+	}
+
+	/**
+	 *  通过ID获取招租方信息
+	 * @param ownerId
+	 * @param modelMap
+	 * @return
+	 */
+	@LogAnno(content = "根据ID获取招租方信息",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showRentById",method=RequestMethod.POST)
+	public PersonalEntity showRentById(Integer ownerId,ModelMap modelMap) {
+		PersonalEntity personalEntity = personalService.getById(ownerId);
+		modelMap.addAttribute("personalEntity",personalEntity);
+		return personalEntity;
+		
+	}
+	/**
+	 * 在session中获取招租者信息
+	 * @param modelMap
+	 * @return
+	 */
+	@LogAnno(content = "在session中获取招租者信息",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="getOwnerId",method=RequestMethod.POST)
+	public PersonalEntity getOwnerId(ModelMap modelMap) {
+		PersonalEntity personalEntity = (PersonalEntity) modelMap.get("personalEntity");
+		
+		return personalEntity;
+	}
+	/**
+	 * 添加车位信息
+	 * @param modelMap
+	 * @param stallEntity
+	 * @return
+	 */
+	@LogAnno(content = "添加车位",operateName= LogType.添加,userPower=UserType.个人用户)
+	@RequestMapping(value="addPersonalStall",method=RequestMethod.POST)
+	public ResponseData addPersonalStall(HttpServletRequest request,String propertynumber,
+			String stalladdress,String stallarea,Integer stallnumber,ModelMap modelMap) {
+		logger.info("收到添加车位信息请求");
+		ResponseData responseData = new ResponseData();
+		//获取当前登陆的用户信息
+		PersonalEntity personalEntity=(PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+		//将当前用户信息封装到车位表中
+		String pic = null;
+		pic = CBDUtil.uploadFile(request);
+		//System.out.println(pic);
+		StallEntity stallEntity = new StallEntity();
+		stallEntity.setStalltype("未审核");
+		stallEntity.setUserid(personalEntity.getId());
+		stallEntity.setUsertype("个人");
+		stallEntity.setPropertypic(pic);
+		stallEntity.setStallnumber(stallnumber);
+		stallEntity.setStalladdress(stalladdress);
+		stallEntity.setStallarea(stallarea);
+		stallEntity.setPropertynumber(propertynumber);
+		Timestamp  timestamp= new Timestamp(System.currentTimeMillis());
+		String aduittime = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+		stallEntity.setAduittime(aduittime);
+		stallService.save(stallEntity);
+		logger.info(stallEntity);
+		responseData.getMessage();
+		
+		return responseData;
+	}
+	/**
+	 * 获取当前系统时间
+	 * @return
+	 */
+	@LogAnno(content = "获取当前时间",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="getNowTime",method=RequestMethod.POST)
+	public String getNowTime() {
+		Timestamp  timestamp= new Timestamp(System.currentTimeMillis());
+		String nowTime = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+		return nowTime;
+	}
+	/**
+	 * 个人用户首页显示车位信息
+	 * @param modelMap 模型数据 封装用户对象
+	 * @param curPage 当前页
+	 * @param pageSize 当前页显示条数
+	 * @return
+	 * @throws Exception
+	 */
+	@LogAnno(content = "显示个人车位",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showPernoalStall",method=RequestMethod.POST)
+	public PageBean<StallEntity> showPersonalStall(ModelMap modelMap,Integer curPage,Integer pageSize){
+		logger.debug("收到显示个人车位信息请求");
+		logger.debug("页数："+curPage+"数量："+pageSize);
+		//通过当前登陆用户ID和用户类型查询车位信息
+		PageBean<StallEntity> pageBean = null;
+		try {
+			pageBean = showStallPage(curPage,pageSize);
+			//System.out.println(pageBean);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return pageBean;
+	}
+	/**
+	 * 通过ID 查询出租信息
+	 * @param modelMap
+	 * @param stallId
+	 * @return
+	 */
+	@LogAnno(content = "通过ID 查询出租信息",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showRentStallById",method=RequestMethod.POST)
+	public PersonalrentEntity showRentStallById(ModelMap modelMap,int rentId) {
+		logger.debug("收到根据id 查询租车信息请求");
+		logger.debug("租车id："+rentId);
+		PersonalrentEntity personalrentEntity = personalrentService.getById(rentId);
+		//将租车人和招租人信息都封装到出租表中
+		PersonalEntity owner = personalService.getById(personalrentEntity.getPersonalid());
+		PersonalEntity renter = personalService.getById(personalrentEntity.getRentpersonalid());
+		//封装车位信息
+		personalrentEntity.setOwner(owner);
+		personalrentEntity.setRenter(renter);
+		modelMap.addAttribute(personalrentEntity);
+		return personalrentEntity;
+	}
+	
+	/**
+	 * 通过ID 查询出售信息
+	 * @param modelMap
+	 * @param stallId
+	 * @return
+	 */
+	Integer Number = 0;
+	@LogAnno(content = "通过ID 查询出售信息",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showSaleStallById",method=RequestMethod.POST)
+	public PersonalsaleEntity showSaleStallById(ModelMap modelMap,int saleId) {
+		
+		logger.debug("收到根据id 查询租车信息请求");
+		logger.debug("租车id："+saleId);
+		PersonalsaleEntity personalsaleEntity = personalsaleService.getById(saleId);
+		//将租车人和招租人信息都封装到出租表中
+		PersonalEntity owner = personalService.getById(personalsaleEntity.getPersonalid());
+		PersonalEntity buyer = personalService.getById(personalsaleEntity.getBuyerid());
+		//封装车位信息
+		personalsaleEntity.setPersonalEntity(owner);
+		personalsaleEntity.setBuyer(buyer);
+		modelMap.addAttribute(personalsaleEntity);
+		return personalsaleEntity;
+	}
+	
+	/**
+	 * 通过ID 查询车位信息
+	 * @param modelMap
+	 * @param stallId
+	 * @return
+	 */
+	@LogAnno(content = "通过ID 查询车位信息",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showStallById",method=RequestMethod.POST)
+	public StallEntity showStallById(ModelMap modelMap,int stallId) {
+		Number = stallId;
+		logger.debug("收到根据id 查询租车信息请求");
+		logger.debug("租车id："+stallId);
+		StallEntity stallEntity = stallService.getById(stallId);
+		//封装车位信息
+		modelMap.addAttribute(stallEntity);
+		return stallEntity;
+	}
+	/**
+	 * 个人车位出租发布
+	 * @return
+	 * @throws Exception 
+	 */
+	@LogAnno(content = "发布车位出租",operateName= LogType.添加,userPower=UserType.个人用户)
+	@RequestMapping(value="rentPersonalStall",method=RequestMethod.POST)
+	public ResponseData rentPersonalStall(PersonalrentEntity personalrentEntity,ModelMap modelMap){
+		logger.debug("收到出租车位发布请求");
+		logger.debug("车位id："+personalrentEntity);
+		ResponseData responseData = new ResponseData();
+		//根据stallId(车位ID)获得当前点击的车位对象
+		StallEntity stallEntity = (StallEntity) modelMap.get("stallEntity");
+		//获取前台数据并且封装到个人出租表
+		personalrentEntity.setPersonalid(stallEntity.getUserid());
+		personalrentEntity.setStallid(stallEntity.getId());
+		//将获取的出租信息添加到数据库
+		personalrentService.save(personalrentEntity);
+		//修改当前选中车位状态为待租
+		stallEntity.setStalltype("待租");
+		//将出租信息封装到车位信息
+		stallEntity.setRentEntity(personalrentEntity);
+		stallService.updateById(stallEntity);
+		
+		responseData.getMessage();
+		
+		return responseData;
+	}
+	/**
+	 * 显示个人出租车位信息并分页
+	 * @param curPage
+	 * @param pageSize
+	 * @return
+	 */
+	@LogAnno(content = "显示出租车位",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showRentStallPage",method=RequestMethod.POST)
+	public PageBean<PersonalrentEntity> showRentStallPage(String startTime,String endTime,Integer curPage,Integer pageSize) {
+		logger.debug("收到显示车位信息请求");
+		logger.debug("页数："+curPage+"数量："+pageSize);
+		//通过当前登陆用户ID和用户类型查询车位信息
+		Map<String,Object> map = new HashMap<String, Object>(16);
+		if(startTime != null && startTime != "") {
+			map.put("startTime", startTime);
+		}
+		if(endTime != null && endTime != "") {
+			map.put("endTime", endTime);
+		}
+		map.put("stallType", "待租");
+		map.put("curPage", curPage);
+		map.put("pageSize", pageSize);
+		PageBean<PersonalrentEntity> pageBean = null;
+		try {
+			pageBean = personalrentService.showPersonalRent(map);
+			List<PersonalrentEntity> list = pageBean.getDatas();
+			for(int i= 0; i<list.size(); i++) {
+				PersonalEntity personalEntity = personalService.getById(list.get(i).getPersonalid());
+				StallEntity stallEntity = stallService.getById(list.get(i).getStallid());
+				list.get(i).setStallEntity(stallEntity);
+				list.get(i).setOwner(personalEntity);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//System.out.println(pageBean);
+		
+		return pageBean;
+	}
+	/**
+	 *  分页显示出租车位预定信息
+	 * @param modelMap 缓存用户信息
+	 * @return
+	 */
+	@LogAnno(content = "显示出租预定",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showReservRentStall",method=RequestMethod.POST)
+	public PageBean<PersonalrentEntity> showReserveRentStall(ModelMap modelMap,Integer curPage,Integer pageSize){
+		//获取个人出租车位信息
+		logger.debug("收到显示车位信息请求");
+		logger.debug("页数："+curPage+"数量："+pageSize);
+		//通过当前登陆用户ID和用户类型查询车位信息
+		PersonalEntity personalEntity=(PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+		Map<String,Object> map = new HashMap<String, Object>(16);
+		map.put("personalId", personalEntity.getId());
+		map.put("stallType", "出租预定");
+		map.put("curPage", curPage);
+		map.put("pageSize", pageSize);
+		PageBean<PersonalrentEntity> pageBean = null;
+		try {
+			pageBean = personalrentService.showPersonalRent(map);
+			List<PersonalrentEntity> list = pageBean.getDatas();
+			for(int i= 0; i<list.size(); i++) {
+				PersonalEntity owner = personalService.getById(personalEntity.getId());
+				PersonalEntity renter = personalService.getById(list.get(i).getRentpersonalid());
+				StallEntity stallEntity = stallService.getById(list.get(i).getStallid());
+				list.get(i).setOwner(owner);
+				list.get(i).setStallEntity(stallEntity);
+				list.get(i).setRenter(renter);
+			}
+			pageBean.setDatas(list);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//System.out.println(pageBean);
+		
+		return pageBean;
+	}
+	/**
+	 *  招租用户确定出租预定车位
+	 * @param stallId
+	 * @return
+	 */
+	@LogAnno(content = "确定预定预定信息",operateName= LogType.修改,userPower=UserType.个人用户)
+	@RequestMapping(value="suerReserveStall",method=RequestMethod.POST)
+	public ResponseData suerReserveStall(int rentId) {
+		ResponseData responseData = new ResponseData();
+		PersonalrentEntity personalrentEntity = personalrentService.getById(rentId);
+		BillEntity billEntity1 = new BillEntity();
+		BillEntity billEntity2 = new BillEntity();
+		Timestamp  timestamp= new Timestamp(System.currentTimeMillis());
+		String tradeDate = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+		String tradeTime = new SimpleDateFormat("HH:mm:ss").format(timestamp);
+		billEntity1.setIncome(personalrentEntity.getPrice());
+		billEntity1.setUserid(personalrentEntity.getPersonalid());
+		billEntity1.setTradedate(tradeDate);
+		billEntity1.setTradetime(tradeTime);
+		billEntity1.setNote("出租车位收入");
+		billEntity1.setUsertype("个人");
+		billEntity2.setExpend(personalrentEntity.getPrice());
+		billEntity2.setUserid(personalrentEntity.getRentpersonalid());
+		billEntity2.setTradedate(tradeDate);
+		billEntity2.setTradetime(tradeTime);
+		billEntity2.setNote("出租车位支出");
+		billEntity2.setUsertype("个人");
+		billService.save(billEntity1);
+		billService.save(billEntity2);
+		StallEntity stallEntity = stallService.getById(personalrentEntity.getStallid());
+		stallEntity.setStalltype("已出租");
+		stallService.updateById(stallEntity);
+		responseData.getMessage();
+		return responseData;
+	}
+	/**
+	 * 个人车位出售发布
+	 * @param personalrentEntity
+	 * @param stallId
+	 * @return
+	 * @throws Exception 
+	 */
+	@LogAnno(content = "发布出售",operateName= LogType.添加,userPower=UserType.个人用户)
+	@RequestMapping(value="salePersonalStall",method=RequestMethod.POST)
+	public ResponseData salePersonalStall(Double saleprice,ModelMap modelMap) throws Exception {
+		ResponseData responseData = new ResponseData();
+		logger.info("收到添加出售车位请求");
+		logger.info(saleprice);
+		//根据stallId(车位ID)获得当前点击的车位对象
+		StallEntity stallEntity = (StallEntity) modelMap.get("stallEntity");
+		//获取当前车位的用户信息
+		PersonalsaleEntity personalsaleEntity = new PersonalsaleEntity();
+		//获取前台数据并且封装到个人出售表
+		personalsaleEntity.setPrice(saleprice);
+		personalsaleEntity.setPersonalid(stallEntity.getUserid());
+		personalsaleEntity.setStallid(stallEntity.getId());
+		Timestamp  timestamp= new Timestamp(System.currentTimeMillis());
+		String nowTime = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+		//获取当前发布出售时间
+		personalsaleEntity.setTime(nowTime);
+		//将获取的出售信息添加到数据库
+		personalsaleService.save(personalsaleEntity);
+		//修改当前车位状态为待售
+		stallEntity.setStalltype("待售");
+		stallService.updateById(stallEntity);
+		
+		responseData.getData().put("personalsaleEntity", personalsaleEntity);
+		
+		return responseData;
+	} 
+	
+	/**
+	 * 显示个人出售车位信息并分页
+	 * @param curPage
+	 * @param pageSize
+	 * @return
+	 */
+	@LogAnno(content = "显示出售车位",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showSaleStallPage",method=RequestMethod.POST)
+	public PageBean<PersonalsaleEntity> showSaleStallPage(String publishTime,Integer curPage,Integer pageSize) {
+		logger.debug("收到显示车位信息请求");
+		logger.debug("页数："+curPage+"数量："+pageSize);
+		//通过当前登陆用户ID和用户类型查询车位信息
+		Map<String,Object> map = new HashMap<String, Object>(16);
+		if(publishTime != null && publishTime != "") {
+			map.put("publishTime", publishTime);
+		}
+		map.put("stallType", "待售");
+		map.put("curPage", curPage);
+		map.put("pageSize", pageSize);
+		PageBean<PersonalsaleEntity> pageBean = null;
+		try {
+			pageBean = personalsaleService.showPersonalSale(map);
+			List<PersonalsaleEntity> list = pageBean.getDatas();
+			for(int i= 0; i<list.size(); i++) {
+				StallEntity stallEntity = stallService.getById(list.get(i).getStallid());
+				PersonalEntity personalEntity = personalService.getById(list.get(i).getPersonalid());
+				list.get(i).setStallEntity(stallEntity);
+				list.get(i).setPersonalEntity(personalEntity);
+			}
+			pageBean.setDatas(list);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//System.out.println(pageBean);
+		
+		return pageBean;
+	}
+	/**
+	 * 显示出售车位预定信息
+	 * @param modelMap 缓存用户信息
+	 * @return
+	 */
+	@LogAnno(content = "显示出售预定",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showReserveSaleSatll",method=RequestMethod.POST)
+	public PageBean<PersonalsaleEntity> showReserveSaleStall(ModelMap modelMap,Integer curPage,Integer pageSize){
+		logger.debug("收到显示车位信息请求");
+		logger.debug("页数："+curPage+"数量："+pageSize);
+		//通过当前登陆用户ID和用户类型查询车位信息
+		PersonalEntity personalEntity=(PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+		Map<String,Object> map = new HashMap<String, Object>(16);
+		map.put("personalId", personalEntity.getId());
+		map.put("stallType", "出售预定");
+		map.put("curPage", curPage);
+		map.put("pageSize", pageSize);
+		PageBean<PersonalsaleEntity> pageBean = null;
+		try {
+			pageBean = personalsaleService.showPersonalSale(map);
+			List<PersonalsaleEntity> list = pageBean.getDatas();
+			for(int i= 0; i<list.size(); i++) {
+				PersonalEntity buyer = personalService.getById(list.get(i).getBuyerid());
+				StallEntity stallEntity = stallService.getById(list.get(i).getStallid());
+				list.get(i).setPersonalEntity(personalEntity);
+				list.get(i).setStallEntity(stallEntity);
+				list.get(i).setBuyer(buyer);
+			}
+			pageBean.setDatas(list);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//System.out.println(pageBean);
+		
+		return pageBean;
+	}
+
+	/**
+	 * 预定需要租赁的车位
+	 * @param stallId
+	 * @return
+	 */
+	@LogAnno(content = "预定车位",operateName= LogType.修改,userPower=UserType.个人用户)
+	@RequestMapping(value="reserveRentStall",method=RequestMethod.POST)
+	public ResponseData reserveRentStall(ModelMap modelMap,String message) {
+		ResponseData responseData = new ResponseData();
+		//获取选中车位的出租信息
+		StallEntity stallEntity = (StallEntity)modelMap.get("stallEntity");
+		//将当前车位状态更改为已预定
+		stallEntity.setStalltype("出租预定");
+		stallService.updateById(stallEntity);
+		int stallId = stallEntity.getId();
+		//获取当前登陆用户信息
+		PersonalEntity personalEntity=(PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+		//获取出租信息
+		PersonalrentEntity personalrentEntity = personalrentService.getOne(new QueryWrapper<PersonalrentEntity>().eq("stallId",stallId));
+		//封装当前用户信息到出租表中
+		logger.info(personalEntity+"personalEntity");
+		logger.info(personalrentEntity+"personalrentEntity");
+		personalrentEntity.setRentpersonalid(personalEntity.getId());
+		personalrentEntity.setMessage(message);
+		personalrentService.updateById(personalrentEntity);
+		responseData.getMessage();
+		
+		return responseData;
+	}
+
+	/**
+	 * 预定需要购买的车位
+	 * @param stallId
+	 * @return
+	 */
+	@LogAnno(content = "预定出售车位",operateName= LogType.修改,userPower=UserType.个人用户)
+	@RequestMapping(value="reserveSaleStall",method=RequestMethod.POST)
+	public ResponseData reserveBuyStall(ModelMap modelMap,String message) {
+		ResponseData responseData = new ResponseData();
+		//获取选中车位的出售信息
+		StallEntity stallEntity = stallService.getById(Number);
+		//将当前车位状态更改为已预定
+		stallEntity.setStalltype("出售预定");
+		stallService.updateById(stallEntity);
+		int stallId = stallEntity.getId();
+		//获取出租信息
+		PersonalsaleEntity personalsaleEntity = personalsaleService.getOne(new QueryWrapper<PersonalsaleEntity>().eq("stallId",stallId));
+		//封装当前用户信息到出租表中
+		PersonalEntity personalEntity=(PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+		if(personalEntity != null) {
+			personalsaleEntity.setBuyerid(personalEntity.getId());
+		}
+		personalsaleEntity.setMessage(message);
+		personalsaleService.updateById(personalsaleEntity);
+		responseData.getMessage();
+		
+		return responseData;
+	}
+	/**
+	 * 申请签约
+	 * @param modelMap
+	 * @return
+	 */
+	@LogAnno(content = "申请签约",operateName= LogType.修改,userPower=UserType.个人用户)
+	@RequestMapping(value="applyForSigning",method=RequestMethod.POST)
+	public StallEntity applyForSigning(ModelMap modelMap,int stallId) {
+		StallEntity stallEntity = stallService.getById(stallId);
+		stallEntity.setStalltype("未签约");
+		stallService.updateById(stallEntity);
+		return stallEntity;
+	}
+	
+	/**
+	 * 显示登陆用户所有需要签订的合同
+	 * @param modelMap
+	 * @param curPage
+	 * @param pageSize
+	 * @return
+	 */
+	@LogAnno(content = "显示合同",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showContract",method=RequestMethod.POST)
+	public PageBean<PersonalcontractEntity> showContract(ModelMap modelMap,Integer curPage,Integer pageSize){
+		logger.debug("收到显示合同信息请求");
+		logger.debug("页数："+curPage+"数量："+pageSize);
+		//通过当前登陆用户ID和用户类型查询车位信息
+		PersonalEntity personalEntity=(PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+		int personalId = personalEntity.getId();
+		Map<String, Object> map = new HashMap<>();
+		map.put("sellers", personalId);
+		map.put("curPage", curPage);
+		map.put("pageSize", pageSize);
+		PageBean<PersonalcontractEntity> pageBean = null;
+		try {
+			pageBean = personalcontractService.showPersonalContractBySeller(map);
+			List<PersonalcontractEntity> list = pageBean.getDatas();
+			for(int i=0;i<list.size();i++) {
+				PersonalEntity buyer = personalService.getById(list.get(i).getBuyer());
+				PersonalEntity seller = personalService.getById(list.get(i).getSellers());
+				StallEntity stall = stallService.getById(list.get(i).getStall());
+				list.get(i).setPersonalBuyer(buyer);
+				list.get(i).setPersonalSeller(seller);
+				list.get(i).setStallEntity(stall);
+			}
+			pageBean.setDatas(list);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("合同："+pageBean);
+		return pageBean;
+		
+	}
+	
+	
+	/**
+	 * 通过ID 获取合同详细信息
+	 * @param contractId
+	 * @return
+	 */
+	@LogAnno(content = "通过ID获取合同",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showContractById",method=RequestMethod.POST)
+	public PersonalcontractEntity showContractById(ModelMap modelMap,int contractId) {
+		//获取当前合同
+		PersonalcontractEntity personalcontractEntity = personalcontractService.getById(contractId);
+		//封装买家 卖家  车位信息到合同
+		PersonalEntity seller = personalService.getById(personalcontractEntity.getSellers());
+		PersonalEntity buyer = personalService.getById(personalcontractEntity.getBuyer());
+		StallEntity stallEntity = stallService.getById(personalcontractEntity.getStall());
+		personalcontractEntity.setPersonalBuyer(buyer);
+		personalcontractEntity.setStallEntity(stallEntity);
+		personalcontractEntity.setPersonalSeller(seller);
+		
+		modelMap.addAttribute("personalcontractEntity", personalcontractEntity);
+		return personalcontractEntity;
+	}
+	
+	/**
+	 * 确认签订合同
+	 * @param modelMap
+	 * @return
+	 */
+	@LogAnno(content = "签订合同",operateName= LogType.修改,userPower=UserType.个人用户)
+	@RequestMapping(value="sureSignContract",method=RequestMethod.POST)
+	public PersonalcontractEntity sureContract(ModelMap modelMap) {
+		//获取登陆用户
+		PersonalEntity personalEntity=(PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+		PersonalcontractEntity personalcontractEntity = (PersonalcontractEntity) modelMap.get("personalcontractEntity");
+		String flag = "1";
+		BillEntity billEntity1 = new BillEntity();
+		BillEntity billEntity2 = new BillEntity();
+		Timestamp  timestamp= new Timestamp(System.currentTimeMillis());
+		String tradeDate = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+		String tradeTime = new SimpleDateFormat("HH:mm:ss").format(timestamp);
+		//判断当前登陆用户是买家还是卖家
+		if(personalcontractEntity.getBuyer()== personalEntity.getId()) {
+			//如果时买家，将合同买家确定签约设置为1
+			personalcontractEntity.setBuyersure("1");
+			personalcontractService.updateById(personalcontractEntity);
+			//判断合同是否双方都已经签约
+			if(personalcontractEntity.getSellersure() == null) {
+				return personalcontractEntity;
+			}
+			if(flag.equals(personalcontractEntity.getSellersure()) && (personalcontractEntity.getBuyersure()) == flag) {
+				
+				//如果双方签约合同生效,将车位中用户外键ID 设置为买家ID
+				billEntity1.setIncome(personalcontractEntity.getPrice());
+				billEntity1.setUserid(personalcontractEntity.getSellers());
+				billEntity1.setTradedate(tradeDate);
+				billEntity1.setTradetime(tradeTime);
+				billEntity1.setNote("出售车位收入");
+				billEntity1.setUsertype("个人");
+				billService.save(billEntity1);
+				billEntity2.setExpend(personalcontractEntity.getPrice());
+				billEntity2.setUserid(personalcontractEntity.getBuyer());
+				billEntity2.setTradedate(tradeDate);
+				billEntity2.setTradetime(tradeTime);
+				billEntity2.setNote("购买车位支出");
+				billEntity2.setUsertype("个人");
+				billService.save(billEntity2);
+				int stallId = personalcontractEntity.getStall();
+				StallEntity stallEntity = stallService.getById(stallId);
+				stallEntity.setUserid(personalcontractEntity.getBuyer());
+				stallEntity.setStalltype("空闲");
+				stallService.updateById(stallEntity);
+			}
+			
+		}
+		if(personalcontractEntity.getSellers()== personalEntity.getId()) {
+			//如果时卖家，将卖家确定合同签约设置为1
+			personalcontractEntity.setSellersure("1");
+			personalcontractService.updateById(personalcontractEntity);
+			//判断合同是否双方都已经签约
+			if(personalcontractEntity.getBuyersure() == null) {
+				return personalcontractEntity;
+			}
+			if(flag.equals(personalcontractEntity.getBuyersure()) && (personalcontractEntity.getSellersure()) == flag) {
+				//如果双方签约合同生效,将车位中用户外键ID 设置为买家ID
+				billEntity1.setIncome(personalcontractEntity.getPrice());
+				billEntity1.setUserid(personalcontractEntity.getSellers());
+				billEntity1.setTradedate(tradeDate);
+				billEntity1.setTradetime(tradeTime);
+				billEntity1.setNote("出售车位收入");
+				billEntity1.setUsertype("个人");
+				billService.save(billEntity1);
+				billEntity2.setExpend(personalcontractEntity.getPrice());
+				billEntity2.setUserid(personalcontractEntity.getBuyer());
+				billEntity2.setTradedate(tradeDate);
+				billEntity2.setTradetime(tradeTime);
+				billEntity2.setNote("购买车位支出");
+				billEntity2.setUsertype("个人");
+				billService.save(billEntity2);
+				int stallId = personalcontractEntity.getStall();
+				StallEntity stallEntity = stallService.getById(stallId);
+				stallEntity.setUserid(personalcontractEntity.getBuyer());
+				stallEntity.setStalltype("空闲");
+				stallService.updateById(stallEntity);
+			}
+		}
+
+		return personalcontractEntity;
+	}
+}

@@ -1,0 +1,165 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * (Complain)实体类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:00
+ */
+@TableName(value="t_complain")
+public class ComplainEntity implements Serializable {
+
+	/**
+	 * 投诉事件id
+	 */
+	@TableId(type=IdType.AUTO)
+    private Integer id;
+    /**
+     *	 投诉者
+     */
+	private Integer complainant;
+    /**
+     * 	被投诉者
+     */
+    private Integer bycomplainant;
+
+    private Integer stallid;
+    /**
+     * 投诉内容
+     */
+    private String context;
+    /**
+     * 投诉时间
+     */
+    private String time;
+    /**
+     * 投诉状态
+     */
+    private String type;
+    /**
+     * 投诉结果
+     */
+    private String result;
+    
+    @TableField(exist=false)
+    private PersonalEntity complainanter;
+    @TableField(exist=false)
+    private PersonalEntity bycomplainanter;
+    
+    @TableField(exist=false)
+    private StallEntity stallEntity;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getComplainant() {
+		return complainant;
+	}
+
+	public void setComplainant(Integer complainant) {
+		this.complainant = complainant;
+	}
+
+	public Integer getBycomplainant() {
+		return bycomplainant;
+	}
+
+	public void setBycomplainant(Integer bycomplainant) {
+		this.bycomplainant = bycomplainant;
+	}
+
+	public Integer getStallid() {
+		return stallid;
+	}
+
+	public void setStallid(Integer stallid) {
+		this.stallid = stallid;
+	}
+
+	public String getContext() {
+		return context;
+	}
+
+	public void setContext(String context) {
+		this.context = context;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
+
+	public PersonalEntity getComplainanter() {
+		return complainanter;
+	}
+
+	public void setComplainanter(PersonalEntity complainanter) {
+		this.complainanter = complainanter;
+	}
+
+	public PersonalEntity getBycomplainanter() {
+		return bycomplainanter;
+	}
+
+	public void setBycomplainanter(PersonalEntity bycomplainanter) {
+		this.bycomplainanter = bycomplainanter;
+	}
+
+	public StallEntity getStallEntity() {
+		return stallEntity;
+	}
+
+	public void setStallEntity(StallEntity stallEntity) {
+		this.stallEntity = stallEntity;
+	}
+
+	@Override
+	public String toString() {
+		return "ComplainEntity [id=" + id + ", complainant=" + complainant + ", bycomplainant=" + bycomplainant
+				+ ", stallid=" + stallid + ", context=" + context + ", time=" + time + ", type=" + type + ", result="
+				+ result + ", complainanter=" + complainanter + ", bycomplainanter=" + bycomplainanter
+				+ ", stallEntity=" + stallEntity + "]";
+	}
+
+	
+
+	
+
+	
+
+
+   
+
+}

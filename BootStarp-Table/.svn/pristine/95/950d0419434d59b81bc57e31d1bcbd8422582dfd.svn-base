@@ -1,0 +1,19 @@
+$("#see").click(function() {
+	
+	$.ajax({
+		type:"post",
+		url:"../personalBillCount",
+		data:{"startDate":$('#startDate').val(),"endDate":$('#endDate').val()},
+		dataType:"json",
+		
+		success:function(data){
+			var str="";
+			
+				str+="<tr><td>"+data.count+"</td>" +
+		 		"<td>"+data.expendCount+"</td>" +
+		 		"<td>"+data.incomeCount+"</td>";
+			
+			$("#show").html(str);
+		}
+	})
+})

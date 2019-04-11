@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+		<!-- 配置数据库 -->
+		<!-- 配置连接数据库驱动 -->
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<!-- 配置连接数据库URL地址 -->
+		<property name="connection.url">jdbc:mysql://127.0.0.1:3306/test</property>
+		<!-- 配置数据库连接用户名-->
+		<property name="connection.username">root</property>
+		<!-- 配置数据库连接密码-->
+		<property name="connection.password">1234</property>
+		
+		<!-- 配置c3p0数据源连接池(开源的数据源连接吃，常用于HIbernate，Spring邓框架) -->
+		<!-- 配置连接池最大连接数 -->
+		<property name="hibernate.c3p0.max_size">10</property>
+		<!-- 配置连接池最小连接数 -->
+		<property name="hibernate.c3p0.min_size">1</property>
+		<!-- 配置连接池连接好久批量创建连接数 (默认3)-->
+		<property name="hibernate.c3p0.acquire_increment">5</property>
+		<!-- 配置连接池连接超时的时长 -->
+		<property name="hibernate.c3p0.timeout">5000</property>
+		<!-- 配置连接池检测线程间隔时长,用于检测池中是否有连接超时的对象 -->
+		<property name="hibernate.c3p0.idle_test_period">30000</property>
+		<!-- 配置连接池校验 -->
+		<property name="hibernamte.c3p0.validate">true</property>
+		
+		<!-- 配置hiberante相关配置 -->
+		<!-- 配置数据库方言 -->
+		<property name="dealect">org.hibernate.dialect.MySQLDialect</property>
+		<!-- 配置自动创建数据库表 -->
+		<property name="hbm2ddl.auto">update</property>
+		<!-- 配置显示执行的sql语句 -->
+		<property name="show_sql">true</property>
+		<!-- 配置开启二级缓存 -->
+		<property name="hibernate.cache.use_second_level_cache">false</property>
+		
+	
+		
+		<!-- 配置注解 -->
+		<mapping resource="com/my/entity/beiguansuo/InventoryPessimistic.hbm.xml"/>
+		<mapping resource="com/my/entity/leguansuo/InventoryOptimistic.hbm.xml"/>
+		
+		
+		
+		
+	</session-factory>
+	
+	
+</hibernate-configuration>

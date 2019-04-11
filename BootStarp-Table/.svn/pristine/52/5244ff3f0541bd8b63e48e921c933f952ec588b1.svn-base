@@ -1,0 +1,69 @@
+package com.ne.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ne.bean.PageBean;
+import com.ne.dao.ExternalcontractDao;
+import com.ne.entity.ExternalcontractEntity;
+import com.ne.service.ExternalcontractService;
+import com.ne.service.ThirdplatformService;
+
+/**
+ * 外部合约接口实现类
+ * 
+ * @author 班贵华 2019年3月21日
+ */
+@Transactional(transactionManager = "transactionManager")
+@Rollback(value = false)
+@Service
+public class ExternalcontractServiceImpl extends ServiceImpl<ExternalcontractDao, ExternalcontractEntity>
+		implements ExternalcontractService {
+	@Autowired
+	private ExternalcontractDao externalcontractDao;
+	@Autowired
+	private ThirdplatformService thirdplatformService;
+	
+	/**
+	 * 外部合约分页对象
+	 */
+	@Override
+	public PageBean showExternalcontractInfoByPage(Map<Object, Object> condition) {
+		// 获取数据库查询条件的总条数
+		int curPage = (Integer) condition.get("curPage");
+		int pageSize = (Integer) condition.get("pageSize");
+		List<ExternalcontractEntity> list = externalcontractDao.getExternalcontractInfos(condition);
+		QueryWrapper<ExternalcontractEntity> queryWrapper = new QueryWrapper<ExternalcontractEntity>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("isinvalid", "否");
+		queryWrapper.allEq(map);
+		int tolPetSize = externalcontractDao.selectCount(queryWrapper);
+		for (ExternalcontractEntity externalcontractEntity : list) {
+			externalcontractEntity.setThirdplatformEntity(thirdplatformService.getById(externalcontractEntity.getThirdplatformid()));
+		}
+		PageBean<ExternalcontractEntity> pageBean = new PageBean<ExternalcontractEntity>();
+
+		// 封装分页对象
+		/*
+		 * 当前页数
+		 */
+		pageBean.setCurPage(curPage);
+		// 总条数
+		pageBean.setTolSize(tolPetSize);
+		// 每页显示条数
+		pageBean.setPageSize(pageSize);
+		// 显示数据
+		pageBean.setDatas(list);
+
+		return pageBean;
+	}
+
+}

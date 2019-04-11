@@ -1,0 +1,17 @@
+package com.ne.dao;
+
+import com.ne.entity.SuperadminEntity;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * (Superadmin)表数据库访问层
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+public interface SuperadminDao  extends BaseMapper<SuperadminEntity>{
+
+    
+
+}

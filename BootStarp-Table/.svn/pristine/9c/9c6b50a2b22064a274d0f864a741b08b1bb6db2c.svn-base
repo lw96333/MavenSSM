@@ -1,0 +1,19 @@
+$("#see").click(function() {
+	
+	$.ajax({
+		type:"post",
+		url:"../companyBillCount",
+		data:{"startDate":$('#startDate').val(),"endDate":$('#endDate').val()},
+		dataType:"json",
+		
+		success:function(data){
+			var str="";
+			
+				str+="<tr><td>"+data.count+"</td>" +
+		 		"<td>"+data.incomeCount+"</td>" +
+		 		"<td>"+data.expendCount+"</td>";
+			
+			$("#show").html(str);
+		}
+	})
+})

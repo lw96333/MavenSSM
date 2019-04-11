@@ -1,0 +1,12 @@
+$(function() {
+	
+	$.ajax({
+		url:"../getAllUnaduitStall",
+		type:"post",
+		success:function(){
+			alert("111111")
+		}
+	})
+		
+})
+

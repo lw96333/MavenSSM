@@ -1,0 +1,21 @@
+package com.ne.dao;
+
+import com.ne.entity.LevelEntity;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * (Level)表数据库访问层
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+public interface LevelDao  extends BaseMapper<LevelEntity>{
+
+    @Select("select * from t_level where admin = #{id}")
+	LevelEntity getLevelEntityByAdminId(@Param(value="id") int id );
+}

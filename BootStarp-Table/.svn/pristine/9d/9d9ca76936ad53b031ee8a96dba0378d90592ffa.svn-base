@@ -1,0 +1,61 @@
+package com.ne.service;
+
+import com.ne.bean.BillCountBean;
+import com.ne.bean.PageBean;
+import com.ne.entity.BillEntity;
+
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+ * (Bill)账单表服务接口
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:00
+ */
+public interface BillService extends IService<BillEntity>{
+
+	 /**
+	  * (baojie) 查看企业账单信息
+	  * @param condition 分页查询条件
+	  * @return 账单数据
+	  */
+	 PageBean selectCompanyPageBill(Map<String, Object> condition) throws Exception;
+	 
+	 /**
+	  * (baojie) 查看CBD账单信息
+	  * @param condition 分页查询条件
+	  * @return 账单数据
+	  */
+	 PageBean selectCBDPageBill(Map<String, Object> condition) throws Exception;
+	 
+	 /**
+	  * （baojie）查询个人账单信息
+	  * @param condition 分页查询条件件
+	  * @return 账单数据
+	  */
+	 PageBean selectPersonalPageBill(Map<String, Object> condition) throws Exception;
+	 
+	 /**
+	  * (baojie) 账单费用统计
+	  * @param condition 统计条件
+	  * @return 总收入，总支出
+	  */
+	 BillCountBean cbdBillCount(Map<String, Object> condition) throws Exception;
+	 
+	 /**
+		 * 	个人账单统计
+		 * @param condition 统计条件
+		 * @return 总收入，总支出
+		 */
+	 BillCountBean personalBillCount(Map<String, Object> condition) throws Exception;
+	 
+	 /**
+		 * 	企业账单统计
+		 * @param condition 统计条件
+		 * @return 总收入，总支出
+		 */
+	 BillCountBean companyBillCount(Map<String, Object> condition) throws Exception;
+	 
+}

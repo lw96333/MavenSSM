@@ -1,0 +1,26 @@
+package com.ne.service;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.PersonalrentEntity;
+
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+ * (Personalrent)表服务接口
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+public interface PersonalrentService extends IService<PersonalrentEntity>{
+
+	/**
+	 * 个人发布出租车位业务层接口
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+    PageBean<PersonalrentEntity> showPersonalRent(Map<String , Object> condition) throws Exception;
+    
+}

@@ -1,0 +1,23 @@
+package com.ne.service;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.TradingrecordEntity;
+
+import java.util.List;
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+ * (Tradingrecord)表服务接口
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:02
+ */
+public interface TradingrecordService extends IService<TradingrecordEntity>{
+	PageBean<PersonalsaleEntity> getAllPersonalSalePageBean(Map<String, Object> map);
+
+	PageBean<PersonalsaleEntity> showTradingrecord(Map<String, Object> condition) throws Exception;
+    
+}

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd 
+http://www.springframework.org/schema/mvc 
+http://www.springframework.org/schema/mvc/spring-mvc.xsd 
+http://www.springframework.org/schema/context 
+http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--开启注解驱动-->
+    <mvc:annotation-driven/>
+    <!--开启自动扫描注解(base-package用于设置需要扫描注解的包)-->
+    <context:component-scan base-package="com.student"/>
+    <!--  配置页面控制器的映射（必配项）   -->
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"></bean>
+    <!--     配置页面控制器适配器（必配项） -->
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"></bean>
+    <!--     配置视图解析器（必配项） -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
+        <property name="prefix" value=""></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+   
+    <!--配置上传文件 （可选） -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	<!--设置字符集编码  -->
+		<property name="defaultEncoding" value="utf-8"/>
+		<!--设置上传文件最大字节数 /1024 -->
+		<property name="maxUploadSize" value="10485760000"/>
+		<!--设置上传文件缓存大小 -->
+		<property name="maxInMemorySize" value="4096000"/>
+	</bean>
+    
+    	<!-- 配置拦截器（可选） -->
+	<!-- <mvc:interceptors>
+		<mvc:interceptor>
+		设置url地址 
+		<mvc:mapping path="/*"/>
+		<bean class="com.ne.property.MyHandleIntercepter"/>
+		</mvc:interceptor>
+	</mvc:interceptors> -->
+    
+    <!--   配置访问静态资源（必配项） -->
+    <mvc:default-servlet-handler/>
+    <!--开启AOP注解-->
+    <!-- <aop:aspectj-autoproxy/> -->
+</beans> 
+

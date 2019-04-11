@@ -1,0 +1,351 @@
+package com.ne.controller;
+
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.ne.log.LogType;
+import org.apache.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.ComplainEntity;
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.PersonalrentEntity;
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.StallEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.UserType;
+import com.ne.service.ComplainService;
+import com.ne.service.PersonalService;
+import com.ne.service.PersonalrentService;
+import com.ne.service.PersonalsaleService;
+import com.ne.service.StallService;
+import com.ne.service.TradingrecordService;
+import com.ne.util.ResponseData;
+/**
+ * 查询显示控制
+ * @author xlp
+ *
+ *2019年3月27日
+ */
+@RestController//等价于Controller+ResponeBoy
+@ResponseBody
+public class TradingrecordController {
+
+		//获取日志记录器
+		/**
+		 *  	获取Logger对象
+		 */
+		private static Logger logger = Logger.getLogger(StallController.class);
+		@Autowired
+		private StallService stallService;
+		@Autowired
+		private PersonalService personalService;
+		@Autowired
+		private PersonalrentService personalrentService;
+		@Autowired
+		private TradingrecordService tradingrecordService;
+		
+		@Autowired
+		private ComplainService complainService;
+		@Autowired
+		private PersonalsaleService personalsaleService;
+
+		//响应信息
+		/**
+		 * 	创建ResponseData对象
+		 */
+		private ResponseData responseData = new ResponseData();
+		/**
+		 * 查询租赁信息
+		 * @param curPage
+		 * @param pageSize
+		 * @return
+		 */
+		@LogAnno(content="查询租赁信息",operateName= LogType.查询,userPower=UserType.个人用户)
+		@RequestMapping(value="showRenTheQuery",method=RequestMethod.POST)
+		public PageBean<PersonalrentEntity> showReserveRentStall(Integer curPage,Integer pageSize){
+        	PersonalEntity personalEntity= (PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+			logger.info("收到显示车位信息请求");
+			logger.info("页数："+curPage+"数量："+pageSize);
+			Map<String,Object> map = new HashMap<String, Object>(16);
+			map.put("stallType", "已出租");
+			map.put("curPage", curPage);
+			map.put("pageSize",pageSize);
+			map.put("personalId", personalEntity.getId());
+			PageBean<PersonalrentEntity> pageBean = null;
+			try {
+				pageBean = personalrentService.showPersonalRent(map);
+				List<PersonalrentEntity> list = pageBean.getDatas();
+				for(int i= 0; i<list.size(); i++) {
+					PersonalEntity owner = personalService.getById(list.get(i).getPersonalid());
+					PersonalEntity renter = personalService.getById(list.get(i).getRentpersonalid());
+					StallEntity stallEntity = stallService.getById(list.get(i).getStallid());
+					list.get(i).setOwner(owner);
+					list.get(i).setStallEntity(stallEntity);
+					list.get(i).setRenter(renter);
+				}
+				pageBean.setDatas(list);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			System.out.println(pageBean);
+			
+			return pageBean;
+		}
+		@LogAnno(content="查询租赁信息",operateName= LogType.查询,userPower=UserType.个人用户)
+		@RequestMapping(value="showTrading",method=RequestMethod.POST)
+		public PageBean<PersonalrentEntity> showTrading(Integer curPage,Integer pageSize){
+        	PersonalEntity personalEntity= (PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+			logger.info("收到显示车位信息请求");
+			logger.info("页数："+curPage+"数量："+pageSize);
+			Map<String,Object> map = new HashMap<String, Object>(16);
+			map.put("stallType", "已出租");
+			map.put("curPage", curPage);
+			map.put("pageSize",pageSize);
+//			map.put("personalId", personalEntity.getId());
+			map.put("rentPersonalId", personalEntity.getId()); 
+			PageBean<PersonalrentEntity> pageBean = null;
+			try {
+				pageBean = personalrentService.showPersonalRent(map);
+				List<PersonalrentEntity> list = pageBean.getDatas();
+				for(int i= 0; i<list.size(); i++) {
+					PersonalEntity owner = personalService.getById(list.get(i).getPersonalid());
+					PersonalEntity renter = personalService.getById(list.get(i).getRentpersonalid());
+					StallEntity stallEntity = stallService.getById(list.get(i).getStallid());
+					list.get(i).setOwner(owner);
+					list.get(i).setStallEntity(stallEntity);
+					list.get(i).setRenter(renter);
+				}
+				pageBean.setDatas(list);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			System.out.println(pageBean);
+			
+			return pageBean;
+		}
+		/**
+		 * 根据Id查询信息
+		 * @param id
+		 * @return
+		 */
+		@LogAnno(content="根据ID查询租赁信息",operateName= LogType.查询,userPower=UserType.个人用户)
+		@RequestMapping(value="tradingrecordById",method=RequestMethod.POST)
+		public ResponseData tradingrecordById(int id) {
+			
+			PersonalrentEntity personalrentEntity = personalrentService.getById(id);
+			
+			responseData.getData().put("personalrentEntity", personalrentEntity);
+			return responseData;
+			
+		}
+		/**
+		 * 根据ID查询出售信息
+		 * @param id
+		 * @return
+		 */
+		@LogAnno(content="根据ID查询出售信息",operateName= LogType.查询,userPower=UserType.个人用户)
+		@RequestMapping(value="tradingById",method=RequestMethod.POST)
+		public ResponseData tradingById(int id) {
+			
+			PersonalsaleEntity personalsaleEntity = personalsaleService.getById(id);
+			
+			responseData.getData().put("personalsaleEntity", personalsaleEntity);
+			return responseData;
+			
+		}
+		
+		/**
+		 * 添加租赁投诉信息
+		 * @param rentContractId
+		 * @param context
+		 * @return
+		 */
+		@LogAnno(content="添加投诉信息",operateName= LogType.添加,userPower=UserType.个人用户)
+		@RequestMapping(value="sendComplain",method=RequestMethod.POST)
+		public ComplainEntity sendComplain(Integer rentContractId,String context) {
+			
+			PersonalrentEntity personalrentEntity = personalrentService.getById(rentContractId);
+			logger.info("sendComplain");
+			System.out.println("内容 ："+context);
+			System.out.println("id："+rentContractId);
+			//添加投诉信息到投诉表
+			ComplainEntity complainEntity = new ComplainEntity();
+			System.out.println("asdasdasd："+personalrentEntity);
+			complainEntity.setComplainant(personalrentEntity.getRentpersonalid());
+			complainEntity.setBycomplainant(personalrentEntity.getPersonalid());
+			complainEntity.setStallid(personalrentEntity.getStallid());
+			complainEntity.setContext(context);
+			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+			String time = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+			complainEntity.setTime(time);
+			complainEntity.setType("未处理");
+			complainService.save(complainEntity);
+			System.out.println(personalrentEntity);
+			return  complainEntity;
+			
+			
+			
+		}
+		/**
+		 * 招租投诉
+		 * @param rentContractId
+		 * @param context
+		 * @return
+		 */
+		@LogAnno(content="添加投诉信息",operateName= LogType.添加,userPower=UserType.个人用户)
+		@RequestMapping(value="checkForlease",method=RequestMethod.POST)
+		public ComplainEntity checkForlease(Integer rentContractId,String context) {
+			
+			PersonalrentEntity personalrentEntity = personalrentService.getById(rentContractId);
+			logger.info("checkForlease");
+//			System.out.println("内容 ："+context);
+//			System.out.println("id："+rentContractId);
+			//添加投诉信息到投诉表
+			ComplainEntity complainEntity = new ComplainEntity();
+//			System.out.println("asdasdasd："+personalrentEntity);
+			complainEntity.setBycomplainant(personalrentEntity.getRentpersonalid());
+			complainEntity.setComplainant(personalrentEntity.getPersonalid());
+			complainEntity.setStallid(personalrentEntity.getStallid());
+			complainEntity.setContext(context);
+			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+			String time = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+			complainEntity.setTime(time);
+			complainEntity.setType("未处理");
+			complainService.save(complainEntity);
+			System.out.println(personalrentEntity);
+			return  complainEntity;
+		}
+		/**
+		 * 购买投诉
+		 * @param rentContractId
+		 * @param context
+		 * @return
+		 */
+		@LogAnno(content="添加出搜投诉信息",operateName= LogType.添加,userPower=UserType.个人用户)
+		@RequestMapping(value="getCmpla",method=RequestMethod.POST)
+		public ComplainEntity getCmpla(Integer rentContractId,String context) {
+		
+			PersonalsaleEntity personalsaleEntity = personalsaleService.getById(rentContractId);
+			System.out.println("内容 ："+context);
+			System.out.println("id："+rentContractId);
+			//添加投诉信息到投诉表
+			ComplainEntity complainEntity = new ComplainEntity();
+//			System.out.println("asdasdasd："+personalsaleEntity);
+			complainEntity.setBycomplainant(personalsaleEntity.getBuyerid());
+			complainEntity.setComplainant(personalsaleEntity.getPersonalid());
+			complainEntity.setStallid(personalsaleEntity.getStallid());
+			complainEntity.setContext(context);
+			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+			String time = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+			complainEntity.setTime(time);
+			complainEntity.setType("未处理");
+			complainService.save(complainEntity);
+			System.out.println(personalsaleEntity);
+			return  complainEntity;
+			
+		}
+		
+		/**
+		 * 购买投诉
+		 * @param rentContractId
+		 * @param context
+		 * @return
+		 */
+		@LogAnno(content="添加出搜投诉信息",operateName= LogType.添加,userPower=UserType.个人用户)
+		@RequestMapping(value="getCompla",method=RequestMethod.POST)
+		public ComplainEntity getCompla(Integer rentContractId,String context) {
+			
+			PersonalsaleEntity personalsaleEntity = personalsaleService.getById(rentContractId);
+			System.out.println("内容 ："+context);
+			System.out.println("id："+rentContractId);
+			//添加投诉信息到投诉表
+			ComplainEntity complainEntity = new ComplainEntity();
+			System.out.println("asdasdasd："+personalsaleEntity);
+			complainEntity.setBycomplainant(personalsaleEntity.getBuyerid());
+			complainEntity.setComplainant(personalsaleEntity.getPersonalid());
+			complainEntity.setStallid(personalsaleEntity.getStallid());
+			complainEntity.setContext(context);
+			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+			String time = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+			complainEntity.setTime(time);
+			complainEntity.setType("未处理");
+			complainService.save(complainEntity);
+			System.out.println(personalsaleEntity);
+			return  complainEntity;
+			
+			
+			
+		
+		}
+		/**
+		 *	 查询出售信息
+		 * @param curPage
+		 * @param pageSize
+		 * @return
+		 */
+		@LogAnno(content="查询出售信息",operateName= LogType.查询,userPower=UserType.个人用户)
+		@RequestMapping(value="saleofParking",method=RequestMethod.POST)
+		public PageBean<PersonalsaleEntity> saleofParking1(Integer curPage,Integer pageSize){
+        	PersonalEntity personalEntity= (PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+			logger.debug("收到显示车位信息请求");
+			logger.debug("页数："+curPage+"数量："+pageSize);
+			Map<String,Object> map = new HashMap<String, Object>(16);
+//			map.put("stallType", "已出售");
+			map.put("curPage", curPage);
+			map.put("pageSize", pageSize);
+			map.put("personalId", personalEntity.getId());
+			PageBean<PersonalsaleEntity> pageBean = tradingrecordService.getAllPersonalSalePageBean(map);
+				
+			return pageBean;
+		}
+		
+		/**
+		 *	 查询出售信息
+		 * @param curPage
+		 * @param pageSize
+		 * @return
+		 */
+		@LogAnno(content="查询出售信息",operateName= LogType.查询,userPower=UserType.个人用户)
+		@RequestMapping(value="showfParking",method=RequestMethod.POST)
+		public PageBean<PersonalsaleEntity> showfParking(Integer curPage,Integer pageSize){
+        	PersonalEntity personalEntity= (PersonalEntity) SecurityUtils.getSubject().getPrincipal();
+			logger.debug("收到显示车位信息请求");
+			logger.debug("页数："+curPage+"数量："+pageSize);
+			Map<String,Object> map = new HashMap<String, Object>(16);
+//			map.put("stallType", "已出售");
+			map.put("curPage", curPage);
+			map.put("pageSize", pageSize);
+			map.put("buyerId", personalEntity.getId());
+			PageBean<PersonalsaleEntity> pageBean = null;
+			try {
+				pageBean = tradingrecordService.showTradingrecord(map);
+				List<PersonalsaleEntity> list = pageBean.getDatas();
+				for(int i= 0; i<list.size(); i++) {
+					PersonalEntity personalSeller = personalService.getById(list.get(i).getPersonalid());
+					//买方
+					PersonalEntity buyer = personalService.getById(list.get(i).getBuyerid());
+					StallEntity stallEntity = stallService.getById(list.get(i).getStallid());
+						list.get(i).setPersonalEntity(personalSeller);
+						list.get(i).setStallEntity(stallEntity);
+						list.get(i).setBuyer(buyer);
+				}
+				pageBean.setDatas(list);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			System.out.println(pageBean);
+			return pageBean;
+		}
+		    
+}

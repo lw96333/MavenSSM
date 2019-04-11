@@ -1,0 +1,110 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * (Personalsale)实体类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+@TableName(value="t_personalsale")
+public class PersonalsaleEntity implements Serializable {
+    @TableId(type=IdType.AUTO)
+    private Integer id;
+    
+    private Integer stallid;
+    
+    private Integer personalid;
+    
+    private String message;
+    
+    private double price;
+   
+    private String time;
+
+    private Integer buyerid;
+    
+    @TableField(exist=false)
+    private PersonalEntity personalEntity;
+    @TableField(exist=false)
+    private StallEntity stallEntity;
+    @TableField(exist=false)
+    private PersonalEntity buyer;
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public Integer getStallid() {
+		return stallid;
+	}
+	public void setStallid(Integer stallid) {
+		this.stallid = stallid;
+	}
+	public Integer getPersonalid() {
+		return personalid;
+	}
+	public void setPersonalid(Integer personalid) {
+		this.personalid = personalid;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public double getPrice() {
+		return price;
+	}
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
+	}
+	public Integer getBuyerid() {
+		return buyerid;
+	}
+	public void setBuyerid(Integer buyerid) {
+		this.buyerid = buyerid;
+	}
+	public PersonalEntity getPersonalEntity() {
+		return personalEntity;
+	}
+	public void setPersonalEntity(PersonalEntity personalEntity) {
+		this.personalEntity = personalEntity;
+	}
+	public StallEntity getStallEntity() {
+		return stallEntity;
+	}
+	public void setStallEntity(StallEntity stallEntity) {
+		this.stallEntity = stallEntity;
+	}
+	public PersonalEntity getBuyer() {
+		return buyer;
+	}
+	public void setBuyer(PersonalEntity buyer) {
+		this.buyer = buyer;
+	}
+	@Override
+	public String toString() {
+		return "PersonalsaleEntity [id=" + id + ", stallid=" + stallid + ", personalid=" + personalid + ", message="
+				+ message + ", price=" + price + ", time=" + time + ", buyerid=" + buyerid + ", personalEntity="
+				+ personalEntity + ", stallEntity=" + stallEntity + ", buyer=" + buyer + "]";
+	}
+    
+	
+
+
+}

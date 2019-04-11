@@ -1,0 +1,118 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="../general/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="../general/style/authority/basic_layout.css" rel="stylesheet" type="text/css">
+<link href="../general/style/authority/common_style.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="../assets/js/bootstrap-table.min.css">
+
+<title>账单显示</title>
+
+</head>
+<body>
+
+	<div id="container">
+		<div class="ui_content">
+			<div class="ui_tb">
+				<h2>账单记录</h2>
+				<br />
+				<div>
+					起始日期：<input type="text" class="form-control" id="startDate" name="brithday" readonly="readonly"
+      value="" placeholder="请选开始日期" onClick="WdatePicker()" style="height: 30px;width: 150px;display: inline-block">
+
+
+					结束日期：<input type="text" class="form-control" id="endDate" name="brithday" readonly="readonly"
+      value="" placeholder="请选结束日期" onClick="WdatePicker()" style="height: 30px;width: 150px;display: inline-block">
+
+
+					<!-- <button type="button" class="btn btn-info btn-sm">搜索</button> -->
+					<button type="button" class="btn btn-info btn-sm"
+						id="see" data-toggle="modal" data-target="#myModal">合计账单</button>
+				</div>
+				<br />
+
+				<div class="bs-example" data-example-id="hoverable-table">
+
+					<table class="table" id="tb_departments"></table>
+				</div>
+				<!-- Modal -->
+				<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+					aria-labelledby="myModalLabel">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-body">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th>交易总笔数</th>
+											<th>支出金额合计</th>
+											<th>收入金额合计</th>
+										</tr>
+									</thead>
+									<!--    <tr>
+                                                    <td>&nbsp;&nbsp;&nbsp;10</td>
+                                                    <td>&nbsp;&nbsp;&nbsp;15000.00</td>
+                                                    <td>&nbsp;&nbsp;&nbsp;10000.00</td>
+                                                </tr> -->
+									<tbody id="show"></tbody>
+									
+									<!-- <tr>
+                                       <td>总收益</td>
+                                       <td colspan="2"><span id="ji"></span></td>
+                                    </tr> -->
+								</table>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-info" data-dismiss="modal">关闭</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--      <div class="ui_tb_h30">
+            <div class="ui_flt" style="height: 30px; line-height: 30px;">
+                共有
+                <span class="ui_txt_bold04">90</span>
+                条记录，当前第
+						<span class="ui_txt_bold04">1
+						/
+						9</span>
+                页
+            </div>
+            <div class="ui_frt">
+                   如果是第一页，则只显示下一页、尾页
+
+                <input type="button" value="首页" class="ui_input_btn01" />
+                <input type="button" value="上一页" class="ui_input_btn01" />
+                <input type="button" value="下一页" class="ui_input_btn01"
+                       onclick="jumpNormalPage(2);" />
+                <input type="button" value="尾页" class="ui_input_btn01"
+                       onclick="jumpNormalPage(9);" />
+
+                    如果是最后一页，则只显示首页、上一页
+
+                转到第<input type="text" id="jumpNumTxt" class="ui_input_txt01" />页
+                <input type="button" class="ui_input_btn01" value="跳转" onclick="jumpInputPage(9);" />
+            </div>
+        </div> -->
+			<br />
+		</div>
+
+
+	</div>
+	<script type="text/javascript" src="../general/js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../general/js/bootstrap.min.js"></script>
+	<script language="javascript" type="text/javascript" src="../assets/My97DatePicker/WdatePicker.js"></script>
+
+	<script src="../assets/js/bootstrap-table.min.js"></script>
+	<script src="../assets/js/bootstrap-table-zh-CN.min.js"></script>
+
+	<script src="../ajax/Bill/showCBDBill.js"></script>
+	<script src="../ajax/Bill/CBDBillCount.js"></script>
+</body>
+</html>

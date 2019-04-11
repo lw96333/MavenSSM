@@ -1,0 +1,179 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * 个人用户出售合同实体类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+@TableName(value="t_personalcontract")
+public class PersonalcontractEntity implements Serializable {
+
+	/**
+	 * 合同id
+	 */
+    @TableId(type=IdType.AUTO)
+    private Integer id;
+    /**
+     * 合同编号
+     */
+    private String contractnumber;
+    /**
+     * 卖方id
+     */
+    private Integer sellers;
+    /**
+     * 买方id
+     */
+    private Integer buyer;
+    /**
+     * 车位id
+     */
+    private Integer stall;
+    /**
+     * 价格
+     */
+    private Object price;
+    /**
+     * 合同生效时间
+     */
+    private String time;
+    /**
+     * 买方确认合同
+     */
+    private String sellersure;
+    /**
+     * 买方确认合同
+     */
+    private String buyersure;
+
+    /**
+     * 卖方
+     */
+    @TableField(exist=false)
+    private PersonalEntity personalSeller;
+    /**
+     * 买方
+     */
+    @TableField(exist=false)
+    private PersonalEntity personalBuyer;
+    /**
+     * 车位
+     */
+    @TableField(exist=false)
+    private StallEntity stallEntity;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getContractnumber() {
+        return contractnumber;
+    }
+
+    public void setContractnumber(String contractnumber) {
+        this.contractnumber = contractnumber;
+    }
+
+    public Integer getSellers() {
+        return sellers;
+    }
+
+    public void setSellers(Integer sellers) {
+        this.sellers = sellers;
+    }
+
+    public Integer getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(Integer buyer) {
+        this.buyer = buyer;
+    }
+
+    public Integer getStall() {
+        return stall;
+    }
+
+    public void setStall(Integer stall) {
+        this.stall = stall;
+    }
+
+    public Object getPrice() {
+        return price;
+    }
+
+    public void setPrice(Object price) {
+        this.price = price;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getSellersure() {
+        return sellersure;
+    }
+
+    public void setSellersure(String sellersure) {
+        this.sellersure = sellersure;
+    }
+
+    public String getBuyersure() {
+        return buyersure;
+    }
+
+    public void setBuyersure(String buyersure) {
+        this.buyersure = buyersure;
+    }
+
+	public PersonalEntity getPersonalSeller() {
+		return personalSeller;
+	}
+
+	public void setPersonalSeller(PersonalEntity personalSeller) {
+		this.personalSeller = personalSeller;
+	}
+
+	public PersonalEntity getPersonalBuyer() {
+		return personalBuyer;
+	}
+
+	public void setPersonalBuyer(PersonalEntity personalBuyer) {
+		this.personalBuyer = personalBuyer;
+	}
+
+	
+	public StallEntity getStallEntity() {
+		return stallEntity;
+	}
+
+	public void setStallEntity(StallEntity stallEntity) {
+		this.stallEntity = stallEntity;
+	}
+
+	@Override
+	public String toString() {
+		return "PersonalcontractEntity [id=" + id + ", contractnumber=" + contractnumber + ", sellers=" + sellers
+				+ ", buyer=" + buyer + ", stall=" + stall + ", price=" + price + ", time=" + time + ", sellersure="
+				+ sellersure + ", buyersure=" + buyersure + ", personalSeller=" + personalSeller + ", personalBuyer="
+				+ personalBuyer + ", stallEntity=" + stallEntity + "]";
+	} 
+
+}

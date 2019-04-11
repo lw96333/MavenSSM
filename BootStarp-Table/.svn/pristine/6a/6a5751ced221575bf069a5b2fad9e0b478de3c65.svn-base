@@ -1,0 +1,72 @@
+package com.ne.util;
+
+import org.apache.shiro.crypto.hash.Md5Hash;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+
+/**
+ * @Auther: tangxiong
+ * @Date: 2019/3/20 0020 15:16
+ * @Description: 文件上传文件工具类
+ */
+public class CBDUtil {
+
+    /**
+     * 上传文件工具方法
+     *
+     * @param request
+     * @return 返回保存数据库的路径
+     */
+    public static String uploadFile(HttpServletRequest request) {
+        String localhost = "D:\\myimgs\\";
+        //创建上传文件解析器
+        CommonsMultipartResolver multipartResolver =
+                new CommonsMultipartResolver(request.getServletContext());
+        //判断上传文件
+        if (multipartResolver.isMultipart(request)) {
+
+            //转换request类型为上传类型
+            MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+            //获取上传文件名
+            Iterator<String> iterator = multiRequest.getFileNames();
+            while (iterator.hasNext()) {
+                //获取上传文件
+                MultipartFile file = multiRequest.getFile(iterator.next());
+                if (file != null) {
+                    //获取源文件名
+                    String fileName = file.getOriginalFilename();
+                    String ext = fileName.substring(fileName.lastIndexOf("."));
+                    String newFileName = System.currentTimeMillis() + ext;
+                    String savePath = localhost + File.separator + newFileName;
+                    localhost += newFileName;
+                    //写文件
+                    if (fileName != null) {
+                        try {
+                            File dir = new File(savePath);
+                            if (!dir.exists()){
+                                dir.mkdirs();
+                            }
+                            file.transferTo(dir);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+        return localhost;
+    }
+
+    public static String md5(String password, String username) {
+        Md5Hash md5Hash = new Md5Hash(password, username, 3);
+        return md5Hash.toString();
+    }
+
+
+}

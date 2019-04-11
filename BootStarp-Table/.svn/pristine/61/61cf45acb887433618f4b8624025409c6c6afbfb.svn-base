@@ -1,0 +1,37 @@
+package com.ne.service;
+
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.ne.bean.PageBean;
+import com.ne.entity.ComplainEntity;
+
+import java.util.Map;
+
+/**
+ * (Complain)表服务接口
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:00
+ */
+public interface ComplainService extends IService<ComplainEntity> {
+    /**
+     * 封装分页方法
+     *
+     * @param condition
+     * @return
+     * @throws Exception
+     */
+    PageBean<ComplainEntity> showlistComplain(Map<String, Object> condition) throws Exception;
+
+
+    /**
+     * 封装分页方法
+     *
+     * @param condition
+     * @return
+     * @throws Exception
+     */
+    PageBean<ComplainEntity> getComplainEntity(Map<String, Object> condition) throws Exception;
+
+
+}

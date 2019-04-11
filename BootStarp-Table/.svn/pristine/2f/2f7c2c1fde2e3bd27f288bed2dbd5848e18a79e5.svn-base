@@ -1,0 +1,59 @@
+package com.ne.test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.CompanylcontractEntity;
+import com.ne.service.CompanylcontractService;
+import com.ne.service.ExternalcontractService;
+import com.ne.service.ThirdplatformService;
+
+
+/**
+ * @Auther: tangxiong
+ * @Date: 2019/3/16 18:31
+ * @Description:
+ */
+@Transactional(transactionManager = "transactionManager")
+@Rollback(value = false)
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/application.xml"})
+public class ExternalcontractTest extends AbstractTransactionalJUnit4SpringContextTests {
+  
+	@Autowired
+	private ExternalcontractService externalcontractService;
+	@Autowired
+	private CompanylcontractService companylcontractService;
+	@Autowired
+	private ThirdplatformService thirdplatformService;
+	
+	@Test
+	public void addTest() {
+		
+		/*CompanylcontractEntity companylcontractEntity = new CompanylcontractEntity();
+		ExternalcontractEntity entity =	new ExternalcontractEntity();
+	
+		entity.setContractnumber("usdhfu");
+		entity.setContractpic("sdfsd");
+		externalcontractService.save(entity);*/
+		/*entity = externalcontractService.getById(2);
+		entity.setId(2);
+		externalcontractService.save(entity);*/
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		map.put("curPage", 0);
+		map.put("pageSize", 3);
+		PageBean<CompanylcontractEntity> pageBean = companylcontractService.showCompanylcontractInfoByPage(map);
+		
+		System.out.println(pageBean);
+	}
+}

@@ -1,0 +1,27 @@
+package com.ne.service;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.CompanylcontractEntity;
+
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+ * 企业合约接口
+ * 
+ *@author 班贵华
+ * 2019年3月21日
+ */
+public interface CompanylcontractService extends IService<CompanylcontractEntity>{
+
+	/**
+	 * 企业合约分页对象
+	 * @param condition
+	 * @return
+	 */
+	
+	public PageBean showCompanylcontractInfoByPage(Map<Object, Object> condition);
+
+	CompanylcontractEntity getCompanylcontractEntityByStallId(int stallid ,int companyid);
+}

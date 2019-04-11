@@ -1,0 +1,54 @@
+$(function(){
+	var formData = new FormData();
+	$("#renewal").click(function(){
+		
+		if($("#starttimes").val().trim() > $("#endtimes").val().trim()){
+			
+			alert("结束时间不能比生效日期小");
+		}else if(
+				$("#file-pic1")[0].files[0] == null || $("#contractnumbers").val().trim() == null || 
+				$("#endtimes").val().trim() == null || $("#starttimes").val().trim() == null ||
+				$("#companycontacts").val().trim() == null || $("#prices").val().trim() == null ||
+				$("#companphones").val().trim() == null || $("#longtimes").val().trim() == null
+		){
+			alert("所有内容不能为空");
+		} else{
+			
+		
+		formData.append("contractpic",$("#file-pic1")[0].files[0]);
+		formData.append("contractnumber",$("#contractnumbers").val().trim());
+		formData.append("starttime",$("#starttimes").val().trim());
+		//formData.append("newContractnumber",$("#newContractnumbers").val().trim());
+		formData.append("endtime",$("#endtimes").val().trim());
+		formData.append("companycontact",$("#companycontacts").val().trim());
+		formData.append("price",$("#prices").val().trim());
+		formData.append("companphone",$("#companphones").val().trim());
+		formData.append("longtime",$("#longtimes").val().trim());
+		
+		$.ajax({
+			url:"../extendContractCompanylcontract",
+			type:"POST",
+			cache:false,
+			async:false,
+			processData:false,
+			contentType:false,
+			data:
+				formData,
+			
+			dataType:"json",
+			success:function(data){
+			
+				
+				if(data.code == 200){
+					self.location="corporateTenantContract.jsp";
+				}else{
+					
+					alert("输入有误请检查后重试");
+				}
+				
+				
+			}
+		})
+		}
+	})
+})

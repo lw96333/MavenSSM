@@ -1,0 +1,22 @@
+package com.ne.dao;
+
+import com.ne.entity.ExternalcontractEntity;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+/**
+ * 外部合约Dao层接口
+ * 
+ * @author 班贵华 2019年3月21日
+ */
+public interface ExternalcontractDao extends BaseMapper<ExternalcontractEntity> {
+
+	@Select("SELECT * FROM t_externalcontract where isinvalid = '否' LIMIT ${curPage},#{pageSize}")
+	public List<ExternalcontractEntity> getExternalcontractInfos(Map<Object, Object> condition);
+
+}

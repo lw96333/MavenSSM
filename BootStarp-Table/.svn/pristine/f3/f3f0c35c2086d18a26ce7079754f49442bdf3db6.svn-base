@@ -1,0 +1,71 @@
+package com.ne.test;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ne.bean.PageBean;
+import com.ne.entity.ComplainEntity;
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.StallEntity;
+import com.ne.service.ComplainService;
+import com.ne.service.PersonalService;
+import com.ne.service.StallService;
+
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/application.xml"})
+@Transactional(transactionManager="transactionManager")
+@Rollback(value = false)
+public class MyTest extends AbstractTransactionalJUnit4SpringContextTests{
+	@Autowired
+	private ComplainService complainService;
+	@Autowired
+	private StallService stallService;
+	@Autowired
+	private PersonalService personalService;
+	
+	@Test
+	public void getById() {
+
+		ComplainEntity complainEntity  = complainService.getById(1);
+		
+		System.out.println(complainEntity);
+	}
+	@Test
+	public void showStalls() {
+		QueryWrapper<StallEntity> queryWrapper = new QueryWrapper<StallEntity>();
+		Map<String,Object> map = new HashMap<String, Object>();
+		map.put("userId",1);
+		map.put("userType", "个人");
+		
+		queryWrapper.allEq(map);
+		PersonalEntity personalEntity =personalService.getById(1);
+		List<StallEntity> stalls = stallService.list(queryWrapper);
+		for (StallEntity stallEntity : stalls) {
+			stallEntity.setPersonal(personalEntity);
+		}
+		System.out.println(stalls);
+	}
+	
+	@Test
+	public void page() throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("curPage", 0);
+		map.put("pageSize", 2);
+		map.put("usertype", "个人");
+		PageBean<StallEntity> pageBean = stallService.showPageByCondition(map);
+		System.out.println(pageBean);
+	}
+}

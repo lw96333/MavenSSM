@@ -1,0 +1,88 @@
+$(function(){
+	
+	var stalladdress = null;
+	var stallarea = null;
+	var stallnumber = null;
+	var propertypic = null;
+	var propertynumber = null;
+	var flag = false;
+	var flag1 = false;
+	var flag2 = false;
+	var flag3 = false;
+	var flag4 = false;
+	var flag5 = false;
+	$("#stalladdress").focusout(function(){
+		if((/^[\u4e00-\u9fa5_0-9a-zA-Z]{1,30}$/).test($("#stalladdress").val().trim())){
+			$("#error1").html("");
+			stalladdress = $("#stalladdress").val().trim();
+			flag1=true;
+		}else{
+			$("#error1").html("只能输入汉字、字母和数字(1-30个字符)！");
+		}
+	})
+	$("#stallarea").focusout(function(){
+		if((/^[A-Z]{1,3}$/).test($("#stallarea").val().trim())){
+			$("#error3").html("");
+			stallarea = $("#stallarea").val().trim();
+			flag2=true;
+		}else{
+			$("#error3").html("请输入1-3个大写英文字母！");
+		}
+	})
+	$("#stallnumber").focusout(function(){
+		if((/^[0-9]{1,5}$/).test($("#stallnumber").val().trim())){
+			$("#error5").html("");
+			stallnumber = $("#stallnumber").val().trim();
+			flag3=true;
+		}else{
+			$("#error5").html("请输入1-5个数字！");
+		}
+	})
+	$("#propertynumber").focusout(function(){
+		if((/^[\u4e00-\u9fa5_0-9a-zA-Z]{1,20}$/).test($("#propertynumber").val().trim())){
+			$("#error4").html("");
+			propertynumber = $("#propertynumber").val().trim();
+			flag4=true;
+		}else{
+			$("#error4").html("只能输入中文、字母和数字(1-20个字符)");
+		}
+	})
+	$("#propertypic").focusout(function(){
+		if($("#propertypic")[0].files[0] != null){
+			$("#error2").html("");
+			propertypic = $("#propertypic")[0].files[0];
+			flag5=true;
+		}else{
+			$("#error2").html("产权复印件不能为空");
+		}
+	})
+	if(flag1==true && flag2==true && flag3==true && flag4==true && flag5==true){
+		flag = true;
+	}
+	$("#addStall").click(function(){
+		//alert(propertypic)
+		var formData = new FormData();
+		formData.append("propertypic",$("#propertypic")[0].files[0]);
+		formData.append("stalladdress",stalladdress);
+		formData.append("stallarea",stallarea);
+		formData.append("stallnumber",stallnumber);
+		formData.append("propertynumber",propertynumber);
+		if(flag==true){
+			$.ajax({
+				url:"../addPersonalStall",
+				type:"POST",
+				cache:false,
+				async:false,
+				processData:false,
+				contentType:false,
+				data:formData,
+				success:function(data){
+					alert("添加成功！请等待后台审核")
+					self.location="table_basic.jsp";
+				}
+			})
+		}
+	})
+	
+		
+})

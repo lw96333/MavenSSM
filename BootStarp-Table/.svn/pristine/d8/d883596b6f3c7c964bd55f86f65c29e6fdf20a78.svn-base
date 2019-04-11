@@ -1,0 +1,229 @@
+package com.ne.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.ne.log.LogType;
+import org.apache.log4j.Logger;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ne.bean.PageBean;
+import com.ne.entity.ComplainEntity;
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.PersonalrentEntity;
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.StallEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.UserType;
+import com.ne.service.ComplainService;
+import com.ne.service.PersonalService;
+import com.ne.service.PersonalrentService;
+import com.ne.service.PersonalsaleService;
+import com.ne.service.StallService;
+import com.ne.util.ResponseData;
+
+/**
+ * 投诉信息页面控制
+ * @author xlp
+ *
+ *2019年3月22日
+ */
+
+@RestController
+@ResponseBody
+public class ComplainController {
+
+	@Autowired
+	private ComplainService complainService;
+	@Autowired
+	private PersonalService personalService;
+	@Autowired
+	private StallService stallService;
+	@Autowired
+	private PersonalsaleService personalsaleService;
+	@Autowired
+	private PersonalrentService personalrentService;
+	/**
+	 * 获取日志记录器
+	 */
+	private static Logger logger = Logger.getLogger(StallController.class);
+	
+	/**
+	 * 响应信息
+	 */
+	private ResponseData responseData = new ResponseData();
+	
+	/**
+	 * 显示查询投诉信息
+	 * @param modelMap
+	 * @param curPage
+	 * @param pageSize
+	 * @return
+	 * @throws Exception
+	 */
+	@LogAnno(content="查询投诉信息",operateName= LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="showlistComplaom",method=RequestMethod.POST)
+	public PageBean<ComplainEntity> showlistComplaom(Integer curPage,Integer pageSize,String type,ModelMap modelMap)  {
+
+		logger.info("获得显示信息请求");
+		Map<String , Object> map = new HashMap<String, Object>(16);
+		if(!("".equals(type)) &&  type != null) {
+			map.put("type",type);
+		 	}
+		else {
+			map.put("type",null);
+		}
+
+			map.put("curPage", curPage);
+			map.put("pageSize", pageSize);
+
+			
+			PageBean<ComplainEntity> pageBean = null;
+			try {
+				pageBean = complainService.showlistComplain(map);
+				List<ComplainEntity> list= pageBean.getDatas();
+				for (int i = 0; i < list.size(); i++) {
+					PersonalEntity complainanter=personalService.getById(list.get(i).getComplainant());
+
+					PersonalEntity bycomplainant=personalService.getById(list.get(i).getBycomplainant());
+					StallEntity personalEntity2=stallService.getById(list.get(i).getStallid());
+					list.get(i).setComplainanter(complainanter);
+					list.get(i).setBycomplainanter(bycomplainant);
+					list.get(i).setStallEntity(personalEntity2);
+			 }
+			 pageBean.setDatas(list);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			 System.out.println("啊实打实打算发"+pageBean);
+			 return pageBean;
+	}
+	/**
+	 * 根据id查询投诉
+	 * @param id
+	 * @return
+	 */
+	@LogAnno(content="根据ID查询投诉信息",operateName=LogType.查询,userPower=UserType.个人用户)
+	@RequestMapping(value="complainById",method=RequestMethod.POST)
+	public ResponseData complainById(int id) {
+		
+		ComplainEntity complainEntity = complainService.getById(id);
+		
+		responseData.getData().put("complainEntity", complainEntity);
+		
+		return responseData;
+		
+	}
+	
+	
+		/**
+		 * 获取日志记录器
+		 */
+		 static { 
+			 logger=Logger.getLogger(ComplainController.class);
+			 }
+		 /**
+		  * 分页查看所有信息
+		  * @param complainEntity
+		  * @return
+		  */
+		 @LogAnno(content = "分页查看所有信息", operateName = LogType.查询, userPower = UserType.后台管理员)
+		 @RequestMapping(value="select",method=RequestMethod.POST)
+		 public PageBean<ComplainEntity> getComplainEntity(Integer curPage,Integer pageSize)throws Exception {
+			 logger.info("获得显示信息请求");
+			 Map<String , Object> map = new HashMap<String, Object>(16);
+				map.put("curPage", curPage);
+				map.put("pageSize", pageSize);
+				PageBean<ComplainEntity> pageBean = complainService.getComplainEntity(map);
+				
+				return pageBean;
+		 }
+		 
+		 /**
+		  * 修改状态
+		  * @param id
+		  * @return
+		  */
+		 @LogAnno(content = "修改投诉状态", operateName = LogType.修改, userPower = UserType.后台管理员)
+		 @RequestMapping(value="unpdate1",method=RequestMethod.POST)
+		 public ResponseData unpdateComplain1(Integer id) {
+			 ComplainEntity complainEntity=new ComplainEntity();
+			 complainEntity.setId(id);
+			 complainEntity.setResult("投诉无效");
+			 complainEntity.setType("已处理");
+			 Boolean i= complainService.updateById(complainEntity);
+			
+			 responseData.getData().put("boolean1",i);
+			return responseData;
+			 
+		 }
+		 /**
+		  * 修改状态
+		  * @param id
+		  * @return
+		  */
+		 @LogAnno(content = "修改投诉状态", operateName = LogType.修改, userPower = UserType.后台管理员)
+		 @RequestMapping(value="unpdate2",method=RequestMethod.POST)
+		 public ResponseData unpdateComplain2(Integer id) {
+			 
+			 ComplainEntity complainEntity=new ComplainEntity();
+			 complainEntity.setId(id);
+			 complainEntity.setResult("暂缓处理");
+			 complainEntity.setType("已处理");
+			 Boolean i= complainService.updateById(complainEntity);
+			 responseData.getData().put("boolean2",i);
+			return responseData;
+			 
+		 }
+		 /**
+		  * 修改状态
+		  * @param id
+		  * @return
+		  */
+		 @LogAnno(content = "修改投诉状态", operateName = LogType.修改, userPower = UserType.后台管理员)
+		 @RequestMapping(value="unpdate3",method=RequestMethod.POST)
+		 public ResponseData unpdateComplain3(Integer id) {
+			 
+			 ComplainEntity complainEntity=complainService.getById(id);
+			
+			 complainEntity.setResult("投诉生效");
+			 complainEntity.setType("已处理");
+			 
+			 logger.info(complainEntity.getBycomplainant()+"2222");
+			 PersonalEntity personalEntity=personalService.getById(complainEntity.getBycomplainant());
+			 logger.info(personalEntity+"1111");
+			 QueryWrapper< ComplainEntity> queryWrapper = new QueryWrapper<ComplainEntity>();
+			 Map< String , Object> map  = new HashMap<>(16);
+			 map.put("type", "已处理");
+			 map.put("byComplainant", complainEntity.getBycomplainant());
+			 queryWrapper.allEq(map);
+			
+			 QueryWrapper< PersonalsaleEntity> queryWrapper2 = new QueryWrapper<PersonalsaleEntity>();
+			 queryWrapper2.eq("personalId", complainEntity.getBycomplainant());
+			 
+			 QueryWrapper< PersonalrentEntity> queryWrapper3 = new QueryWrapper<PersonalrentEntity>();
+			 queryWrapper3.eq("personalId", complainEntity.getBycomplainant());
+			
+			 double num2 = personalsaleService.count(queryWrapper2) + personalrentService.count(queryWrapper3);
+
+			 
+			 Boolean i= complainService.updateById(complainEntity);
+			 double num = complainService.count(queryWrapper);
+			 logger.info(num);
+			 logger.info(num2);
+			 personalEntity.setCredibility(personalEntity.getCredibility()-5);
+			 personalService.updateById(personalEntity);
+			 responseData.getData().put("boolean3",i);
+			return responseData;
+			 
+		 }
+
+}

@@ -1,0 +1,67 @@
+package com.ne.bean;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ *    通用分页对象
+ * @author xlp
+ *
+ */
+
+
+public  class PageBean<T> implements Serializable {
+    /**
+     *   当前页数
+     */
+	private int curPage;
+	/**
+	 * 每页显示条数
+	 */
+	private int pageSize;
+	/**
+	 * 总条数
+	 */
+	private int tolSize;
+	/**
+	 * 显示的数据
+	 */
+	private List<T> datas;
+	
+	
+	public int getCurPage() {
+		return curPage;
+	}
+	public void setCurPage(int curPage) {
+		this.curPage = curPage;
+	}
+	public int getPageSize() {
+		return pageSize;
+	}
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+	
+	public int getTolSize() {
+		return tolSize;
+	}
+	public void setTolSize(int tolSize) {
+		this.tolSize = tolSize;
+	}
+	public List<T> getDatas() {
+		return datas;
+	}
+	public void setDatas(List<T> datas) {
+		this.datas = datas;
+	}
+	@Override
+	public String toString() {
+		return "PageBean [curPage=" + curPage + ", pageSize=" + pageSize + ", tolSize=" + tolSize + ", datas=" + datas
+				+ "]";
+	}
+	
+	
+	
+	
+	
+}

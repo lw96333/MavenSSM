@@ -1,0 +1,17 @@
+$(function(){
+	$("#notpengding").click(function(){
+		$("#stallid").attr("value");
+		
+		$.ajax({
+			url:"../notPassStallType",
+			type:"POST",
+			data:{
+				id:$("#stallid").attr("value")
+			},
+			success:function(data){
+				self.location="personalSale.jsp";
+			}
+		})
+	})
+})
+

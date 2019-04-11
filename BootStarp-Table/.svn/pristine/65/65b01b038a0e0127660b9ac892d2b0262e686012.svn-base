@@ -1,0 +1,148 @@
+
+function judge(obj,str){
+    var my = obj;
+    if(my.val() != "" && my.val() != null){
+        my.css({
+            "border": "1px solid gainsboro"
+        });
+        return true;
+    }else{
+        my.attr("placeholder",str);
+        my.css({
+            "border": "1px solid red"
+        });
+        return false;
+    }
+}
+
+$(function(){
+	
+	var adminid = $("#adminid").val();
+
+	$("#oldpw").on("blur",function(){
+    	var oldpw = $("#oldpw").val();
+    	if(oldpw==null || oldpw==""){
+    		$("#oldpw").css({
+    			"border": "1px solid red"
+    		});
+    		$("#oldpw").attr({
+    			"placeholder": "请输入原密码"
+    		});
+    	}else{
+    		$.ajax({
+				type:"post",
+				url:"../AdminPasswordIsTrue",
+				data:{
+					"oldpw":oldpw,
+					"adminid":adminid
+					
+				},
+				dataType:"json",
+				success:passwordIsTureSuccess
+			});
+    		
+    	}
+        
+
+    });
+    $("#newpw1").on("blur",function(){
+        judge($(this),"请输入新密码，8-16位字母数组或者下划线");
+    });
+    $("#phone").on("blur",function(){
+        judge($(this),"请输入电话号码!");
+    });
+    
+    $("#newpw2").on("blur",function(){
+        judge($(this),"请再次输入新密码，8-16位字母数组或者下划线");
+    });
+    $("#surechange").click(function(){
+    	
+        var falg = true;
+        var oldpw = $("#oldpw").val();
+        var pw1 = $("#newpw1").val();
+        var pw2 = $("#newpw2").val();
+        var phone = $("#phone").val();
+        var reg = /^[a-z0-9_-]{8,16}$/;
+        var regphone = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/;
+        var adminid = $("#adminid").val();
+       
+        if(oldpw==null || oldpw== ""){
+            falg =false;
+      
+        }
+       
+        if(pw1==null || pw1 == ""||!reg.test(pw1.trim())){
+            $("#newpw1").css({
+    			"border": "1px solid red"
+    		}); 
+            falg =false; 
+        }
+        if(phone==null || phone == ""||!regphone.test(phone.trim())){
+            $("#phone").css({
+    			"border": "1px solid red"
+    		});
+            falg =false; 
+        }
+        if(pw2!=pw1){
+        	$("#newpw2").css({
+    			"border": "1px solid red"
+    		});
+        	$("#newpw2").val("");
+            falg =false;   
+        }
+     
+        if(falg){
+			$.ajax({
+				type:"post",
+				url:"../updateAdminPassword",
+				data:{
+					"oldpw":oldpw,
+					"newpw1":pw1,
+					"newpw2":pw2,					
+					"adminid":adminid,
+					"phone":phone
+					
+				},
+				dataType:"json",
+				success:changePasswordSuccess
+			});
+
+        }else{
+            return false;
+        }
+    });
+    
+   
+    function changePasswordSuccess(rd){
+    	if(rd.message =="changeOK"){
+    		alert("密码修改成功，即将返回主页!");
+        	self.location="indexImg.jsp";
+    	
+    	}else{
+    		
+    	}
+    	
+    }
+    
+    function passwordIsTureSuccess(rd){
+    
+    	if(rd.message!="pwtrue"){
+    		$("#oldpw").css({
+    			"border": "1px solid red"
+    		});
+    		$("#oldpw").val("");
+    		$("#oldpw").attr({
+    			"placeholder": "密码不正确，请重新输入原密码"
+    		});
+    	}
+    	
+    }
+    
+    $("#cancel").click(function(){
+    	$("#oldpw").val("");
+    	$("#newpw1").val("");
+    	$("#newpw2").val("");
+    	$("#phone").val("");
+    });
+   
+});

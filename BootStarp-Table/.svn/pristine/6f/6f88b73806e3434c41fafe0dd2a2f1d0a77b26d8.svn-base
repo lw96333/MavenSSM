@@ -1,0 +1,257 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+
+/**
+ * (Stall)车位信息实体类
+ * 
+ * @author 杨雷
+ *
+ *         2019年3月21日
+ */
+@TableName(value = "t_stall")
+public class StallEntity implements Serializable {
+	/**
+	 * 车位Id
+	 */
+	@TableId(type = IdType.AUTO)
+	private Integer id;
+
+	/**
+	 * 车位地址
+	 */
+	private String stalladdress;
+	/**
+	 * 车位区域
+	 */
+
+	private String stallarea;
+
+	/**
+	 * 车位编号
+	 */
+	private Integer stallnumber;
+
+	/**
+	 * 车位产权编号
+	 */
+	private String propertynumber;
+
+	/**
+	 * 产权图片
+	 */
+	private String propertypic;
+	/**
+	 * 车位状态(空闲、待租、预定、审核状态、出售状态 ）
+	 */
+
+	private String stalltype;
+	/**
+	 * 车位对应的用户类型（个人车位、CBD自身车位、第三方平台车位）
+	 */
+
+	private String usertype;
+	/**
+	 * 关联用户ID
+	 */
+	private Integer userid;
+
+	/**
+	 * 申请时间
+	 */
+	private String aduittime;
+	
+	/**
+	 * 最长可租日期
+	 */
+	private String longtime;
+	
+	/**
+	 * 
+	 * 第三方合同id(外键)
+	 */
+	private Integer externalcontractid;
+	
+	/**
+	 * 
+	 * 企业合同id(外键)
+	 */
+	private Integer companylcontractid;
+
+	@TableField(exist = false)
+	private CompanylcontractEntity companylcontra;
+
+	@TableField(exist = false)
+	private PersonalEntity personal;
+
+	@TableField(exist = false)
+	private PersonalrentEntity rentEntity;
+
+	@TableField(exist = false)
+	private PersonalsaleEntity rsaleEntity;
+	
+	@TableField(exist = false)
+	private CompanyEntity  companyEntity;
+	
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public CompanyEntity getCompanyEntity() {
+		return companyEntity;
+	}
+
+	public void setCompanyEntity(CompanyEntity companyEntity) {
+		this.companyEntity = companyEntity;
+	}
+
+	public String getStalladdress() {
+		return stalladdress;
+	}
+
+	public void setStalladdress(String stalladdress) {
+		this.stalladdress = stalladdress;
+	}
+
+	public String getStallarea() {
+		return stallarea;
+	}
+
+	public void setStallarea(String stallarea) {
+		this.stallarea = stallarea;
+	}
+
+	public Integer getStallnumber() {
+		return stallnumber;
+	}
+
+	public void setStallnumber(Integer stallnumber) {
+		this.stallnumber = stallnumber;
+	}
+
+	public String getPropertynumber() {
+		return propertynumber;
+	}
+
+	public void setPropertynumber(String propertynumber) {
+		this.propertynumber = propertynumber;
+	}
+
+	public String getPropertypic() {
+		return propertypic;
+	}
+
+	public void setPropertypic(String propertypic) {
+		this.propertypic = propertypic;
+	}
+
+	public String getStalltype() {
+		return stalltype;
+	}
+
+	public void setStalltype(String stalltype) {
+		this.stalltype = stalltype;
+	}
+
+	public String getUsertype() {
+		return usertype;
+	}
+
+	public void setUsertype(String usertype) {
+		this.usertype = usertype;
+	}
+
+	public Integer getUserid() {
+		return userid;
+	}
+
+	public void setUserid(Integer userid) {
+		this.userid = userid;
+	}
+
+	public String getAduittime() {
+		return aduittime;
+	}
+
+	public void setAduittime(String aduittime) {
+		this.aduittime = aduittime;
+	}
+
+	public String getLongtime() {
+		return longtime;
+	}
+
+	public void setLongtime(String longtime) {
+		this.longtime = longtime;
+	}
+
+	public Integer getExternalcontractid() {
+		return externalcontractid;
+	}
+
+	public void setExternalcontractid(Integer externalcontractid) {
+		this.externalcontractid = externalcontractid;
+	}
+
+	public Integer getCompanylcontractid() {
+		return companylcontractid;
+	}
+
+	public void setCompanylcontractid(Integer companylcontractid) {
+		this.companylcontractid = companylcontractid;
+	}
+
+	public CompanylcontractEntity getCompanylcontra() {
+		return companylcontra;
+	}
+
+	public void setCompanylcontra(CompanylcontractEntity companylcontra) {
+		this.companylcontra = companylcontra;
+	}
+
+	public PersonalEntity getPersonal() {
+		return personal;
+	}
+
+	public void setPersonal(PersonalEntity personal) {
+		this.personal = personal;
+	}
+
+	public PersonalrentEntity getRentEntity() {
+		return rentEntity;
+	}
+
+	public void setRentEntity(PersonalrentEntity rentEntity) {
+		this.rentEntity = rentEntity;
+	}
+
+	public PersonalsaleEntity getRsaleEntity() {
+		return rsaleEntity;
+	}
+
+	public void setRsaleEntity(PersonalsaleEntity rsaleEntity) {
+		this.rsaleEntity = rsaleEntity;
+	}
+
+	@Override
+	public String toString() {
+		return "StallEntity [id=" + id + ", stalladdress=" + stalladdress + ", stallarea=" + stallarea
+				+ ", stallnumber=" + stallnumber + ", propertynumber=" + propertynumber + ", propertypic=" + propertypic
+				+ ", stalltype=" + stalltype + ", usertype=" + usertype + ", userid=" + userid + ", aduittime="
+				+ aduittime + ", longtime=" + longtime + ", externalcontractid=" + externalcontractid
+				+ ", companylcontractid=" + companylcontractid + ", companylcontra=" + companylcontra + ", personal="
+				+ personal + ", rentEntity=" + rentEntity + ", rsaleEntity=" + rsaleEntity + "]";
+	}
+
+}

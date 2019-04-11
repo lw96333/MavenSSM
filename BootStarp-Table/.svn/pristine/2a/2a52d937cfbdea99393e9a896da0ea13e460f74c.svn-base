@@ -1,0 +1,137 @@
+package com.ne.dao;
+
+import com.ne.bean.BillCountBean;
+import com.ne.entity.BillEntity;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * (Bill)表数据库访问层
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:00
+ */
+public interface BillDao  extends BaseMapper<BillEntity>{
+
+	/**
+	 * 显示企业账单记录
+	 * @param page 分页条件
+	 * @return 返回对应的数据
+	 */
+	@Select("<script> select * from T_BILL where usertype='企业' "
+			+ "<if test = 'startDate != null'>"
+			+ "and tradedate &gt;= #{startDate} </if>"
+			+ "<if test = 'endDate != null'>"
+			+ " and tradedate &lt;= #{endDate} </if>"
+			+ "and userid = (select id from T_COMPANY where "
+			+ "COMPANYNAME = #{companyname})"
+			+ "limit ${cur},${size} </script>")
+	List<BillEntity> selectCompanyPageBill(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 *    显示CBD分页账单
+	 * @param condition
+	 * @return
+	 */
+	@Select("<script> select * from T_BILL where (usertype='第三方'  or usertype='企业'  ) "
+			+ "<if test = 'startDate != null'>"
+			+ "and tradedate &gt;= #{startDate} </if>"
+			+ "<if test = 'endDate != null'>"
+			+ " and tradedate &lt;= #{endDate} </if>"
+			+ "limit ${cur},${size} </script>")
+	List<BillEntity> selectCBDPageBill(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 *  显示个人分页账单
+	 * @param condition
+	 * @return
+	 */
+	@Select("<script> select * from T_BILL where usertype='个人' "
+			+ "<if test = 'startDate != null'>"
+			+ "and tradedate &gt;= #{startDate} </if>"
+			+ "<if test = 'endDate != null'>"
+			+ " and tradedate &lt;= #{endDate} </if>"
+			+ "and userid= (select id from t_personal where "
+			+ "name = #{name})"
+			+ "limit ${cur},${size} </script>")
+	List<BillEntity> selectPersonalPageBill(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 * 	CBD账单统计
+	 * @param condition 统计条件
+	 * @return 总收入，总支出
+	 */
+	@Select("<script>select count(id) as count,SUM(income) as incomeCount ,SUM(expend) as expendCount from t_bill where (usertype='第三方'  or usertype='企业'  ) "
+			+ "<if test = 'startDate != null'>"
+			+ "and tradedate &gt;= #{startDate} </if>"
+			+ "<if test = 'endDate != null'>"
+			+ "and tradedate &lt;= #{endDate} </if>"
+			+ "</script>")
+	BillCountBean cbdBillCount(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 * 	企业账单统计
+	 * @param condition 统计条件
+	 * @return 总收入，总支出
+	 */
+	@Select("<script>select count(id) as count,SUM(income) as incomeCount ,SUM(expend) as expendCount from t_bill where usertype='企业' "
+			+ "<if test = 'startDate != null'>"
+			+ "and tradedate &gt;= #{startDate} </if>"
+			+ "<if test = 'endDate != null'>"
+			+ " and tradedate &lt;= #{endDate} </if>"
+			+ "and userid= (select id from t_company where "
+			+ "companyname = #{companyname})</script>")
+	BillCountBean companyBillCount(Map<String, Object> condition) throws Exception;
+
+	
+	/**
+	 * 	个人账单统计
+	 * @param condition 统计条件
+	 * @return 总收入，总支出
+	 */
+	@Select("<script> select count(id) as count,SUM(income) as incomeCount ,SUM(expend) as expendCount from t_bill where usertype='个人' "
+			+ "<if test = 'startDate != null'>"
+			+ "and tradedate &gt;= #{startDate} </if>"
+			+ "<if test = 'endDate != null'>"
+			+ " and tradedate &lt;= #{endDate} </if>"
+			+ "and userid= (select id from t_personal where "
+			+ "name = #{name})</script>")
+	BillCountBean personalBillCount(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 *   企业条件统计账单数量
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("<script> select count(id) from T_BILL where usertype='企业' "
+			+ "<if test = 'startDate != null'>"
+			+ "and tradedate &gt;= #{startDate} </if>"
+			+ "<if test = 'endDate != null'>"
+			+ " and tradedate &lt;= #{endDate} </if>"
+			+ "and userid = (select id from T_COMPANY where "
+			+ "COMPANYNAME = #{companyname}) </script>")
+	int selectCompanyCount(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 *   个人条件统计账单数量
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("<script> select count(id) from t_bill where usertype='个人' "
+			+ "<if test = 'startDate != null'>"
+			+ "and tradedate &gt;= #{startDate} </if>"
+			+ "<if test = 'endDate != null'>"
+			+ " and tradedate &lt;= #{endDate} </if>"
+			+ "and userid= (select id from t_personal where "
+			+ "name = #{name})</script>")
+	int selectPersonalCount(Map<String, Object> condition) throws Exception;
+
+}

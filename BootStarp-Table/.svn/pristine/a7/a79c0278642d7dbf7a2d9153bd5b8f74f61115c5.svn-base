@@ -1,0 +1,49 @@
+package com.ne.controller;
+
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ne.entity.AdminEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.UserType;
+import com.ne.log.LogType;
+import com.ne.util.ResponseData;
+
+/**
+ * 获取并且显示当前用户的信息
+ * @author 石科林
+ *
+ * 2019年3月27日
+ */
+@RestController
+public class ShowAdminController {
+
+	/**
+	 * 获取日志记录器
+	 */
+	private static Logger logger = Logger.getLogger(StallController.class);
+	
+	/**
+	 * 查询用户姓名
+	 * @param session
+	 * @return
+	 */
+	@LogAnno(content="显示用户姓名",operateName= LogType.查询,userPower=UserType.后台管理员)
+	@RequestMapping(value="showAdminName",method=RequestMethod.POST)
+	public ResponseData showAdminName(HttpSession session) {
+		logger.debug("收到显示用户信息请求");
+		logger.debug(session);
+		
+		AdminEntity adminEntity = (AdminEntity) SecurityUtils.getSubject().getPrincipal();
+		System.out.println("用户姓名："+adminEntity.getName());
+		
+		
+		return ResponseData.ok();
+		
+	}
+}

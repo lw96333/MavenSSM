@@ -1,0 +1,16 @@
+$(function(){
+	$("#suerReserveStall").click(function(){
+		$.ajax({
+			url:"../suerReserveStall",
+			type:"POST",
+			data:{
+				starttime:$("#startTime").val().trim(),
+				endtime:$("#endTime").val().trim(),
+				price:$("#price").val().trim()
+			},
+			success:function(data){
+				self.location="table_complete.jsp";
+			}
+		})
+	})
+})

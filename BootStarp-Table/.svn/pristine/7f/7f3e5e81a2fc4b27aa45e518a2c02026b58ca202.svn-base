@@ -1,0 +1,134 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ *	计费实体类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:00
+ */
+@TableName(value="T_BILL")
+public class BillEntity implements Serializable {
+    
+	/**
+	 * 账单ID
+	 */
+	@TableId(type=IdType.AUTO)
+    private Integer id;
+    
+    /**
+     *  账单用户名
+     */
+    private int userid;
+    
+    /**
+     * 交易日期
+     */
+    private String tradedate;
+    
+    /**
+     * 交易时间
+     */
+    private String tradetime;
+    
+    /**
+     * 支出
+     */
+    private Object expend;
+    
+    /**
+     * 收入
+     */
+    private Object income;
+    
+    /**
+     * 备注
+     */
+    private String note;
+    
+    /**
+     *  用户类型
+     */
+    private String usertype;
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTradedate() {
+        return tradedate;
+    }
+
+    public void setTradedate(String tradedate) {
+        this.tradedate = tradedate;
+    }
+
+    public String getTradetime() {
+        return tradetime;
+    }
+
+    public void setTradetime(String tradetime) {
+        this.tradetime = tradetime;
+    }
+
+    public Object getExpend() {
+        return expend;
+    }
+
+    public void setExpend(Object expend) {
+        this.expend = expend;
+    }
+
+    public Object getIncome() {
+        return income;
+    }
+
+    public void setIncome(Object income) {
+        this.income = income;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+    
+
+	public int getUserid() {
+		return userid;
+	}
+
+	public void setUserid(int userid) {
+		this.userid = userid;
+	}
+
+	public String getUsertype() {
+		return usertype;
+	}
+
+	public void setUsertype(String usertype) {
+		this.usertype = usertype;
+	}
+
+	@Override
+	public String toString() {
+		return "BillEntity [id=" + id + ", userid=" + userid + ", tradedate=" + tradedate + ", tradetime=" + tradetime
+				+ ", expend=" + expend + ", income=" + income + ", note=" + note + ", usertype=" + usertype + "]";
+	}
+
+	
+
+}

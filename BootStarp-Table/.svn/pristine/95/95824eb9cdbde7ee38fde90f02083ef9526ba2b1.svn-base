@@ -1,0 +1,58 @@
+package com.ne.dao;
+
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.TradingrecordEntity;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * (Tradingrecord)表数据库访问层
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:02
+ */
+public interface TradingrecordDao  extends BaseMapper<TradingrecordEntity>{
+	
+	/**
+	 * 根据条件查询登陆用户所有出售车位发布信息
+	 * @param condition
+	 * @return
+	 */
+
+	@Select("<script>"
+			+ "select sale.id as id , sale.stallId as stallid , sale.personalId as personalid,"
+			+ "sale.message as message , sale.price as price , sale.time as time , sale.buyerId as buyerid from"
+			+ " t_personalsale as sale left join t_stall as sta on sale.stallId = sta.id where 1=1 and sta.userType= '个人'  "
+			+ "<if test='personalId != null'>"
+			+ " and sale.personalId = #{personalId}</if>"
+			+ "<if test='buyerId != null'>"
+			+ " and sale.buyerId = #{buyerId}</if>"
+			+ "<if test='stallType != null'>"
+			+ " and sta.stallType=#{stallType}</if>"
+			+ " limit #{curPage},#{pageSize}"
+			+ "</script>")
+    List<PersonalsaleEntity> showTradingrecord(Map<String , Object> condition) throws Exception;
+	
+	@Select("<script>"
+			+ "select count(*) from"
+			+ " t_personalsale as sale left join t_stall as sta on sale.stallId = sta.id where 1=1 and sta.userType= '个人'  "
+			+ "<if test='personalId != null'>"
+			+ " and sale.personalId = #{personalId}</if>"
+			+ "<if test='buyerId != null'>"
+			+ " and sale.buyerId = #{buyerId}</if>"
+			+ "<if test='stallType != null'>"
+			+ " and sta.stallType=#{stallType}</if>"
+			+ "</script>")
+    int getTolSize(Map<String , Object> condition) throws Exception;
+	
+
+	@Select("select * from t_personalsale where personalId=#{personalId} limit #{curPage},#{pageSize}")
+    List<PersonalsaleEntity> getAllSale(Map<String, Object> map);
+
+}

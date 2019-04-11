@@ -1,0 +1,159 @@
+package com.ne.test;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ne.bean.PageBean;
+import com.ne.dao.PersonalrentDao;
+import com.ne.entity.PersonalEntity;
+import com.ne.entity.PersonalrentEntity;
+import com.ne.entity.StallEntity;
+import com.ne.service.PersonalService;
+import com.ne.service.PersonalrentService;
+import com.ne.service.PersonalsaleService;
+import com.ne.service.StallService;
+import com.ne.util.ResponseData;
+
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/application.xml"})
+@Transactional(transactionManager="transactionManager")
+@Rollback(value = false)
+public class personalStallTest extends AbstractTransactionalJUnit4SpringContextTests{
+
+	@Autowired
+	private StallService stallService;
+	@Autowired
+	private PersonalService personalService;
+	@Autowired
+	private PersonalrentDao personalrentDao;
+	@Autowired
+	private PersonalrentService personalrentService;
+	@Autowired
+	private PersonalsaleService personalsaleService;
+	@Test
+	public void showStalls() {
+		QueryWrapper<StallEntity> queryWrapper = new QueryWrapper<StallEntity>();
+		Map<String,Object> map = new HashMap<String, Object>();
+		map.put("userId",1);
+		map.put("userType", "个人用户");
+		
+		queryWrapper.allEq(map);
+		PersonalEntity personalEntity =personalService.getById(1);
+		List<StallEntity> stalls = stallService.list(queryWrapper);
+		for (StallEntity stallEntity : stalls) {
+			stallEntity.setPersonal(personalEntity);
+		}
+		System.out.println(stalls);
+	}
+	
+	@Test
+	public void page() throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("userId", 1);
+		map.put("userType", "个人");
+		map.put("stallType", "待租");
+		map.put("curPage", 0);
+		map.put("pageSize", 2);
+		PageBean<StallEntity> pageBean = stallService.showPageByCondition(map);
+		System.out.println(pageBean.getDatas());
+	}
+	
+	@Test
+	public void rentpage() throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("curPage", 0);
+		map.put("stallType", "出租预定");
+		map.put("pageSize", 4);
+		PageBean<PersonalrentEntity> pageBean = personalrentService.showPersonalRent(map);
+		System.out.println(pageBean);
+	}
+	@Test
+	public void count() throws Exception{
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("stallType", "待租");
+		int pageBean = personalrentDao.countRent(map);
+		System.out.println(pageBean);
+	}
+	/**
+	 * 添加车位信息
+	 * @param modelMap
+	 * @param stallEntity
+	 * @return
+	 */
+	@Test
+	public void addPersonalStall() {
+		StallEntity stallEntity = new StallEntity();
+		ResponseData responseData = new ResponseData();
+		stallEntity.setStalladdress("adad");
+		stallEntity.setStallarea("qeqe");
+		stallEntity.setStallnumber(202);
+		stallEntity.setPropertypic("dadas");
+		stallEntity.setStalltype("未审核");
+		stallEntity.setUserid(1);
+		stallEntity.setPropertynumber("qeqeq");
+		stallEntity.setUsertype("个人");
+		stallService.save(stallEntity);
+		
+		System.out.println(stallService.save(stallEntity));
+	}
+
+	/**
+	 * 个人车位出租发布
+	 * @return
+	 * @throws Exception 
+	 */
+	@Test
+	public void rentPersonalStall() throws Exception {
+		ResponseData responseData = new ResponseData();
+		//根据stallId(车位ID)获得当前点击的车位对象
+		StallEntity stallEntity = stallService.getById(1);
+		//获取当前车位的用户信息
+		PersonalEntity personalEntity = personalService.getById(stallEntity.getUserid());
+		//获取前台数据并且封装到个人出租表
+		PersonalrentEntity personalrentEntity = new PersonalrentEntity();
+		personalrentEntity.setEndtime("adad");
+		personalrentEntity.setStarttime("adad");
+		personalrentEntity.setPrice(21212);
+		personalrentEntity.setPersonalid(stallEntity.getUserid());
+		personalrentEntity.setStallid(1);
+
+		
+		//将获取的出租信息添加到数据库
+		personalrentService.save(personalrentEntity);
+		//修改当前选中车位状态为待租
+		stallEntity.setStalltype("待租");
+		stallService.updateById(stallEntity);
+		
+		System.out.println(personalrentEntity);
+	}
+
+	@Test
+	public void addStall() {
+		StallEntity stallEntity = new StallEntity();
+		stallEntity.setPropertynumber("1213");
+		//stallEntity.setPropertypic("adad");
+		stallEntity.setStalladdress("adadadads");
+		stallEntity.setStallarea("dadasd");
+		stallEntity.setStallnumber(121);
+		stallEntity.setStalltype("jih");
+		stallEntity.setUserid(1);
+		stallEntity.setUsertype("个人");
+		
+		System.out.println(stallService.save(stallEntity));
+		
+	}
+}

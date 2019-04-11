@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+
+<hibernate-mapping package="com.my.entity.beiguansuo">
+	<!-- 类和表的映射 -->
+	<class name="InventoryPessimistic" table="t_inventroy">
+		<!-- 映射主键标识属性 -->
+		<id name="id" column="pk_id">
+			<!-- 指定主键生成器策略（自增主键） -->
+			<generator class="native"/>
+		</id>
+		
+		<!-- 映射普通属性 -->
+		<property name="name" column="f_name"/>
+		<property name="count" column="f_count"/>
+		
+	</class>
+</hibernate-mapping>

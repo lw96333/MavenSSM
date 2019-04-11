@@ -1,0 +1,51 @@
+package com.ne.property;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.ne.entity.PropertyEntity;
+import com.ne.service.PropertyService;
+
+/**
+ * 性能统计自定义拦截器
+ * @author 张晋忠
+ *
+ * 2019年3月27日
+ */
+@Component
+public class MyHandleIntercepter extends HandlerInterceptorAdapter{
+	@Autowired
+	private PropertyService propertyService;
+	PropertyEntity propertyEntity =  new PropertyEntity();
+	long nowTime = 0;
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		 nowTime = System.currentTimeMillis();
+		//true允许通过false不允许通过
+		return true;
+	}
+	
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+	}
+	
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		//得到请求响应时间
+		double cosTime = (double)(System.currentTimeMillis()-nowTime)/1000;
+		String url = request.getRequestURL().toString();
+		String newUrl = url.substring(url.lastIndexOf("/")+1);
+		propertyEntity.setResponsetime(cosTime);
+		propertyEntity.setUrl(newUrl);
+		//性能统计存数据库
+		propertyService.save(propertyEntity);
+	}
+}

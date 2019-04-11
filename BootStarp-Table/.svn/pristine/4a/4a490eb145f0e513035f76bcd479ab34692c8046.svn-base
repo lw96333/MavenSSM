@@ -1,0 +1,15 @@
+package com.ne.service;
+
+import com.ne.entity.PersonalEntity;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+ * (Personal)表服务接口
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+public interface PersonalService extends IService<PersonalEntity>{
+
+    
+}

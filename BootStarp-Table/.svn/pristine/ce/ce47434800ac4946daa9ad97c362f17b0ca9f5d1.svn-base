@@ -1,0 +1,55 @@
+package com.ne.bean;
+
+/**
+ * 公司空闲车位Bean
+ * @author 包杰
+ *
+ * 2019年3月29日
+ */
+public class CompanyStallBean {
+
+	/**
+	 * 当前页数
+	 */
+	private int curPage;
+	
+	/**
+	 * 每页显示多少条
+	 */
+	private int pageSize;
+	
+	/**
+	 * 用户类型
+	 */
+	private String userType;
+
+	public int getCurPage() {
+		return curPage;
+	}
+
+	public void setCurPage(int curPage) {
+		this.curPage = curPage;
+	}
+
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+
+	@Override
+	public String toString() {
+		return "CompanyStallBean [curPage=" + curPage + ", pageSize=" + pageSize + ", userType=" + userType + "]";
+	}
+	
+}

@@ -1,0 +1,28 @@
+package com.ne.service.impl;
+
+import com.ne.entity.ThirdplatformEntity;
+import com.ne.dao.ThirdplatformDao;
+import com.ne.service.ThirdplatformService;
+
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * (Thirdplatform)表服务实现类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+@Transactional(transactionManager = "transactionManager")
+@Rollback(value = false)
+@Service
+public class ThirdplatformServiceImpl extends ServiceImpl<ThirdplatformDao,ThirdplatformEntity> implements ThirdplatformService {
+    @Autowired
+    private ThirdplatformDao thirdplatformDao;
+
+    
+}

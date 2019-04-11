@@ -1,0 +1,127 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * 企业信息实体类
+ * 
+ *@author 班贵华
+ * 2019年3月22日
+ */
+@TableName(value="t_company")
+public class CompanyEntity implements Serializable {
+    
+	/**
+	 * 	企业用户ID	
+	 */
+	@TableId(type=IdType.AUTO)
+    private Integer id;
+	/**
+	 * 	企业登录名
+	 */
+    private String loginname;
+    /**
+	 * 	企业登陆密码
+	 */
+    private String loginpassword;
+    /**
+	 * 	企业名称
+	 */
+    private String companyname;
+    /**
+	 * 	企业楼层位置
+	 */
+    private String companyaddress;
+    /**
+	 * 	企业联系人
+	 */
+    private String companycontact;
+    /**
+	 * 	企业联系人电话
+	 */
+    private String companphone;
+    /**
+	 * 企业用户权限
+	 */
+    private String level;
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getLoginname() {
+        return loginname;
+    }
+
+    public void setLoginname(String loginname) {
+        this.loginname = loginname;
+    }
+
+    public String getLoginpassword() {
+        return loginpassword;
+    }
+
+    public void setLoginpassword(String loginpassword) {
+        this.loginpassword = loginpassword;
+    }
+
+    public String getCompanyname() {
+        return companyname;
+    }
+
+    public void setCompanyname(String companyname) {
+        this.companyname = companyname;
+    }
+
+    public String getCompanyaddress() {
+        return companyaddress;
+    }
+
+    public void setCompanyaddress(String companyaddress) {
+        this.companyaddress = companyaddress;
+    }
+
+    public String getCompanycontact() {
+        return companycontact;
+    }
+
+    public void setCompanycontact(String companycontact) {
+        this.companycontact = companycontact;
+    }
+
+  
+
+    public String getCompanphone() {
+		return companphone;
+	}
+
+	public void setCompanphone(String companphone) {
+		this.companphone = companphone;
+	}
+
+	public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+	@Override
+	public String toString() {
+		return "CompanyEntity [id=" + id + ", loginname=" + loginname + ", loginpassword=" + loginpassword
+				+ ", companyname=" + companyname + ", companyaddress=" + companyaddress + ", companycontact="
+				+ companycontact + ", companphone=" + companphone + ", level=" + level + "]";
+	}
+
+}

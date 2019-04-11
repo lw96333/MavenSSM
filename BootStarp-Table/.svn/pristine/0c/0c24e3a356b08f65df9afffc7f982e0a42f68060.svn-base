@@ -1,0 +1,200 @@
+package com.ne.controller;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ne.bean.PageBean;
+import com.ne.entity.StallEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.LogType;
+import com.ne.log.UserType;
+import com.ne.service.StallService;
+import com.ne.util.ResponseData;
+
+/**
+ * 车位管理页面控制器
+ * 
+ * @author 石科林
+ *
+ *         2019年3月21日
+ */
+@RestController
+public class StallController {
+	@Autowired
+	private StallService stallServiceImpl;
+	/**
+	 * 获取日志记录器
+	 */
+	private static Logger logger = Logger.getLogger(StallController.class);
+
+	/**
+	 * 显示车位信息
+	 * 
+	 * @return
+	 */
+	@LogAnno(content = "分页显示车位信息", operateName = LogType.查询, userPower = UserType.后台管理员)
+	@RequestMapping(value = "showAllStall", method = RequestMethod.POST)
+	public PageBean<StallEntity> showAllStall(@RequestParam(value = "curPage") int cur,
+			@RequestParam(value = "pageSize") int size) {
+		logger.debug("收到显示车位信息请求");
+		logger.debug("页数：" + cur + "数量：" + size);
+		Map<String, Object> map = new HashMap<String, Object>();
+		PageBean<StallEntity> stall = new PageBean<StallEntity>();
+		map.put("curPage", cur);
+		map.put("pageSize", size);
+		try {
+			stall = stallServiceImpl.showStallPage(map);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		//返回分页对象
+		return stall;
+	}
+
+	/**
+	 * 添加单个车位
+	 * 
+	 * @param address    车位地址
+	 * @param areaNumber 车位编号 = 区域编号+车位号
+	 * @return
+	 */
+	@LogAnno(content = "添加单个车位", operateName = LogType.添加, userPower = UserType.后台管理员)
+	@RequestMapping(value = "addOneStall", method = RequestMethod.POST)
+	public ResponseData addOneStall(@RequestParam(value = "oneAddress") String address,
+			@RequestParam(value = "oneAreaNumber") String areaNumber,
+			@RequestParam(value = "oneNumber") int oneNumber) {
+		logger.debug("收到添加单个车位信息请求");
+		logger.debug("地址：" + address + "车位编号：" + areaNumber);
+		StallEntity stallEntity = new StallEntity();
+		//判断获取的数据是否为空
+		if (address.trim() == null || areaNumber.trim() == null || (oneNumber + "") == null) {
+			logger.debug("添加单个车位信息有误");
+			
+			//返回错误信息
+			return ResponseData.notFound();
+		}
+
+		// 条件查询（根据信息判断车位是否已经存在）
+		QueryWrapper<StallEntity> queryWrapper = new QueryWrapper<>();
+		Map<String, Object> map = new HashMap<>();
+		map.put("stallAddress", address);
+		map.put("stallArea", areaNumber);
+		map.put("stallNumber", oneNumber);
+
+		QueryWrapper<StallEntity> result = queryWrapper.allEq(map);
+		
+		//判断数据是否重复
+		if (stallServiceImpl.getOne(result) == null) {
+			//获取当前时间
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String time = sdf.format(System.currentTimeMillis());
+			
+			stallEntity.setStalladdress(address);
+			stallEntity.setStallarea(areaNumber);
+			stallEntity.setStallnumber(oneNumber);
+			stallEntity.setPropertynumber("CBD产权");
+			stallEntity.setStalltype("空闲");
+			stallEntity.setUsertype("CBD");
+			stallEntity.setPropertypic("无");
+			stallEntity.setUserid(null);
+			stallEntity.setAduittime(time);
+			stallEntity.setLongtime("无限期");
+			stallServiceImpl.save(stallEntity);
+
+			logger.debug("添加单个车位信息成功");
+
+			//返回添加成功信息
+			return ResponseData.ok();
+		} else {
+			logger.debug("添加单个车位信息重复");
+
+			//返回错误信息
+			return ResponseData.unAuthorized();
+		}
+
+	}
+
+	/**
+	 * 批量添加车位
+	 * 
+	 * @param address     车位地址
+	 * @param areaNumber  区域编号（如：FD）
+	 * @param startNumber 车位起始号
+	 * @param sum         总的车位数量
+	 * @return 响应结果
+	 */
+	@LogAnno(content = "批量添加车位", operateName = LogType.添加, userPower = UserType.后台管理员)
+	@RequestMapping(value = "addBetchStall", method = RequestMethod.POST)
+	public ResponseData addBetchStall(@RequestParam(value = "address") String address,
+			@RequestParam(value = "areaNumber") String areaNumber, @RequestParam(value = "startNumber") int startNumber,
+			@RequestParam(value = "sum") int sum) {
+		logger.debug("收到添加批量车位信息请求");
+		logger.debug("地址：" + address + "车位区域编号：" + areaNumber + "起始车位号：" + startNumber + "车位总数：" + sum);
+		//判断前台值是否为空
+		if (address.trim() == null || areaNumber.trim() == null || (startNumber + "") == null || (sum + "") == null) {
+
+			logger.debug("批量添加车位信息有误");
+
+			//返回错误信息
+			return ResponseData.notFound();
+		}
+		// 条件查询（根据信息判断车位是否已经存在）
+		Map<String, Object> map = new HashMap<>();
+		map.put("stallAddress", address);
+		map.put("stallArea", areaNumber);
+
+		// 获取当前时间
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String time = sdf.format(System.currentTimeMillis());
+		List<StallEntity> stallEntities = new ArrayList<StallEntity>();
+		for (int i = 0; i < sum; i++) {
+			map.remove("stallNumber");
+			map.put("stallNumber", startNumber + i);
+			QueryWrapper<StallEntity> result = new QueryWrapper<>();
+			result=result.allEq(map);
+			
+			//判断数据是否重复
+			if (stallServiceImpl.count(result) == 0) {
+				StallEntity stallEntity = new StallEntity();
+				stallEntity.setStalladdress(address);
+				stallEntity.setStallarea(areaNumber);
+				stallEntity.setStallnumber(startNumber + i);
+				stallEntity.setPropertynumber("CBD产权");
+				stallEntity.setStalltype("空闲");
+				stallEntity.setUsertype("CBD");
+				stallEntity.setPropertypic("无");
+				stallEntity.setUserid(null);
+				stallEntity.setAduittime(time);
+				stallEntity.setLongtime("无限期");
+				stallEntities.add(stallEntity);
+			} else {
+				logger.debug("批量添加车位信息重复");
+
+				//返回错误信息
+				return ResponseData.unAuthorized();
+			}
+
+		}
+		//批量添加车位
+		stallServiceImpl.saveBatch(stallEntities, sum);
+
+		logger.debug("批量添加车位信息成功");
+		
+		//返回添加成功信息
+		return ResponseData.ok();
+	}
+
+}

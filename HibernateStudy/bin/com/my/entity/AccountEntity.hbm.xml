@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+
+<hibernate-mapping package="com.my.entity">
+	<!-- 类和表的映射 -->
+	<class name="AccountEntity" table="t_accout">
+		<!-- 映射主键标识属性 -->
+		<id name="id" column="pk_id">
+			<!-- 指定主键生成器策略（自增主键） -->
+			<generator class="native"/>a
+		</id>
+		
+		<!-- 映射普通属性 -->
+		<property name="name" column="f_name"/>
+		<!-- 映射一对一双向关联属性(column表示外键名) (unique 表示唯一约束【一对一关系】)(cascade表示设置级联操作,简化我们插入数据库操作步骤，简化开发)-->
+		<many-to-one name="creditcard" class="CreditcardEntity" unique="true" column="fk_cardId" cascade="all"></many-to-one>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,89 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * 第三方平台信息实体类
+ * 
+ *@author 班贵华
+ * 2019年3月21日
+ */
+@TableName(value="t_thirdplatform")
+public class ThirdplatformEntity implements Serializable {
+    
+	/**
+	 * 	第三方企业ID
+	 */
+	@TableId(type=IdType.AUTO)
+    private Integer id;
+    /**
+	 * 	第三方单位名称
+	 */
+    private String companyname;
+    /**
+	 * 	第三方单位楼层位置
+	 */
+    private String companyaddress;
+    /**
+	 * 	第三方单位联系人
+	 */
+    private String companycontact;
+    /**
+	 * 	第三方单位联系人电话
+	 */
+    private String companphone;
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getCompanyname() {
+        return companyname;
+    }
+
+    public void setCompanyname(String companyname) {
+        this.companyname = companyname;
+    }
+
+    public String getCompanyaddress() {
+        return companyaddress;
+    }
+
+    public void setCompanyaddress(String companyaddress) {
+        this.companyaddress = companyaddress;
+    }
+
+    public String getCompanycontact() {
+        return companycontact;
+    }
+
+    public void setCompanycontact(String companycontact) {
+        this.companycontact = companycontact;
+    }
+
+    public String getCompanphone() {
+        return companphone;
+    }
+
+    public void setCompanphone(String companphone) {
+        this.companphone = companphone;
+    }
+
+	@Override
+	public String toString() {
+		return "ThirdplatformEntity [id=" + id + ", companyname=" + companyname + ", companyaddress=" + companyaddress
+				+ ", companycontact=" + companycontact + ", companphone=" + companphone + "]";
+	}
+
+    
+}

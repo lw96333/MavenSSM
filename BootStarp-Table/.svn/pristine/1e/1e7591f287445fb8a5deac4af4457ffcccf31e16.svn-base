@@ -1,0 +1,62 @@
+package com.ne.controller;
+
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ne.entity.OnlineEntity;
+import com.ne.entity.PropertyEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.LogType;
+import com.ne.log.UserType;
+import com.ne.service.OnlineService;
+import com.ne.service.PropertyService;
+
+/**
+ * 性能统计和在线人数统计
+ * @author 石科林
+ *
+ * 2019年3月28日
+ */
+@RestController
+public class ContentSessionController {
+
+	@Autowired
+	OnlineService onlineServiceImpl;
+
+	@Autowired
+	PropertyService propertyServiceImpl;
+	
+	/**
+	 * 获取日志记录器
+	 */
+	private static Logger logger = Logger.getLogger(StallController.class);
+
+	/**
+	 * 查询在线人数集合
+	 * @return
+	 */
+	@LogAnno(content = "查询在线人数", operateName = LogType.查询, userPower = UserType.后台管理员)
+	@RequestMapping(value = "showOnline", method = RequestMethod.POST)
+	public List<OnlineEntity> getAllOnline() {
+
+		return onlineServiceImpl.list(null);
+
+	}
+
+	/**
+	 * 查询性能统计集合
+	 * @return
+	 */
+	@LogAnno(content = "性能统计", operateName = LogType.查询, userPower = UserType.后台管理员)
+	@RequestMapping(value = "showProperty", method = RequestMethod.POST)
+	public List<PropertyEntity> getAllPropertyEntity() {
+		return propertyServiceImpl.list(null);
+
+	}
+}

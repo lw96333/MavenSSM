@@ -1,0 +1,64 @@
+package com.ne.dao;
+
+import com.ne.entity.PersonalcontractEntity;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * (Personalcontract)表数据库访问层
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+public interface PersonalcontractDao  extends BaseMapper<PersonalcontractEntity>{
+	
+	/**
+	 * 当前登陆用户如果是卖家所有需要签约的合同
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("SELECT * from t_personalcontract as con left JOIN "
+			+ "t_stall as stall ON stall.id=con.stall "
+			+ "where stall.stallType='已审核'  and (con.sellers=#{sellers} or con.buyer=#{sellers}) limit #{curPage},#{pageSize}")
+    List<PersonalcontractEntity> showContractBySeller(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 * 获得卖家查询合同总数
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("SELECT count(*) from t_personalcontract as con left JOIN "
+			+ "t_stall as stall ON stall.id=con.stall "
+			+ "where stall.stallType='已审核'  and (con.sellers=#{sellers} or con.buyer=#{sellers})")
+	int countContractBySeller(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 * 当前登陆用户如果是买家所有需要签约的合同
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("SELECT * from t_personalcontract as con left JOIN "
+			+ "t_stall as stall ON stall.id=con.stall "
+			+ "where stall.stallType='已审核'  and con.buyer=#{buyer} limit #{curPage},#{pageSize}")
+    List<PersonalcontractEntity> showContractByBuyer(Map<String, Object> condition) throws Exception;
+	
+	/**
+	 * 获得查询买家合同总数
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("SELECT count(*) from t_personalcontract as con left JOIN "
+			+ "t_stall as stall ON stall.id=con.stall "
+			+ "where stall.stallType='已审核'  and con.buyer=#{buyer}")
+	int countContractByBuyer(Map<String, Object> condition) throws Exception;
+}

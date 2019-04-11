@@ -1,0 +1,226 @@
+
+function judge(obj,str){
+    var my = obj;
+    if(my.val() != "" && my.val() != null){
+        my.css({
+            "border": "1px solid gainsboro"
+        });
+        return true;
+    }else{
+        my.attr("placeholder",str);
+        my.css({
+            "border": "1px solid red"
+        });
+        return false;
+    }
+}
+
+$(function(){
+	$("#showerror").css("display","none");
+	var personid= $("#personid").val();
+    $("#oldpw").on("blur",function(){
+    	var oldpw = $("#oldpw").val();
+    	if(oldpw==null || oldpw==""){
+    		$("#oldpw").css({
+    			"border": "1px solid red"
+    		});
+    		$("#oldpw").attr({
+    			"placeholder": "请输入您原登陆密码"
+    		});
+    	}else{
+    		$.ajax({
+				type:"post",
+				url:"../personPasswordIsTrue",
+				data:{
+					"oldpw":oldpw,
+					"personid":personid
+					
+				},
+				dataType:"json",
+				success:passwordIsTureSuccess
+			});
+    		
+    	}
+        
+
+    });
+	 $("#newpw1").on("blur",function(){
+	        judge($(this),"请输入新登陆密码，字母数组或下划线，长度8-16位");
+
+	    });
+	 $("#newpw2").on("blur",function(){
+	        judge($(this),"请确认新登陆密码，字母数组或下划线，长度8-16位");
+
+	    });
+	 $("#homeaddress").on("blur",function(){
+	        judge($(this),"请输入家庭地址信息");
+
+	    });
+    $("#phone").on("blur",function(){
+        judge($(this),"请输入您的电话号码");
+
+    });
+    $("#jobInfo").on("blur",function(){
+        judge($(this),"请输入您的职业介绍，不超过200字!");
+    });
+    $("#personEmail").on("blur",function(){
+        judge($(this),"请输入您的电子邮箱！");
+
+    });
+    $("#surechange").click(function(){
+    	
+        var falg = true;
+        var personid = $("#personid").val();
+        var changePw = true ;
+        var oldpw = null ;
+        var newpw1 = null ;
+        var newpw2 = null ;
+        if(!($("#checkPassword").prop("checked"))){
+       
+        	oldpw = $("#oldpw").val();
+            newpw1 = $("#newpw1").val();
+            newpw2 = $("#newpw2").val();
+             var regpw = /^[a-z0-9_-]{8,16}$/;
+             if(oldpw==null || oldpw== ""){
+                 $("#oldpw").blur(); 
+                 falg =false;
+             }
+             if(newpw1==null || newpw1== ""||!regpw.test(newpw1.trim())){
+                 $("#newpw1").blur(); 
+                 falg =false;
+             }
+             if(newpw2==null || newpw2== ""||!regpw.test(newpw2.trim())||newpw2!=newpw1){
+                 $("#newpw2").blur(); 
+                 falg =false;
+             }     
+        }else{
+        	changePw = false;
+        	
+        }
+       
+        var homeaddress = $("#homeaddress").val();
+        var phone = $("#phone").val();
+        var jobInfo = $("#jobInfo").val();
+        var personEmail= $("#personEmail").val(); 
+        var regphone = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/;      
+        var regem =/^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/;
+        
+        if(homeaddress==null || homeaddress== ""){
+            $("#homeaddress").css({
+    			"border": "1px solid red"
+    		}); 
+            falg =false;
+        }else{
+        	var len = homeaddress.length;
+        	if(len<10){
+        		$("#homeaddress").css({
+        			"border": "1px solid red"
+        		});
+        	
+        		$("#homeaddress").attr({
+        			"placeholder": "家庭地址不能少于10个字!"
+        		});
+        		falg =false;
+        	}
+        }
+        if(personEmail==null || personEmail== ""||!regem.test(personEmail.trim())){
+           
+            $("#personEmail").css({
+    			"border": "1px solid red"
+    		});
+            falg =false;
+        }
+        if(jobInfo==null || jobInfo== ""){
+            $("#jobInfo").css({
+    			"border": "1px solid red"
+    		});  
+            falg =false;
+        }else{
+        	var len = jobInfo.length;
+        	if(len<20){
+        		$("#jobInfo").css({
+        			"border": "1px solid red"
+        		});
+        	
+        		$("#jobInfo").attr({
+        			"placeholder": "职业介绍不能少于20字!"
+        		});
+        		falg =false;
+        	}
+        }
+        if(phone==null || phone == ""||!regphone.test(phone.trim())){
+          
+        	$("#phone").css({
+    			"border": "1px solid red"
+    		});
+    		
+            falg =false;
+        }
+ 
+        if(falg){
+    
+			$.ajax({
+				type:"post",
+				url:"../personUpdateInfo",
+				data:{
+					"oldpw":oldpw,
+					"personid":personid,
+					"newpw1":newpw1,
+					"newpw2":newpw2,
+					"homeaddress":homeaddress,
+					"phone":phone,
+					"jobInfo":jobInfo,
+					"personEmail":personEmail,
+					"changePw":changePw
+				},
+				dataType:"json",
+				success:personInfoUpdateSuccess
+			});
+
+        }else{
+        	$("#showerror").css("display","");
+            return false;
+        }
+    });
+    
+    $("#checkPassword").change( function() {
+    	  if($("#checkPassword").prop("checked")){
+    		  $("#oldpwdiv").css("display","none");
+    		  $("#newpwdiv1").css("display","none");
+    		  $("#newpwdiv2").css("display","none");
+    	  }else{
+    		  $("#oldpwdiv").css("display","");
+    		  $("#newpwdiv1").css("display","");
+    		  $("#newpwdiv2").css("display","");
+    	  }
+    	
+    	
+    	});
+    
+    
+    function personInfoUpdateSuccess(rd){
+    	if(rd.message=="updateinfoOK"){
+    	alert("资料修改成功，即将返回个人主页!");
+    		self.location="index.jsp";
+    	}
+    	
+    }
+    
+    function passwordIsTureSuccess(rd){
+    	if(rd.message!="pwtrue"){
+    		$("#oldpw").css({
+    			"border": "1px solid red"
+    		});
+    		$("#oldpw").val("");
+    		$("#oldpw").attr({
+    			"placeholder": "密码不正确，请重新输入您的原密码"
+    		});
+    	}
+    	
+    }
+    
+    $("body").change(function(){
+    	
+    	$("#showerror").css("display","none");
+    });
+})

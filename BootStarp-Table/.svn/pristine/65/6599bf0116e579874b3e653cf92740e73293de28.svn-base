@@ -1,0 +1,75 @@
+$(function() {
+
+	$("#addExternalcontract").click(
+			function() {
+				// alert("景来了哦");
+
+				if ($("#starttime").val().trim() > $("#endtime").val().trim()) {
+
+					alert("结束时间不能比生效日期小");
+				} else if ($("#file-pic2")[0].files[0] == null
+						|| $("#starttime").val().trim() == null
+						|| $("#companyname").val().trim() == null
+						|| $("#endtime").val().trim() == null
+						|| $("#companycontact").val().trim() == null
+						|| $("#price").val().trim() == null
+						|| $("#companphone").val().trim() == null
+						|| $("#option").val().trim() == null
+						|| $("#address").val().trim() == null
+						|| $("#stallarea").val().trim() == null
+						|| $("#stallnumber").val().trim() == null
+						|| $("#addressDouble").val().trim() == null
+						|| $("#areaNumberDouble").val().trim() == null
+						|| $("#startNumberDouble").val().trim() == null
+						|| $("#sumDouble").val().trim() == null
+						|| $("#companyaddress").val().trim() == null
+						|| $("#longtime").val().trim() == null
+						
+				) {
+					alert("所有内容不能为空");
+				} else {
+					// alert("晋了Ajax");
+					var formData = new FormData();
+					formData.append("contractpicss",$("#file-pic2")[0].files[0]);
+					// formData.append("contractnumber",$("#contractnumber").val().trim());
+					formData.append("starttime", $("#starttime").val().trim());
+					formData.append("companyname", $("#companyname").val().trim());
+					formData.append("endtime", $("#endtime").val().trim());
+					formData.append("companycontact", $("#companycontact").val().trim());
+					formData.append("price", $("#price").val().trim());
+					formData.append("companphone", $("#companphone").val().trim());
+					formData.append("option", $("#option").val().trim());
+					formData.append("address", $("#address").val().trim());
+					formData.append("stallarea", $("#stallarea").val().trim());
+					formData.append("stallnumber", $("#stallnumber").val().trim());
+					formData.append("addressDouble", $("#addressDouble").val().trim());
+					formData.append("areaNumberDouble", $("#areaNumberDouble").val().trim());
+					formData.append("startNumberDouble",$("#startNumberDouble").val().trim());
+					formData.append("sumDouble", $("#sumDouble").val().trim());
+					formData.append("companyaddress", $("#companyaddress").val().trim());
+					formData.append("longtime", $("#longtime").val().trim());
+					$.ajax({
+						url : "../addExternalcontract",
+						type : "POST",
+						cache : false,
+						async : false,
+						processData : false,
+						contentType : false,
+						data : formData,
+
+						dataType : "json",
+						success : function(data) {
+							// alert("回来了来了");
+							if (data.code == 200) {
+								self.location = "externalContract.jsp";
+							} else {
+
+								alert("输入有误请检查后重试");
+							}
+
+						}
+					})
+				}
+			})
+
+})

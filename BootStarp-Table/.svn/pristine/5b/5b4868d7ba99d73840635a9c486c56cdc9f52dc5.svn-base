@@ -1,0 +1,59 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * (Superadmin)实体类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+@TableName(value = "t_superadmin")
+public class SuperadminEntity implements Serializable {
+
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+    
+    private String name;
+    
+    private String password;
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "SuperadminEntity{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
+}

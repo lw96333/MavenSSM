@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+
+<hibernate-mapping package="com.my.entity">
+	<!-- 类和表的映射 -->
+	<class name="HomeEntity" table="t_home">
+		<!-- 映射主键标识属性 -->
+		<id name="id" column="pk_id">
+			<!-- 指定主键生成器策略（自增主键） -->
+			<generator class="native"/>
+		</id>
+		
+		<!-- 映射普通属性 -->
+		<property name="address" column="f_address"/>
+		
+		<!-- 映射一对多双向关联属性(inverse 设置不控制关联映射，数据库只映射一次)-->
+		<set name="members" inverse="true">
+			<!-- 设置外键名（和对方外键名一致） -->
+			<key column="fk_homeId"/>
+			<!-- 设置对象映射类性 -->
+			<one-to-many class="MemberEntity"/>
+		</set>
+	</class>
+</hibernate-mapping>

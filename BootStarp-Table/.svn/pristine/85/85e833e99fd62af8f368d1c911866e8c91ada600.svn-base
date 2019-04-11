@@ -1,0 +1,259 @@
+package com.ne.controller;
+
+import com.ne.log.LogType;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ne.entity.AdminEntity;
+import com.ne.entity.SuperadminEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.UserType;
+import com.ne.service.AdminService;
+import com.ne.service.SuperadminService;
+import com.ne.util.CBDUtil;
+import com.ne.util.ResponseData;
+
+/**
+ * 管理员修改密码和信息控制器
+ * @author 邓万兵
+ *
+ * 2019年3月22日
+ */
+@RestController
+public class AdminUpdateInfoAndPasswordController {
+	
+	/**
+	 * 自动注入 超级管理员服务层接口
+	 */
+	@Autowired
+	private SuperadminService  superAdminer ;
+	/**
+	 * 自动注入 管理员接口
+	 */
+	@Autowired
+	private AdminService adminer ;
+	
+	/**
+	 * ajax响应对象
+	 */
+	private ResponseData rd = new ResponseData();
+	
+	
+	/**
+	 * 查看超级管理员密码是否正确
+	 * @param superid 超级管理员id
+	 * @param oldpw 超级管理员密码
+	 * @return
+	 */
+	@LogAnno(operateName= LogType.查询,userPower=UserType.超级管理员,content="查看密码是否正确")
+	@RequestMapping(value="superAdminPasswordIsTrue",method=RequestMethod.POST)
+	public ResponseData superAdminPasswordIsTrue(
+			@RequestParam(value="superid")String superid ,
+			@RequestParam(value="oldpw")String oldpw){
+	//	logger.log(Priority.DEBUG,"判断用户输入密码是否正确！");
+		/**
+		 * 判断输入的参数是否正确 
+		 */
+		rd.setMessage("ok");
+		if(oldpw == null || oldpw==""){
+			return rd ;
+		}else{
+			SuperadminEntity ce = null ;
+			try{
+				int id = Integer.parseInt(superid);
+				ce = superAdminer.getById(id);
+			}catch (Exception e){
+		//		logger.log(Priority.DEBUG,"数字类型转换失败！");
+			}
+			if(ce==null){
+				return rd ;
+			}else{
+				
+				String dataPW = ce.getPassword();
+				String comName = ce.getName();
+				String md5PW = CBDUtil.md5(oldpw, comName);
+				if(dataPW.equals(md5PW)){
+					rd.setMessage("pwtrue");
+					return rd ;
+					
+				}else{
+				/*	System.out.println("----1----第一次测试修改--》");
+					ce.setPassword(md5PW);
+					superAdminer.saveOrUpdate(ce);*/
+				}
+			}
+			
+		}
+		
+		return rd ;
+	}
+	/**
+	 * 超级管理员密码修改
+	 * @param superid 超级管理员id
+	 * @param oldpw 旧密码
+	 * @param newpw1 新密码
+	 * @param newpw2 确认密码
+	 * @return
+	 */
+	@LogAnno(operateName= LogType.修改,userPower=UserType.超级管理员,content="修改密码")
+	@RequestMapping(value="updatesuperAdminPassword",method=RequestMethod.POST)
+	public ResponseData updatesuperAdminPassword(
+			@RequestParam(value="superid")String superid,
+			@RequestParam(value="oldpw")String 	oldpw,
+			@RequestParam(value="newpw1")String newpw1,
+			@RequestParam(value="newpw2")String newpw2			
+			){
+		
+		boolean falg = true ;
+		/**
+		 * 密码正则验证
+		 */
+		String regpw = "[a-z0-9_-]{8,16}";
+		if(superid==null ||superid ==""){falg = false;}
+		if(oldpw == null || oldpw== ""){
+			falg = false ;			
+			}
+		if(newpw1 == null || newpw1== ""||!newpw1.matches(regpw)||!newpw1.equals(newpw2)){
+			falg = false ;
+			}
+	
+		/**
+		 * 通过数据验证 开始修改密码
+		 */
+		if(falg){
+			SuperadminEntity ce = null ;
+			try{
+			ce =superAdminer.getById(Integer.parseInt(superid));
+			}catch(Exception e){
+				
+			}
+			
+			if(ce!=null){
+			
+				String dataPW = ce.getPassword();
+				String comName = ce.getName();
+				String md5PW = CBDUtil.md5(oldpw, comName);
+				if(dataPW.equals(md5PW)){
+				//	logger.log(Priority.DEBUG,"开始修改密码！");
+					String newMd5Pw = CBDUtil.md5(newpw1, comName);
+					ce.setPassword(newMd5Pw);
+					superAdminer.saveOrUpdate(ce);
+					rd.setMessage("changeOK");
+					return rd ;
+				}
+			}
+			
+		}
+		return rd ;
+	}
+	/**
+	 * 判断管理员密码是否正确
+	 * @param adminid 管理员id
+	 * @param oldpw 管理员密码
+	 * @return
+	 */
+	@LogAnno(operateName= LogType.查询,userPower=UserType.后台管理员,content="查看密码是否正确")
+	@RequestMapping(value="AdminPasswordIsTrue",method=RequestMethod.POST)
+	public ResponseData adminPasswordIsTrue(
+			@RequestParam(value="adminid")String adminid ,
+			@RequestParam(value="oldpw")String oldpw){
+	//	logger.log(Priority.DEBUG,"判断用户输入密码是否正确！");
+
+		rd.setMessage("ok");
+		if(oldpw == null || oldpw==""){
+			return rd ;
+		}else{
+			AdminEntity ce = null ;
+			try{
+				int id = Integer.parseInt(adminid);
+				ce = adminer.getById(id);
+			}catch (Exception e){
+		//		logger.log(Priority.DEBUG,"数字类型转换失败！");
+			}
+			if(ce==null){
+				return rd ;
+			}else{
+				String dataPW = ce.getPassword();
+				String comName = ce.getEmployeeid();
+				String md5PW = CBDUtil.md5(oldpw.trim(), comName);
+				if(dataPW.equals(md5PW)){
+					rd.setMessage("pwtrue");
+					return rd ;
+					
+				}else{
+				/*	System.out.println("xiugaimima");
+					ce.setPassword(md5PW);
+					adminer.saveOrUpdate(ce);*/
+				}
+			}
+			
+		}
+		
+		return rd ;
+	}
+	/**
+	 * 修改管理员资料
+	 * @param adminid 管理员id
+	 * @param oldpw 旧密码
+	 * @param newpw1 新密码
+	 * @param newpw2 确认密码
+	 * @param phone 电话号码
+	 * @return
+	 */
+	@LogAnno(operateName= LogType.修改,userPower=UserType.后台管理员,content="修改密码")
+	@RequestMapping(value="updateAdminPassword",method=RequestMethod.POST)
+	public ResponseData updateAdminPassword(
+			@RequestParam(value="adminid")String adminid,
+			@RequestParam(value="oldpw")String 	oldpw,
+			@RequestParam(value="newpw1")String newpw1,
+			@RequestParam(value="newpw2")String newpw2,
+			@RequestParam(value="phone")String phone	
+			){
+	
+		boolean falg = true ;
+		String regpw = "[a-z0-9_-]{8,16}";
+		String  regphone = "(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\\d{8}";
+		if(adminid==null ||adminid ==""){falg = false;}
+		if(oldpw == null || oldpw== ""){
+			falg = false ;			
+			}
+		if(newpw1 == null || newpw1== ""||!newpw1.trim().matches(regpw)||!newpw1.trim().equals(newpw2.trim())){
+			falg = false ;
+			}
+		if(phone==null || phone==""|| !phone.trim().matches(regphone)){
+			falg = false ;
+		}
+		if(falg){
+			AdminEntity ce = null ;
+			try{
+			ce =adminer.getById(Integer.parseInt(adminid));
+			}catch(Exception e){
+				
+			}
+			if(ce!=null){
+				String dataPW = ce.getPassword();
+				String comName = ce.getEmployeeid();
+				String md5PW = CBDUtil.md5(oldpw.trim(), comName);
+				if(dataPW.equals(md5PW)){
+				//	logger.log(Priority.DEBUG,"开始修改密码！");
+					
+					String newMd5Pw = CBDUtil.md5(newpw1.trim(), comName);
+					ce.setPassword(newMd5Pw);
+					ce.setPhone(phone.trim());
+					adminer.saveOrUpdate(ce);
+					rd.setMessage("changeOK");
+					return rd ;
+				}
+			}
+			
+		}
+		return rd ;
+	}
+}
+

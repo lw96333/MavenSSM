@@ -1,0 +1,17 @@
+package com.ne.dao;
+
+import com.ne.entity.OnlineEntity;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * (Online)表数据库访问层
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+public interface OnlineDao  extends BaseMapper<OnlineEntity>{
+
+    
+
+}

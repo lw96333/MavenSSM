@@ -1,0 +1,173 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * 企业租赁合同实体类
+ * 
+ *@author 班贵华
+ * 2019年3月21日
+ */
+@TableName(value="t_companylcontract")
+public class CompanylcontractEntity implements Serializable {
+    
+	/**
+	 * 	合同ID
+	 */
+	@TableId(type=IdType.AUTO)
+    private Integer id;
+	/**
+	 * 	合同编号
+	 */
+    private String contractnumber;
+    /**
+	 * 	企业用户信息(外键ID)
+	 */
+    private Integer company;
+    /**
+	 * 	企业用户信息
+	 */
+    @TableField(exist=false)
+    private CompanyEntity companyEntity;
+   
+    /**
+	 * 	车位信息
+	 */
+    @TableField(exist=false)
+    private StallEntity stallEntity;
+    /**
+	 * 	成交价格
+	 */
+    private Double price;
+    /**
+	 * 	合同生效日期
+	 */
+    private String starttime;
+    /**
+	 * 	合同截止日期
+	 */
+    private String endtime;
+    /**
+	 * 	是否作废	
+	 */
+    private String isinvalid;
+    /**
+	 * 合同复印件
+	 */
+	private String contractpic;
+	/**
+	 * 最长可租日期
+	 */
+	private String longtime;
+
+
+    public String getLongtime() {
+		return longtime;
+	}
+
+	public void setLongtime(String longtime) {
+		this.longtime = longtime;
+	}
+
+	public String getContractpic() {
+		return contractpic;
+	}
+
+	public void setContractpic(String contractpic) {
+		this.contractpic = contractpic;
+	}
+
+	public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getContractnumber() {
+        return contractnumber;
+    }
+
+    public void setContractnumber(String contractnumber) {
+        this.contractnumber = contractnumber;
+    }
+
+    public Integer getCompany() {
+        return company;
+    }
+
+    public void setCompany(Integer company) {
+        this.company = company;
+    }
+
+ 
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public String getStarttime() {
+        return starttime;
+    }
+
+    public void setStarttime(String starttime) {
+        this.starttime = starttime;
+    }
+
+    public String getEndtime() {
+        return endtime;
+    }
+
+    public void setEndtime(String endtime) {
+        this.endtime = endtime;
+    }
+
+    public String getIsinvalid() {
+        return isinvalid;
+    }
+
+    public void setIsinvalid(String isinvalid) {
+        this.isinvalid = isinvalid;
+    }
+    
+    
+	public CompanyEntity getCompanyEntity() {
+		return companyEntity;
+	}
+
+	public void setCompanyEntity(CompanyEntity companyEntity) {
+		this.companyEntity = companyEntity;
+	}
+
+	public StallEntity getStallEntity() {
+		return stallEntity;
+	}
+
+	public void setStallEntity(StallEntity stallEntity) {
+		this.stallEntity = stallEntity;
+	}
+
+	@Override
+	public String toString() {
+		return "CompanylcontractEntity [id=" + id + ", contractnumber=" + contractnumber + ", company=" + company
+				+ ", companyEntity=" + companyEntity  + ", stallEntity=" + stallEntity + ", price="
+				+ price + ", starttime=" + starttime + ", endtime=" + endtime + ", isinvalid=" + isinvalid
+				+ ", contractpic=" + contractpic + ", longtime=" + longtime + "]";
+	}
+
+	
+
+	
+
+}

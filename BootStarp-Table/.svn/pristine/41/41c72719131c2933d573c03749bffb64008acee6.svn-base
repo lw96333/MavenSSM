@@ -1,0 +1,32 @@
+package com.ne.dao;
+
+import com.ne.entity.AdminEntity;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * (Admin)表数据库访问层
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:16:58
+ */
+public interface AdminDao  extends BaseMapper<AdminEntity>{
+	/**
+	 * 分页查看管理员
+	 * @param condition
+	 * @return
+	 * @throws Exception
+	 */
+	@Select("select * from t_admin limit #{curPage},#{pageSize}")
+	List<AdminEntity> showAdminEntityByPage(Map<String, Object> condition)throws Exception;
+	
+	@Select("select * from t_admin where password =#{pwd} and phone = #{tel} and employeeid = #{name}")
+	AdminEntity getOneAdminEntityByPwdAndPhoneAndName(@Param(value="pwd")String pwd ,@Param(value="tel")String phone, @Param(value="name")String name);
+}

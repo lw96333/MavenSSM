@@ -1,0 +1,143 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * (Personalrent)实体类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:01
+ */
+@TableName(value="t_personalrent")
+public class PersonalrentEntity implements Serializable {
+    @TableId(type=IdType.AUTO)
+    private Integer id;
+    
+    private Integer stallid;
+    
+    private Integer personalid;
+    
+    private String starttime;
+    
+    private String endtime;
+    
+    private Object price;
+    
+    private String message;
+    
+    
+    private Integer rentpersonalid;
+    
+    @TableField(exist=false)
+    private StallEntity stallEntity;
+    
+    @TableField(exist=false)
+    private PersonalEntity owner;
+    
+    @TableField(exist=false)
+    private PersonalEntity renter;
+    
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getStallid() {
+        return stallid;
+    }
+
+    public void setStallid(Integer stallid) {
+        this.stallid = stallid;
+    }
+
+    public Integer getPersonalid() {
+        return personalid;
+    }
+
+    public void setPersonalid(Integer personalid) {
+        this.personalid = personalid;
+    }
+
+    public String getStarttime() {
+        return starttime;
+    }
+
+    public void setStarttime(String starttime) {
+        this.starttime = starttime;
+    }
+
+    public String getEndtime() {
+        return endtime;
+    }
+
+    public void setEndtime(String endtime) {
+        this.endtime = endtime;
+    }
+
+    public Object getPrice() {
+        return price;
+    }
+
+    public void setPrice(Object price) {
+        this.price = price;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+
+
+	public Integer getRentpersonalid() {
+		return rentpersonalid;
+	}
+
+	public void setRentpersonalid(Integer rentpersonalid) {
+		this.rentpersonalid = rentpersonalid;
+	}
+
+	public StallEntity getStallEntity() {
+		return stallEntity;
+	}
+
+	public void setStallEntity(StallEntity stallEntity) {
+		this.stallEntity = stallEntity;
+	}
+	
+
+	public PersonalEntity getOwner() {
+		return owner;
+	}
+
+	public void setOwner(PersonalEntity owner) {
+		this.owner = owner;
+	}
+
+	public PersonalEntity getRenter() {
+		return renter;
+	}
+
+	public void setRenter(PersonalEntity renter) {
+		this.renter = renter;
+	}
+
+	@Override
+	public String toString() {
+		return "PersonalrentEntity [id=" + id + ", stallid=" + stallid + ", personalid=" + personalid + ", starttime="
+				+ starttime + ", endtime=" + endtime + ", price=" + price + ", message=" + message + "]";
+	}
+
+}

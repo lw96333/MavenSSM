@@ -1,0 +1,17 @@
+$(function(){
+	$("#sureSignContract").click(function(){
+		$.ajax({
+			url:"../sureSignContract",
+			type:"POST",
+			success:function(data){
+				if(data.sellersure == "1" && data.buyersure =="1" ){
+					alert("签约成功,合同生效！")
+					self.location="table_basic.jsp";
+				}else{
+					alert("您已签约,请等待对方签约后合同才会生效!")
+					self.location="personalContract.jsp";
+				}
+			}
+		})
+	})
+})

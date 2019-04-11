@@ -1,0 +1,103 @@
+package com.ne.test;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ne.bean.PageBean;
+import com.ne.entity.StallEntity;
+import com.ne.service.StallService;
+
+/**
+ * 车辆管理测试类
+ * @author 石科林
+ *
+ * 2019年3月21日
+ */
+@Transactional(transactionManager = "transactionManager",rollbackFor=Exception.class)
+@Rollback(value = false)
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/application.xml"})
+public class StallTest extends AbstractTransactionalJUnit4SpringContextTests{
+	@Autowired
+	private StallService stallServiceImpl;
+	/**
+	 * 查询所有的车位信息
+	 */
+	@Test
+	public void showInfo() {
+		Map<String, Object> map=new HashMap<String, Object>(16);
+		PageBean<StallEntity> stall=new PageBean<StallEntity>();
+		map.put("curPage", 1);
+		map.put("pageSize", 5);
+		try {
+			stall=stallServiceImpl.showStallPage(map);
+		System.out.println(stall);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
+	
+	/**
+	 * 添加单个车位
+	 */
+	@Test
+	public void addOne() {
+		String address="长安路66号";
+		String areaNumber="FD-332";
+		StallEntity stallEntity=new StallEntity();
+		String[] str =areaNumber.split("-");
+		stallEntity.setStalladdress(address);
+//		stallEntity.setStallarea(areaNumber.substring(0, 2));
+//		stallEntity.setStallnumber(Integer.parseInt(areaNumber.substring(2)));
+		stallEntity.setStallarea(str[0]);
+		stallEntity.setStallnumber(Integer.parseInt(str[1]));
+		stallEntity.setPropertynumber("CBD产权");
+		stallEntity.setStalltype("空闲");
+		stallEntity.setUsertype("CBD车位");
+		stallEntity.setPropertypic("无");
+		stallEntity.setUserid(null);
+		stallServiceImpl.save(stallEntity);
+	}
+
+	/**
+	 * 批量添加车位
+	 */
+	@Test
+	public void addBetch() {
+		//车位数量
+		int sum=10;
+		//起始车位号
+		int startNumber=120;
+		//车位地址
+		String address="靖江区二郎山路66号";
+		//区域号
+		String areaNumber="CF";
+		List<StallEntity> stallEntities=new ArrayList<StallEntity>() ;
+		for (int i = 0; i < sum ; i++) {
+			StallEntity stallEntity=new StallEntity();
+			stallEntity.setStalladdress(address);
+			stallEntity.setStallarea(areaNumber);
+			stallEntity.setStallnumber(startNumber+i);
+			stallEntity.setPropertynumber("CBD产权");
+			stallEntity.setStalltype("空闲");
+			stallEntity.setUsertype("CBD车位");
+			stallEntity.setPropertypic("无");
+			stallEntity.setUserid(null);
+			stallEntities.add(stallEntity);
+		}
+		stallServiceImpl.saveBatch(stallEntities,sum);
+	}
+}

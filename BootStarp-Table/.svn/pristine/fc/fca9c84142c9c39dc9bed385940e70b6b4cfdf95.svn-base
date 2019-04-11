@@ -1,0 +1,63 @@
+package com.ne.dao;
+
+import com.ne.entity.LogEntity;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+
+/**
+ * 日志信息数据访问层
+ * @author 张晋忠
+ *
+ * 2019年3月27日
+ */
+public interface LogDao  extends BaseMapper<LogEntity>{
+	
+	/**
+	 * 分页查询日志信息
+	 * @param map
+	 * @return
+	 */
+	@Select("<script>"
+			+ "select * from t_log where 1=1"
+			+ "<if test='userType!= null'>"
+			+ " and userType=#{userType}"
+			+ "</if>"
+			+ "<if test='logType!= null'>"
+			+ " and logType=#{logType}"
+			+ "</if>"
+			+ "<if test='time!= null'>"
+			+ " and time like concat('%',#{time},'%')"
+			+ "</if>"
+			+ "<if test='name!= null'>"
+			+ " and name like concat('%',#{name},'%')"
+			+ "</if>"
+			+ " limit ${curPage},${pageSize}"
+			+ "</script>")
+    List<LogEntity> getLogs(Map<String, Object> map);
+	
+	@Select("<script>"
+			+ "select count(*) from t_log where 1=1"
+			+ "<if test='userType!= null'>"
+			+ " and userType=#{userType}"
+			+ "</if>"
+			+ "<if test='logType!= null'>"
+			+ " and logType=#{logType}"
+			+ "</if>"
+			+ "<if test='time!= null'>"
+			+ " and time like concat('%',#{time},'%')"
+			+ "</if>"
+			+ "<if test='name!= null'>"
+			+ " and name like concat('%',#{name},'%')"
+			+ "</if>"
+			+ "</script>")
+    int getTolSize(Map<String, Object> map);
+	
+    
+
+}

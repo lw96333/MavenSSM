@@ -1,0 +1,196 @@
+$(function() {
+	$("#register").click(function() {
+		if(isTrue1 && isTrue2 && isTrue3 && isTrue4 && isTrue5 && isTrue6 && isTrue7 && isTrue8 ){
+		$.ajax({
+			url : "regist",
+			type : "post",
+			data : {
+				name : $("#name").val().trim(),
+				password : $("#password").val().trim(),
+				realname : $("#realname").val().trim(),
+				address : $("#address").val().trim(),
+				phone : $("#phone").val().trim(),
+				identitycard : $("#identitycard").val().trim(),
+				professional : $("#professional").val().trim(),
+				email : $("#email").val().trim(),
+				credibility : 100,
+				level : '个人'
+			},
+			dataType : "json",
+			success : function(data) {
+				if (data == 1) {
+					alert("添加成功！")
+					location.href = "login.jsp";
+				} else {
+					alert("添加失败！用户名重复！");
+					isTrue--;
+				}
+			}
+		})
+	}else{
+		alert("添加失败！请重新输入");
+	}
+	})
+	/**
+	 * 验证用户名的正则表达式
+	 */
+	var name=/^[\u4e00-\u9fa5_0-9a-zA-Z]{1,20}$/;
+	/**
+	 * 验证密码的正则表达式
+	 */
+	var password=/^\w{6,18}$/;
+	/**
+	 * 验证真实姓名的正则表达式
+	 */
+	var realName=/^[\u4e00-\u9fa5]{2,5}$/;
+	/**
+	 * 验证家庭地址的正则表达式
+	 */
+	var address=/^[\u4e00-\u9fa5_0-9a-zA-Z]{1,30}$/;
+	/**
+	 * 验证电话号码的正则表达式
+	 */
+	var phone=/^1([38]\d|4[579]|[57][0-35-9]|66|9[89])\d{8}$/;
+	/**
+	 * 身份证验证
+	 */
+	var idcard=/(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+	/**
+	 * 职业描述
+	 */
+	var professional=/^[\u4e00-\u9fa5_0-9a-zA-Z]{1,30}$/;
+	/**
+	 * 邮箱
+	 */
+	var email=/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+	var isTrue1=false;
+	var isTrue2=false;
+	var isTrue3=false;
+	var isTrue4=false;
+	var isTrue5=false;
+	var isTrue6=false;
+	var isTrue7=false;
+	var isTrue8=false;
+	/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#name").blur(function(){
+		var reg1=$("#name").val();
+		if(name.test(reg1)){
+			$("#name").css("color","green");
+			isTrue1=true;
+		}else{
+			$("#name").html("输入有误，请重新输入！");
+			$("#name").css("color","red");
+			isTrue1=false;
+		}
+	})
+/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#password").blur(function(){
+		var reg1=$("#password").val();
+		if(password.test(reg1)){
+			$("#password").css("color","green");
+			isTrue2=true;
+		}else{
+			$("#password").html("输入有误，请重新输入！");
+			$("#password").css("color","red");
+			isTrue2=false;
+		}
+	})/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#realname").blur(function(){
+		var reg1=$("#realname").val();
+		if(realName.test(reg1)){
+			$("#realname").css("color","green");
+			isTrue3=true;
+		}else{
+			$("#realname").html("输入有误，请重新输入！");
+			$("#realname").css("color","red");
+			isTrue3=false;
+		}
+	})/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#address").blur(function(){
+		var reg1=$("#address").val();
+		if(address.test(reg1)){
+			$("#address").css("color","green");
+			isTrue4=true;
+		}else{
+			$("#address").html("输入有误，请重新输入！");
+			$("#address").css("color","red");
+			isTrue4=false;
+		}
+	})/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#phone").blur(function(){
+		var reg1=$("#phone").val();
+		if(phone.test(reg1)){
+			$("#phone").css("color","green");
+			isTrue5=true;
+		}else{
+			$("#phone").html("输入有误，请重新输入！");
+			$("#phone").css("color","red");
+			isTrue5=false;
+		}
+	})/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#identitycard").blur(function(){
+		var reg1=$("#identitycard").val();
+		if(idcard.test(reg1)){
+			$("#identitycard").css("color","green");
+			isTrue6=true;
+		}else{
+			$("#identitycard").html("输入有误，请重新输入！");
+			$("#identitycard").css("color","red");
+			isTrue6=false;
+		}
+	})/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#professional").blur(function(){
+		var reg1=$("#professional").val();
+		if(professional.test(reg1)){
+			$("#professional").css("color","green");
+			isTrue7=true;
+		}else{
+			$("#professional").html("输入有误，请重新输入！");
+			$("#professional").css("color","red");
+			isTrue7=false;
+		}
+	})/**
+	 * 验证输入框的内容是否正确
+	 * 正确内容提示‘√’
+	 * 错误内容提示‘×’
+	 */
+	$("#email").blur(function(){
+		var reg1=$("#email").val();
+		if(email.test(reg1)){
+			$("#email").css("color","green");
+			isTrue8=true;
+		}else{
+			$("#email").html("输入有误，请重新输入！");
+			$("#email").css("color","red");
+			isTrue8=false;
+		}
+	})
+})

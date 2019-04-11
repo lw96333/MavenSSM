@@ -1,0 +1,91 @@
+package com.ne.service.impl;
+
+import com.ne.entity.ComplainEntity;
+import com.ne.entity.PersonalsaleEntity;
+import com.ne.entity.TradingrecordEntity;
+import com.ne.bean.PageBean;
+import com.ne.dao.TradingrecordDao;
+import com.ne.service.PersonalService;
+import com.ne.service.PersonalsaleService;
+import com.ne.service.StallService;
+import com.ne.service.TradingrecordService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * (Tradingrecord)表服务实现类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:02
+ */
+@Transactional(transactionManager = "transactionManager")
+@Rollback(value = false)
+@Service
+public class TradingrecordServiceImpl extends ServiceImpl<TradingrecordDao,TradingrecordEntity> implements TradingrecordService {
+    @Autowired
+    private TradingrecordDao tradingrecordDao;
+    @Autowired
+    private PersonalService personalService;
+    @Autowired
+    private StallService stallService;
+    @Autowired
+    private PersonalsaleService personalsaleService;
+
+	@Override
+	public PageBean<PersonalsaleEntity> getAllPersonalSalePageBean(Map<String, Object> map) {
+		
+		List<PersonalsaleEntity> list = tradingrecordDao.getAllSale(map);
+		for (int i = 0; i < list.size(); i++) {
+			list.get(i).setPersonalEntity(personalService.getById(list.get(i).getPersonalid()));
+			list.get(i).setStallEntity(stallService.getById(list.get(i).getStallid()));
+			list.get(i).setBuyer(personalService.getById(list.get(i).getBuyerid()));
+		}
+		PageBean<PersonalsaleEntity> pageBean = new PageBean<>();
+		pageBean.setDatas(list);
+		pageBean.setCurPage(Integer.parseInt(map.get("curPage").toString()));
+		pageBean.setPageSize(Integer.parseInt(map.get("pageSize").toString()));
+		QueryWrapper<PersonalsaleEntity> queryWrapper = new QueryWrapper<PersonalsaleEntity>();
+		
+		int count = personalsaleService.count(queryWrapper.eq("personalId", map.get("personalId")));
+		pageBean.setTolSize(count);
+		return pageBean;
+	}
+	
+	@Override
+	public PageBean<PersonalsaleEntity> showTradingrecord(Map<String, Object> condition) throws Exception {
+
+    	PageBean<PersonalsaleEntity> pageBean = new PageBean<PersonalsaleEntity>();
+
+		// 获得当前页数和每页显示条数
+		int curPage = (Integer) condition.get("curPage");
+		int pageSize = (Integer) condition.get("pageSize");
+		
+		 Map<String, Object>  map = new HashMap<String, Object>();
+//		 map.put("stallType","已出售");
+		 map.put("buyerId", condition.get("buyerId"));
+		 
+
+		// 获取数据库查询条件的总条数
+		int tolSize = tradingrecordDao.getTolSize(map);
+		
+		System.out.println("tolSize"+tolSize);
+		// 获取查询的数据集合
+		List<PersonalsaleEntity> list = tradingrecordDao.showTradingrecord(condition);
+		// 封装PageBean对象
+		pageBean.setCurPage(curPage);
+		pageBean.setPageSize(pageSize);
+		pageBean.setTolSize(tolSize);
+		pageBean.setDatas(list);
+
+		return pageBean;
+	}
+}

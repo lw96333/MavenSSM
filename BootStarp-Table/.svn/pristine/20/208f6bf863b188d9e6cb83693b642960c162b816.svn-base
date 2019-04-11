@@ -1,0 +1,151 @@
+package com.ne.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ne.bean.BillCountBean;
+import com.ne.bean.PageBean;
+import com.ne.dao.BillDao;
+import com.ne.entity.BillEntity;
+import com.ne.service.BillService;
+
+/**
+ * (Bill)表服务实现类
+ *
+ * @author tangxiong
+ * @since 2019-03-21 09:17:00
+ */
+@Transactional(transactionManager = "transactionManager")
+@Rollback(value = false)
+@Service
+public class BillServiceImpl extends ServiceImpl<BillDao, BillEntity> implements BillService {
+	@Autowired
+	private BillDao billDao;
+
+	/**
+	 * 获取日志记录器
+	 */
+	private static Logger logger = Logger.getLogger(BillServiceImpl.class);
+
+	@Override
+	public PageBean selectCompanyPageBill(Map<String, Object> condition) throws Exception {
+
+		// 判断查询条件是否为空
+		QueryWrapper queryWrapper = new QueryWrapper();
+		if (condition.get("startDate") != null) {
+			queryWrapper.ge("tradeDate", condition.get("startDate"));
+		}
+		if (condition.get("endDate") != null) {
+			queryWrapper.le("tradeDate", condition.get("endDate"));
+		}
+		queryWrapper.eq("usertype", "企业");
+		// 查询总条数
+		//int count = billDao.selectCount(queryWrapper);
+		int count = billDao.selectCompanyCount(condition);
+
+		// 查询数据
+		List<BillEntity> billEntities = billDao.selectCompanyPageBill(condition);
+		
+		// 封装数据
+		PageBean<BillEntity> pageBean = new PageBean<BillEntity>();
+		pageBean.setDatas(billEntities);
+		pageBean.setTolSize(count);
+
+		logger.info(pageBean);
+		return pageBean;
+	}
+
+	@Override
+	public PageBean selectCBDPageBill(Map<String, Object> condition) throws Exception {
+		// 判断查询条件是否为空
+		QueryWrapper queryWrapper = new QueryWrapper();
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (condition.get("startDate") != null) {
+			queryWrapper.ge("tradeDate", condition.get("startDate"));
+			
+		}
+		if (condition.get("endDate") != null) {
+			queryWrapper.le("tradeDate", condition.get("endDate"));
+		}
+		//queryWrapper.eq("usertype", "第三方");
+		queryWrapper.ne("usertype", "个人");
+
+		// 查询总条数
+		int count = billDao.selectCount(queryWrapper);
+
+		// 查询数据
+		List<BillEntity> billEntities = billDao.selectCBDPageBill(condition);
+		
+		// 封装数据
+		PageBean<BillEntity> pageBean = new PageBean<BillEntity>();
+		pageBean.setDatas(billEntities);
+		pageBean.setTolSize(count);
+		
+		logger.info(pageBean);
+		return pageBean;
+	}
+
+	@Override
+	public PageBean selectPersonalPageBill(Map<String, Object> condition) throws Exception {
+
+		// 判断查询条件是否为空
+		QueryWrapper queryWrapper = new QueryWrapper();
+		if (condition.get("startDate") != null) {
+			queryWrapper.ge("tradeDate", condition.get("startDate"));
+		}
+		if (condition.get("endDate") != null) {
+			queryWrapper.le("tradeDate", condition.get("endDate"));
+		}
+		queryWrapper.eq("usertype", "个人");
+
+		// 查询总条数
+		//int count = billDao.selectCount(queryWrapper);
+		int count = billDao.selectPersonalCount(condition);
+		
+		// 查询数据
+		List<BillEntity> billEntities = billDao.selectPersonalPageBill(condition);
+		
+		// 封装数据
+		PageBean<BillEntity> pageBean = new PageBean<BillEntity>();
+		pageBean.setDatas(billEntities);
+		pageBean.setTolSize(count);
+		
+		logger.info(pageBean);
+		return pageBean;
+	}
+
+	@Override
+	public BillCountBean cbdBillCount(Map<String, Object> condition) throws Exception {
+
+		//CBD账单统计
+		BillCountBean money = billDao.cbdBillCount(condition);
+		logger.info(money);
+		return money;
+	}
+
+	@Override
+	public BillCountBean personalBillCount(Map<String, Object> condition) throws Exception {
+		//个人账单统计
+		BillCountBean money = billDao.personalBillCount(condition);
+		logger.info(money);
+		return money;
+	}
+
+	@Override
+	public BillCountBean companyBillCount(Map<String, Object> condition) throws Exception {
+		//企业账单统计
+		BillCountBean money = billDao.companyBillCount(condition);
+		logger.info(money);
+		return money;
+	}
+
+}

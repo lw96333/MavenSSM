@@ -1,0 +1,226 @@
+$(function () {
+        $('#table').bootstrapTable({
+            url: '../queryCompany',         //请求后台的URL（*）
+            method: 'get',                      //请求方式（*）
+            contentType: "application/x-www-form-urlencoded",//post请求的话就加上这个句话 */
+            toolbar: '#toolbar',                //工具按钮用哪个容器
+            striped: false,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: true,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+           // queryParams: oTableInit.queryParams,//传递参数（*）
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber:1,                       //初始化加载第一页，默认第一页
+            pageSize: 5,                       //每页的记录行数（*）
+            pageList: [5, 10, 20],        //可供选择的每页的行数（*）
+            //search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+            strictSearch: true,
+            showColumns: true,                  //是否显示所有的列
+            showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: true,                //是否启用点击选中行
+            //height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+            showToggle:true,                    //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,
+            queryParams: function (params) { // 请求服务器数据时发送的参数，可以在这里添加额外的查询参数，返回false则终止请求
+
+                return {
+                	pageSize: params.limit, // 每页要显示的数据条数 （params.limit）不可变表示开始数据位置 size可以变 对应后台的取值
+                	curPage: params.offset, // 每页显示数据的开始行号 （params.offset）不可变表示结束数据位置  cur可以变 对应后台的取值
+                    companyName: $("#companyname").val(),
+                    companyAddress: $("#floor").val(),
+                    companyContacter: $("#linkman").val(),
+                    companyPhone: $("#linknum").val()
+                }
+            },
+            responseHandler: function(data) {//请求得到参数处理 res是服务器返回的参数 （可以取任何变量名（和AJAX一样））
+                console.log(data);
+                return {
+                    "total": data.tolSize,//总条数 （"total"）不能变 插件特定解析字段 后面的值可根据实际情况做变化
+                    "rows": data.datas  //数据  （"rows"）不能变 插件特定解析字段 后面的值可根据实际情况做变化
+                };
+            },
+            columns: [{
+                field: 'id',
+                title: 'id',
+                align: 'center'
+            },{
+                field: 'loginname',
+                title: '企业用户名',
+                align: 'center'
+            }, {
+                field: 'loginpassword',
+                title: '企业登录密码',
+                align: 'center'
+
+            }, {
+                field: 'companyname',
+                title: '企业名称',
+                align: 'center'
+
+            }, {
+                field: 'companyaddress',
+                title: '企业楼层位置',
+                align: 'center'
+
+            }, {
+                field: 'companycontact',
+                title: '企业联系人',
+                align: 'center'
+
+            }, {
+                field: 'companphone',
+                title: '企业联系电话',
+                align: 'center',
+                formatter: function indexFormatter(value, row, index) {//格式化数据 得到的数据需要做特殊的处理 formatter处理关键字
+                    //value 表示field 原本的值 一般会把这个值拿来做处理 （如 这个值是一个图片连接地址）
+                    //row  表示该行的数据对象，相当与 我们java中的一个对象
+                    //index 表示行数的索引 索引是从0开始
+
+                    return value;
+                }
+            },{
+                field: 'operation',
+                title: '操作',
+                align: 'center',
+                formatter:addFunctionAlty,//表格中增加按钮
+                events:{
+                    "click #btn_delete":function(e,value,row,index) {
+                    	var id = row.id;
+                    	if(confirm("确认删除？")){
+		                    	$.ajax({
+		                    		url:"../deleteCompany",
+		                    		type:"post",
+		                    		data:{
+		                    			"id":id
+		                    		},
+		                    		dataType:"json",
+		                    		success:function(ResponseData){
+		                    			if(ResponseData.data["delflag"]==true){
+		                    				self.location="companyManageIndexList.jsp";
+		                    				alert("删除成功");
+		                    			}
+		                    		}
+		                    	})
+                    	}else{
+                    		alert("取消删除");
+                    	}
+                    }
+
+                }//给按钮注册事件  "click #btn_delete" 对应事件 和选择器
+            }]
+        });
+
+
+        function addFunctionAlty(value, row, index) {
+            return [
+               /*  '<button type="button" id="btn_edit" class="btn btn-default" data-toggle="modal" data-target="#ModalInfo">修改</button>  ', */
+                '<button id="btn_delete" class="btn btn-warning">删除</button>'
+            ].join('');
+        }
+	
+	
+        $("#ensure").click(function(){
+        	$.ajax({
+        		url:"../addCompany",
+        		type:"post",
+        		data:{
+        			"loginname":$("#loginName1").val(),
+        			"loginpassword":$("#pwd1").val(),
+        			"companyname":$("#name1").val(),
+        			"companyaddress":$("#floor1").val(),
+        			"companycontact":$("#contact1").val(),
+        			"companphone":$("#phone1").val()
+        		},
+        		dataType:"json",
+        		success:function(ResponseData){
+        			if(ResponseData.data["flag"]==true){
+        				self.location="companyManageIndexList.jsp";
+        				alert("添加成功");
+        			}else{
+        				alert("您的输入有误，请重新添加");
+        			}
+        		}
+        	})
+        	
+        })
+        
+        
+        $("#phone1").blur( function () { 
+			var reg6 = $("#phone1").val();
+			var err = $("#regPhone");
+				if(/^1([38]\d|4[579]|[57][0-35-9]|66|9[89])\d{8}$/.test(reg6)){
+					err.html("√");
+	                err.css("color","green");
+				}else{
+					err.html("×");
+	                err.css("color","red");
+				}
+			});
+		
+		$("#contact1").blur( function () { 
+			var reg5 = $("#contact1").val();
+			var err = $("#regContacter");
+				if(/^[\u4e00-\u9fa5]{2,}$/.test(reg5)){
+					err.html("√");
+	                err.css("color","green");
+				}else{
+					err.html("×");
+	                err.css("color","red");
+				}
+			});
+		
+		$("#floor1").blur( function () { 
+			var reg4 = $("#floor1").val();
+			var err = $("#regFloor");
+				if(/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(reg4)){
+					err.html("√");
+	                err.css("color","green");
+				}else{
+					err.html("×");
+	                err.css("color","red");
+				}
+			});
+		
+
+		$("#name1").blur( function () { 
+			var reg3 = $("#name1").val();
+			var err = $("#regLoginComName");
+				if(/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(reg3)){
+					err.html("√");
+	                err.css("color","green");
+				}else{
+					err.html("×");
+	                err.css("color","red");
+				}
+			});
+		
+		$("#pwd1").blur( function () { 
+			var reg2 = $("#pwd1").val();
+			var err = $("#regLoginPwd");
+				if(/^[a-zA-Z0-9]{6,16}$/.test(reg2)){
+					err.html("√");
+	                err.css("color","green");
+				}else{
+					err.html("×");
+	                err.css("color","red");
+				}
+			});
+		
+		$("#loginName1").blur( function () { 
+			var reg1 = $("#loginName1").val();
+			var err = $("#regLoginName");
+				if(/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/.test(reg1)){
+					err.html("√");
+	                err.css("color","green");
+				}else{
+					err.html("×");
+	                err.css("color","red");
+				}
+			});
+		
+      
+})

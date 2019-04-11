@@ -1,0 +1,146 @@
+package com.ne.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import com.ne.log.LogType;
+import org.apache.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import com.ne.bean.BillCountBean;
+import com.ne.bean.PageBean;
+import com.ne.entity.BillEntity;
+import com.ne.entity.CompanyEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.UserType;
+import com.ne.service.BillService;
+
+/**
+ *  企业 账单类控制页面器
+ * @author 包杰
+ *
+ * 2019年3月21日
+ */
+@RestController
+public class CompanyBillController {
+
+	@Autowired
+	private BillService billService;
+	
+	/**
+	 * 获取日志记录器
+	 */
+	private static Logger logger = Logger.getLogger(CompanyBillController.class);
+	
+	/**
+	 * (baojie)显示企业账单数据
+	 * @param size 显示数据
+	 * @param cur 当前页数
+	 * @param startDate 查看开始日期
+	 * @param endDate 查看结束日期
+	 * @param session
+	 * @return
+	 */
+	@LogAnno(content = "显示企业账单数据", operateName = LogType.查询, userPower = UserType.企业用户)
+	@RequestMapping(value="/companyBillPage",method=RequestMethod.POST)
+	public PageBean showBillInfo(
+			@RequestParam(value="size") String size,
+			@RequestParam(value="cur") String cur,
+			@RequestParam(value="startDate") String startDate,
+			@RequestParam(value="endDate") String endDate,HttpSession session) {
+		
+		//创建一个Map集合封装分页查询条件
+		Map< String, Object> condition = new HashMap<>();
+		
+		//判断条件是否为空
+		if(startDate==null||startDate=="") {
+			condition.put("startDate", null);
+		}else {
+			condition.put("startDate", startDate);
+		}
+		if (endDate==null||endDate=="") {
+			condition.put("endDate", null);
+		}else {
+			condition.put("endDate", endDate);
+		}
+		//当前页数
+		condition.put("cur", cur);
+		//第几条开始查询
+		condition.put("size", size);
+		//用户类型
+//		String companyname=(String) session.getAttribute("companyname");
+		//获取登录用户信息
+		CompanyEntity companyEntity = (CompanyEntity) SecurityUtils.getSubject().getPrincipal();
+		logger.info(companyEntity.getCompanyname());
+		condition.put("companyname", companyEntity.getCompanyname());
+		
+		//调用业务
+		PageBean<BillEntity> pages = null;
+		try {
+			pages = billService.selectCompanyPageBill(condition);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		logger.info(pages);
+		
+		return pages;
+	}
+	
+	/**
+	 * (baojie)企业统计费用
+	 * @param startDate 查看开始日期
+	 * @param endDate 查看结束日期
+	 * @param session
+	 * @return
+	 */
+
+	@LogAnno(content = "企业统计费用", operateName = LogType.查询, userPower = UserType.企业用户)
+	@RequestMapping(value="/companyBillCount",method=RequestMethod.POST)
+	public BillCountBean companyBillCount(
+			@RequestParam(value="startDate") String startDate,
+			@RequestParam(value="endDate") String endDate,
+			HttpSession session) {
+		
+		//创建一个Map集合封装分页查询条件
+		Map< String, Object> condition = new HashMap<>();
+		
+		//判断查询条件是否为空
+		if(startDate==null||startDate=="") {
+			condition.put("startDate", null);
+		}else {
+			condition.put("startDate", startDate);
+		}
+		if (endDate==null||endDate=="") {
+			condition.put("endDate", null);
+		}else {
+			condition.put("endDate", endDate);
+		}
+		//String companyname=(String) session.getAttribute("companyname");
+		//获取登录用户信息
+		CompanyEntity companyEntity = (CompanyEntity) SecurityUtils.getSubject().getPrincipal();
+		logger.info(companyEntity.getCompanyname());
+		condition.put("companyname", companyEntity.getCompanyname());
+		logger.info(condition);
+		
+		//掉费用统计
+		BillCountBean money =null;
+		try {
+			money = billService.companyBillCount(condition);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		logger.info(money);
+		return money;
+	}
+}

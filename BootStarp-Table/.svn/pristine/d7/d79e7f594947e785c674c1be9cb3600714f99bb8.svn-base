@@ -1,0 +1,205 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@ taglib uri="http://shiro.apache.org/tags" prefix="shiro" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta  charset="UTF-8">
+<title>前台模板</title>
+ 	<link rel="stylesheet" href="../general/js/bootstrap.min.css">
+    <!--bootstrap-table插件样式 必须引用它在上面之后 -->
+    <link rel="stylesheet" href="../general/js/bootstrap-table.min.css">
+<link rel="stylesheet" href="../assets/css/bootstrap.css"/>
+  <link rel="stylesheet" href="../assets/css/amazeui.css" />
+  <link rel="stylesheet" href="../assets/css/core.css" />
+  <link rel="stylesheet" href="../assets/css/menu.css" />
+  <link rel="stylesheet" href="../assets/css/index.css" />
+  <link rel="stylesheet" href="../assets/css/admin.css" />
+  <link rel="stylesheet" href="../assets/css/page/typography.css" />
+  <link rel="stylesheet" href="../assets/css/page/form.css" />
+  <link rel="stylesheet" href="../assets/css/component.css" />
+  <link rel="stylesheet" href="../general/css/naranja.min.css">
+  
+    	 <script src="../general/js/jquery-3.3.1.min.js"></script>
+    <!--按照下面顺序引用jquery必须先引用 -->
+    <script src="../general/js/bootstrap.min.js"></script>
+    <script src="../general/js/bootstrap-table.min.js"></script>
+    <script src="../general/js/bootstrap-table-zh-CN.min.js"></script>
+     <script type="text/javascript" src="../assets/js/amazeui.min.js"></script>
+    <script src="../ajax/personalStall/showReservSaleStall.js"></script>
+    	<script type="text/javascript" src="../ajax/logout/logout.js"></script>
+	<script type="text/javascript" src="../general/js/naranja.js"></script>
+	<script type="text/javascript" src="../ajax/personalStall/reservrRentStall.js" ></script>
+<script type="text/javascript" src="../ajax/personalStall/reservrSaleStall.js" ></script>
+<script type="text/javascript" src="../ajax/personalManage/updateStallType.js"></script>
+<script type="text/javascript" src="../ajax/personalManage/sendContract.js"></script>
+</head>
+<body>
+<!-- Begin page -->
+<header class="am-topbar am-topbar-fixed-top">
+  <div class="am-topbar-left am-hide-sm-only">
+    <a href="index.jsp" class="logo"><span>Admin<span>to</span></span><i class="zmdi zmdi-layers"></i></a>
+  </div>
+
+  <div class="contain">
+    <ul class="am-nav am-navbar-nav am-navbar-left">
+
+      <li><h4 class="page-title">车位购买</h4></li>
+    </ul>
+
+    <ul class="am-nav am-navbar-nav am-navbar-right">
+      <li class="inform"></li>
+      <li class="hidden-xs am-hide-sm-only">
+        <input type="text" class="form-control" id="brithda" name="brithday" readonly="readonly" value="" placeholder="请选择日期" onClick="WdatePicker()" style="height: 30px;width: 150px;display: inline-block">&nbsp;<input type="text" class="form-control" id="brithday" name="brithday" readonly="readonly" value="" placeholder="请选择日期" onClick="WdatePicker()" style="height: 30px;width: 150px;margin-right: 280px; display: inline-block">
+      </li>
+      <li class="inform"><a href="javascript:void(0)" id="logout" class="glyphicon glyphicon-off" aria-hidden="true"></a></li>
+           <li class="hidden-xs am-hide-sm-only">
+                        <form role="search" class="app-search">
+                            <input type="text" placeholder="Search..." class="form-control">
+                            <a href=""><img src="../assets/img/search.png"></a>
+                        </form>
+                    </li>
+    </ul>
+  </div>
+</header>
+<!-- end page -->
+
+
+<div class="admin">
+  <!--<div class="am-g">-->
+  <!-- ========== Left Sidebar Start ========== -->
+  <!--<div class="left side-menu am-hide-sm-only am-u-md-1 am-padding-0">
+      <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 548px;">
+          <div class="sidebar-inner slimscrollleft" style="overflow: hidden; width: auto; height: 548px;">-->
+  <!-- sidebar start -->
+  <div class="admin-sidebar am-offcanvas  am-padding-0" id="admin-offcanvas">
+    <div class="am-offcanvas-bar admin-offcanvas-bar">
+      <!-- User -->
+      <div class="user-box am-hide-sm-only">
+        <div class="user-img">
+          <img src="../assets/img/avatar-1.jpg" alt="user-img" title="Mat Helme" class="img-circle img-thumbnail img-responsive">
+          <div class="user-status offline"><i class="am-icon-dot-circle-o" aria-hidden="true"></i></div>
+        </div>
+        <h5><span id="userName"><shiro:principal property="name"/></span></h5>
+        <ul class="list-inline">
+          <li>
+            <a href="#">
+              <i class="fa fa-cog" aria-hidden="true"></i>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="text-custom">
+              <i class="fa fa-cog" aria-hidden="true"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- End User -->
+
+      <ul class="am-list admin-sidebar-list">
+        <li><a href="index.jsp"><span class="am-icon-home"></span> 个人主页</a></li>
+        <li class="admin-parent">
+          <a class="am-cf" data-am-collapse="{target: '#collapse-nav1'}"><span class="am-icon-table"></span> 车位管理 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
+          <ul class="am-list am-collapse admin-sidebar-sub am-in" id="collapse-nav1">
+            <li><a href="table_basic.jsp" class="am-cf"> 我的车位</a></li>
+            <li><a href="table_complete.jsp">车位租赁</a></li>
+            <li><a href="parking_space_purchase.jsp">车位购买</a></li>
+            <li><a href="personalContract.jsp">网上签约</a></li>
+          </ul>
+        </li>
+        <li><a href="updateMessage.jsp" class="am-cf"> 修改信息</a></li>
+
+        <li class="admin-parent"><a class="am-cf" data-am-collapse="{target: '#collapse-nav2'}"><span class="am-icon-adjust"></span> 交易记录 <span class="am-icon-angle-right am-fr am-margin-right"></span></a>
+          <ul class="am-list am-collapse admin-sidebar-sub am-in" id="collapse-nav2"  >
+            <li><a href="rendOwnerTransactionRecord.jsp" class="am-cf"> 招租记录</a></li>
+            <li><a href="rendTransactionRecord.jsp"> 租赁记录</a></li>
+           <li><a href="sellTransactionRecord.jsp" class="am-cf"> 出售记录</a></li>
+			 <li><a href="sellTransactionRecord2.jsp" class="am-cf"> 购买记录</a></li>
+          </ul>
+        </li>
+        <li><a href="bill.jsp" class="am-cf"> <span class="am-icon-adn"></span> 计费功能</a></li>
+        <li><a href="inform.jsp"><span class="am-icon-amazon"></span> 消息提醒</a></li>
+        <li><a href="tousu.jsp" class="am-cf"> <span class="am-icon-archive"></span> 投诉</a></li>
+        
+      </ul>
+    </div>
+  </div>
+  <!-- sidebar end -->
+
+  <!--</div>
+</div>
+</div>-->
+  <!-- ========== Left Sidebar end ========== -->
+
+	<div style="display:none">
+		 发送人：<label id="sendUser"><shiro:principal property="name"/></label>
+   		出租 接收人：<label id="getUser">${personalrentEntity.owner.name }</label>
+   		 出售 接收人：<label id="getSellerUser">${personalsaleEntity.personalEntity.name }</label>
+   		 购买 接收人：<label id="getBuyerUser">${personalcontractEntity.personalBuyer.name }</label>
+   		 出售 接收人：<label id="getSellerUser2">${personalcontractEntity.personalSeller.name }</label>
+		车位发布人：<label id="getOwnerUser">${stallEntity.personal.name }</label>
+	</div>		
+
+  <!--	<div class="am-g">-->
+  <!-- ============================================================== -->
+  <!-- Start right Content here -->
+  <div class="content-page">
+    <!-- Start content -->
+   <br/> <br/>
+    <div class="content">
+
+      <div class="card-box">
+        <div class="am-g">
+          <!--=====================表格和按钮格式==============-->
+          <div class="bs-example" data-example-id="hoverable-table">
+
+                <table class="table table-hover" id="showReserveSaleSatll"></table>
+                <!--=====================显示被预定车位按钮模态框==============-->
+				<div class="modal fade" id="showReserveSaleStallInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title" id="myModalLabel">预定车位详细信息</h4>
+								</div>
+								<div class="modal-body">
+									<table class="table table-hover">
+										<tr>
+											<td colspan="2">待售车位信息：<lable id="stallInfo"></lable></td>
+										</tr>
+										<tr>
+											<td>用户名：<lable id="userNames"></td>
+											<td>职业：<lable id="professional"></lable></td>
+										<tr>
+											<td>真正姓名：<lable id="realName"></lable></td>
+											<td>身份证号码：<lable id="identitycard"></lable></td>
+										</tr>								<tr>
+											<td>电话：<lable id="phone"></lable></td>
+											<td>信誉度：<lable id="credibility"></lable></td>
+										</tr>
+										<tr>
+											<td colspan="2">留言：<lable id="message"></lable></td>
+										</tr>
+									</table>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+</body>
+</html>

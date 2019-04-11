@@ -1,0 +1,53 @@
+package com.ne.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+
+/**
+ * 性能统计实体类
+ * @author 张晋忠
+ *
+ * 2019年3月27日
+ */
+@TableName(value="t_property")
+public class PropertyEntity implements Serializable {
+    @TableId(type=IdType.AUTO)
+    private Integer id;
+    
+    /**
+     * 统计请求响应时间(单位秒)
+     */
+    private double responsetime;
+    /**
+     * 请求url
+     */
+    private String url;
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public double getResponsetime() {
+		return responsetime;
+	}
+	public void setResponsetime(double responsetime) {
+		this.responsetime = responsetime;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	@Override
+	public String toString() {
+		return "PropertyEntity [id=" + id + ", responsetime=" + responsetime + ", url=" + url + "]";
+	}
+
+
+}

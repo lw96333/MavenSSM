@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+
+<hibernate-mapping package="com.my.entity">
+	<!-- 类和表的映射 -->
+	<class name="CreditcardEntity" table="t_creditcard">
+		<!-- 映射主键标识属性 -->
+		<id name="id" column="pk_id">
+			<!-- 指定主键生成器策略（自增主键） -->
+			<generator class="native" />
+		</id>
+
+		<!-- 映射普通属性 -->
+		<property name="carId" column="f_carId" />
+		<property name="bank" column="f_bank" />
+
+		<!-- 映射一对一双向关联属性(property-ref表示对方关联属性引用名) -->
+		<one-to-one name="account" property-ref="creditcard"></one-to-one>
+	</class>
+</hibernate-mapping>

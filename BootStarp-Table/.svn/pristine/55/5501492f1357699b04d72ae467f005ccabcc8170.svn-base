@@ -1,0 +1,355 @@
+package com.ne.controller;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ne.bean.PageBean;
+import com.ne.entity.BillEntity;
+import com.ne.entity.ExternalcontractEntity;
+import com.ne.entity.RenewalexternalcontractEntity;
+import com.ne.entity.StallEntity;
+import com.ne.entity.ThirdplatformEntity;
+import com.ne.log.LogAnno;
+import com.ne.log.LogType;
+import com.ne.log.UserType;
+import com.ne.service.BillService;
+import com.ne.service.ExternalcontractService;
+import com.ne.service.RenewalexternalcontractService;
+import com.ne.service.StallService;
+import com.ne.service.ThirdplatformService;
+import com.ne.util.CBDUtil;
+import com.ne.util.ResponseData;
+import com.ne.util.UploadFiles;
+
+/**
+ * 外部合约页面控制器
+ * 
+ * @author 班贵华 2019年3月21日
+ */
+@RestController
+public class ExternalContractController {
+	/**
+	 * 服务对象
+	 */
+	@Autowired
+	private ExternalcontractService externalcontractService;
+	@Autowired
+	private ThirdplatformService thirdplatformService;
+	@Autowired
+	private RenewalexternalcontractService renewalexternalcontractService;
+	@Autowired
+	private StallService sallService;
+	@Autowired
+	private BillService billService;
+	/**
+	 * 响应信息
+	 */
+	
+	// 获取日志记录器
+	private static Logger logger = Logger.getLogger(ExternalContractController.class);
+
+	/**
+	 * 外部合约分页对象
+	 * 
+	 * @param request
+	 * @return 成功返回200，当前页数为空返回404
+	 */
+	@LogAnno(content = "外部合约分页对象", operateName = LogType.查询, userPower = UserType.后台管理员)
+	@RequestMapping(value = "showExternalcontract", method = RequestMethod.POST)
+	public PageBean<ExternalcontractEntity> showExternalcontract(@RequestParam(value = "curPage") Integer curPage,
+			@RequestParam(value = "pageSize") Integer pageSize) {
+
+		Map<Object, Object> condition = new HashMap<Object, Object>();
+
+		condition.put("curPage", curPage);
+		condition.put("pageSize", pageSize);
+		PageBean<ExternalcontractEntity> pageBean = externalcontractService.showExternalcontractInfoByPage(condition);
+		logger.info( "查看了外部合约分页对象");
+		return pageBean;
+
+	}
+
+	/**
+	 * 添加外部合约
+	 * 
+	 * @param externalcontractEntity 外部合约实体类
+	 * @return 添加成功返回200，失败返回404
+	 */
+	@LogAnno(content = "添加外部合约", operateName = LogType.添加, userPower = UserType.后台管理员)
+	@RequestMapping(value = "addExternalcontract", method = RequestMethod.POST)
+	public ResponseData addExternalcontract(HttpServletRequest request, String starttime,
+			String endtime, Double price, String companyname, String companycontact, String companphone, String address,
+			String stallarea, Integer stallnumber, String addressDouble, String areaNumberDouble,
+			Integer startNumberDouble, Integer sumDouble, String option,String companyaddress,Integer longtime) {
+		String contractpic =CBDUtil.uploadFile(request);
+		/*try {
+			contractpic = UploadFiles.fileUpload(request);
+		} catch (IllegalStateException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		String contractnumber = "EL Ne:"+System.currentTimeMillis();
+
+		ExternalcontractEntity externalcontractEntity = new ExternalcontractEntity();
+		externalcontractEntity.setIsinvalid("否");
+		externalcontractEntity.setContractnumber(contractnumber);
+		externalcontractEntity.setStarttime(starttime);
+		externalcontractEntity.setEndtime(endtime);
+		externalcontractEntity.setPrice(price);
+		externalcontractEntity.setContractpic(contractpic);
+		
+		ThirdplatformEntity thirdplatformEntity = new ThirdplatformEntity();
+		thirdplatformEntity.setCompanphone(companphone);
+		thirdplatformEntity.setCompanycontact(companycontact);
+		thirdplatformEntity.setCompanyname(companyname);
+		thirdplatformEntity.setCompanyaddress(companyaddress);
+		
+		QueryWrapper<ThirdplatformEntity> queryWrapper = new QueryWrapper<>();
+		Map<String, Object> map = new HashMap<>();
+		map.put("companyname", companyname);
+		queryWrapper.allEq(map);
+		ThirdplatformEntity thirdplatformEntity2 = null;
+		if(thirdplatformService.count(queryWrapper) > 0) {
+			 thirdplatformEntity2 = thirdplatformService.getOne(queryWrapper);
+			thirdplatformEntity.setId(thirdplatformEntity2.getId());
+			thirdplatformService.updateById(thirdplatformEntity);
+			externalcontractEntity.setThirdplatformid(thirdplatformEntity2.getId());
+			externalcontractService.save(externalcontractEntity);
+		}else {
+			thirdplatformService.save(thirdplatformEntity);
+			thirdplatformEntity = thirdplatformService.getOne(queryWrapper);
+			externalcontractEntity.setThirdplatformid(thirdplatformEntity.getId());
+			externalcontractService.save(externalcontractEntity);
+		}
+		QueryWrapper<ExternalcontractEntity> wrapper = new QueryWrapper<ExternalcontractEntity>();
+		Map<String, Object> map2 = new HashMap<>();
+		map2.put("contractnumber", contractnumber);
+		wrapper.allEq(map2);
+		ExternalcontractEntity entity = externalcontractService.getOne(wrapper);
+
+		if ("单车位添加".equals(option)) {
+			
+			StallEntity stallEntity = new StallEntity();
+			if (address.trim() == null || stallarea.trim() == null || (stallnumber + "") == null) {
+				return ResponseData.notFound();
+			}else {
+				BillEntity billEntity = new BillEntity();
+				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+				String tradedate = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+				String tradedate2 = new SimpleDateFormat("HH:mm:ss").format(timestamp);
+				billEntity.setUserid(thirdplatformEntity.getId());
+				billEntity.setTradedate(tradedate);
+				billEntity.setTradetime(tradedate2);
+				billEntity.setExpend(price);
+				billEntity.setNote("第三方车位添加");
+				billEntity.setUsertype("第三方");
+				billService.save(billEntity);
+				
+				stallEntity.setStalladdress(address);
+				stallEntity.setStallarea(stallarea);
+				stallEntity.setStallnumber(stallnumber);
+				stallEntity.setPropertynumber("第三方产权");
+				stallEntity.setStalltype("空闲");
+				stallEntity.setLongtime(longtime + "个月");
+			}
+			
+			
+			if(entity != null) {
+				stallEntity.setExternalcontractid(entity.getId());
+			}
+			
+			/*if(thirdplatformEntity2 != null) {
+				stallEntity.setThirdplatformid(thirdplatformEntity2.getId());
+			}else {
+				stallEntity.setThirdplatformid(thirdplatformEntity.getId());
+			}*/
+			
+			stallEntity.setPropertypic("无");
+			//stallEntity.setUserid(thirdplatformEntity.getId());
+			sallService.save(stallEntity);
+
+			return ResponseData.ok();
+		} else if ("批量添加车位".equals(option)) {
+
+			if (addressDouble.trim() == null || areaNumberDouble.trim() == null || (startNumberDouble + "") == null
+					|| (sumDouble + "") == null) {
+				return ResponseData.notFound();
+			}else {
+				BillEntity billEntity = new BillEntity();
+				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+				String tradedate = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+				String tradedate2 = new SimpleDateFormat("HH:mm:ss").format(timestamp);
+				billEntity.setUserid(thirdplatformEntity.getId());
+				billEntity.setTradedate(tradedate);
+				billEntity.setTradetime(tradedate2);
+				billEntity.setExpend(price);
+				billEntity.setNote("第三方车位添加");
+				billEntity.setUsertype("第三方");
+				billService.save(billEntity);
+				
+				
+				
+				List<StallEntity> stallEntities = new ArrayList<StallEntity>();
+				for (int i = 0; i < sumDouble; i++) {
+					StallEntity stallEntity = new StallEntity();
+					stallEntity.setStalladdress(addressDouble);
+					stallEntity.setStallarea(areaNumberDouble);
+					stallEntity.setStallnumber(startNumberDouble + i);
+					stallEntity.setPropertynumber("第三方产权");
+					stallEntity.setStalltype("空闲");
+					stallEntity.setLongtime(longtime + "个月");
+					if(entity != null) {
+						stallEntity.setExternalcontractid(entity.getId());
+					}
+					/*if(thirdplatformEntity2 != null) {
+						stallEntity.setThirdplatformid(thirdplatformEntity2.getId());
+					}else {
+						stallEntity.setThirdplatformid(thirdplatformEntity.getId());
+					}*/
+					stallEntity.setPropertypic("无");
+					//stallEntity.setUserid(thirdplatformEntity.getId());
+					stallEntities.add(stallEntity);
+				}
+				sallService.saveBatch(stallEntities, sumDouble);
+
+				return ResponseData.ok();
+			}
+			
+		} else {
+			return ResponseData.notFound();
+		}
+
+	}
+
+	/**
+	 * 外部合约续约
+	 * 
+	 * @param eModel
+	 * @return 成功返回200，失败返回404
+	 */
+	@LogAnno(content = "外部合约续约", operateName = LogType.添加, userPower = UserType.后台管理员)
+	@RequestMapping(value = "extendContractExternalcontract", method = RequestMethod.POST)
+	public ResponseData extendContractExternalcontract(HttpServletRequest request, String contractnumbers,
+			String starttimes, String endtimes, Double pricess, String companycontacts, String companphones
+			) {
+		
+		String newContractnumber = "EL Ne:"+System.currentTimeMillis();
+		
+		String contractpic =CBDUtil.uploadFile(request);
+		/*try {
+			contractpic = UploadFiles.fileUpload(request);
+		} catch (IllegalStateException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		ExternalcontractEntity externalcontractEntity = new ExternalcontractEntity();
+		externalcontractEntity.setContractnumber(contractnumbers);
+		externalcontractEntity.setStarttime(starttimes);
+		externalcontractEntity.setEndtime(endtimes);
+		externalcontractEntity.setPrice(pricess);
+		QueryWrapper<ExternalcontractEntity> queryWrapper = new QueryWrapper<>();
+		RenewalexternalcontractEntity renewalexternalcontractEntity = new RenewalexternalcontractEntity();
+		Map<String, Object> map = new HashMap<>();
+
+		map.put("contractnumber", externalcontractEntity.getContractnumber());
+		queryWrapper.allEq(map);
+		ExternalcontractEntity externalcontractEntity2 = externalcontractService.getOne(queryWrapper);
+		BillEntity billEntity =  new BillEntity();
+		if (externalcontractEntity2 != null) {
+			billEntity.setUserid(externalcontractEntity2.getThirdplatformid());
+			externalcontractEntity.setThirdplatformid(externalcontractEntity2.getThirdplatformid());
+			externalcontractEntity2.setIsinvalid("是");
+			externalcontractService.update(externalcontractEntity2, queryWrapper);
+			ThirdplatformEntity thirdplatformEntity = thirdplatformService
+					.getById(externalcontractEntity2.getThirdplatformid());
+			thirdplatformEntity.setCompanycontact(companycontacts);
+			thirdplatformEntity.setCompanphone(companphones);
+			thirdplatformService.updateById(thirdplatformEntity);
+			externalcontractEntity.setThirdplatformid(externalcontractEntity2.getThirdplatformid());
+			renewalexternalcontractEntity.setOldcontract(externalcontractEntity2.getId());
+		} else {
+			return ResponseData.notFound();
+		}
+
+		
+		externalcontractEntity.setIsinvalid("否");
+		externalcontractEntity.setContractpic(contractpic);
+		externalcontractEntity.setContractnumber(newContractnumber);
+		externalcontractService.save(externalcontractEntity);
+		QueryWrapper<ExternalcontractEntity> queryWrapper2 = new QueryWrapper<>();
+		Map<String, Object> map2 = new HashMap<>();
+		map2.put("contractnumber", newContractnumber);
+		queryWrapper2.allEq(map2);
+		externalcontractEntity = externalcontractService.getOne(queryWrapper2);
+		
+		if(externalcontractEntity != null) {
+					
+			
+			renewalexternalcontractEntity.setNewcontract(externalcontractEntity.getId());
+		}
+		
+		if (renewalexternalcontractService.save(renewalexternalcontractEntity)) {
+			
+			if(billEntity != null) {
+				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+				String tradedate = new SimpleDateFormat("yyyy-MM-dd").format(timestamp);
+				String tradedate2 = new SimpleDateFormat("HH:mm:ss").format(timestamp);				
+				billEntity.setTradedate(tradedate);
+				billEntity.setTradetime(tradedate2);
+				billEntity.setExpend(pricess);
+				billEntity.setNote("第三方车位续约");
+				billEntity.setUsertype("第三方");								
+				billEntity.setExpend(pricess);
+				billService.save(billEntity);
+			}
+			
+			return ResponseData.ok();
+		}
+
+		return ResponseData.notFound();
+
+	}
+
+	/**
+	 * 外部合约解约
+	 * 
+	 * @return 成功返回200，失败返回404
+	 */
+	@LogAnno(content = "外部合约解约", operateName = LogType.删除, userPower = UserType.后台管理员)
+	@RequestMapping(value = "deleteExternalcontract", method = RequestMethod.POST)
+	public ResponseData deleteExternalcontract(@RequestParam("id") Integer id) {
+
+		ExternalcontractEntity entity = externalcontractService.getById(id);
+		entity.setIsinvalid("是");
+
+		if (externalcontractService.updateById(entity)) {
+			QueryWrapper<StallEntity> queryWrapper = new QueryWrapper();
+			Map<String, Object> map = new HashMap<>();
+			/*map.put("userId", entity.getThirdplatformid());*/
+			map.put("externalcontractid",id);
+			queryWrapper.allEq(map);
+			sallService.remove(queryWrapper);
+			return ResponseData.ok();
+		}
+		return ResponseData.notFound();
+
+	}
+
+}
