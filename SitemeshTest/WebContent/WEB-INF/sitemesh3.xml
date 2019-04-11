@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+	<!-- 指明被装饰页面 -->
+	<mapping path="/*" decorator="/decorators/frame.jsp" />
+	
+	<!-- 指明不被装饰页面 -->
+	<mapping path="/login.jsp" exclue="true" />
+</sitemesh>  
